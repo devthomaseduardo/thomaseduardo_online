@@ -32,7 +32,7 @@ import {
 } from "react-router-dom";
 import LinkBio from "./pages/LinkBio";
 
-// --- Types ---
+// Types
 interface Project {
   id: string;
   title: string;
@@ -46,7 +46,7 @@ interface Project {
   link?: string;
 }
 
-// --- Constants & Helpers ---
+// Constants & Helpers
 const CUBIC_BEZIER = [0.4, 0, 0.2, 1];
 
 const SMOOTH_TRANSITION = {
@@ -92,7 +92,13 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// --- PREMIUM CUSTOM ICONS ---
+const IconProduct = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 14H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
 
 const IconStrategy = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
@@ -125,22 +131,30 @@ const IconSaaS = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const IconEcom = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 6H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const IconFintech = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M2 10H22" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M7 14H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M11 14H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
 const IconPerformance = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
     <path d="M12 12L16 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    <path d="M8 16L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
     <path d="M12 7V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M17 12H19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M5 12H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const IconProduct = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2  12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M12 18V12M12 12V6M12 12H18M12 12H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 2" />
-    <circle cx="12" cy="12" r="2" fill="currentColor" />
   </svg>
 );
 
@@ -160,7 +174,7 @@ const IconGrowth = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// --- END PREMIUM CUSTOM ICONS ---
+// END PREMIUM CUSTOM ICONS
 
 
 const LoadingScreen = () => {
@@ -286,32 +300,12 @@ const AboutSection = () => (
     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[150px] pointer-events-none" />
     
     <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
-      {/* Text Column (Now on Left on Desktop) */}
-      <motion.div {...FADE_UP} className="order-2 lg:order-1">
-        <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-6 block">Quem sou</span>
-        <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter italic leading-[1.1] py-2">
-          Não apenas código. <br />
-          <span className="text-gradient">Estratégia de produto.</span>
-        </h2>
-        <div className="space-y-6 text-gray-400 text-lg md:text-xl leading-relaxed font-medium">
-          <p>
-            Minha jornada no desenvolvimento começou com a necessidade de resolver problemas reais. Rapidamente percebi que código por si só não gera valor, o que importa é como essa tecnologia transforma processos em lucro.
-          </p>
-          <p>
-            Hoje, atuo como um parceiro estratégico para empresas e empreendedores que buscam elevar seu patamar digital. Desenvolvo sistemas que unem <span className="text-white font-bold italic">design impecável</span> com uma <span className="text-white font-bold italic">arquitetura técnica</span> preparada para escala.
-          </p>
-          <p>
-            Meu foco é criar ativos digitais que trabalham por você, automatizando o que é repetitivo e potencializando o que é lucrativo.
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Video Column (Now on Right on Desktop) */}
+      {/* Video Column (Now on Left on Desktop) */}
       <motion.div 
         {...FADE_UP}
-        className="relative order-1 lg:order-2"
+        className="relative order-1"
       >
-        <div className="aspect-[9/16] md:h-[950px] rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
+        <div className="aspect-[9/16] md:h-[1100px] rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
           <video 
             src="/about-video.mp4" 
             autoPlay 
@@ -338,6 +332,26 @@ const AboutSection = () => (
         {/* Floating Decorative Elements */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-cyan/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl" />
+      </motion.div>
+
+      {/* Text Column (Now on Right on Desktop) */}
+      <motion.div {...FADE_UP} className="order-2">
+        <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-6 block">Quem sou</span>
+        <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter italic leading-[1.1] py-2">
+          Não apenas código. <br />
+          <span className="text-gradient">Estratégia de produto.</span>
+        </h2>
+        <div className="space-y-6 text-gray-400 text-lg md:text-xl leading-relaxed font-medium">
+          <p>
+            Minha jornada no desenvolvimento começou com a necessidade de resolver problemas reais. Rapidamente percebi que código por si só não gera valor, o que importa é como essa tecnologia transforma processos em lucro.
+          </p>
+          <p>
+            Hoje, atuo como um parceiro estratégico para empresas e empreendedores que buscam elevar seu patamar digital. Desenvolvo sistemas que unem <span className="text-white font-bold italic">design impecável</span> com uma <span className="text-white font-bold italic">arquitetura técnica</span> preparada para escala.
+          </p>
+          <p>
+            Meu foco é criar ativos digitais que trabalham por você, automatizando o que é repetitivo e potencializando o que é lucrativo.
+          </p>
+        </div>
       </motion.div>
     </div>
   </section>
@@ -698,12 +712,11 @@ const BentoGrid = () => (
         </div>
       </motion.div>
     </div>
+    </div>
   </section>
 );
 
 const ProjectSection = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
   const projects: Project[] = [
     {
       id: "gravura",
@@ -742,20 +755,32 @@ const ProjectSection = () => {
       title: "COLOR WAVES",
       description: "Interface vibrante para agência de marketing digital.",
       technologies: ["React", "GSAP", "TailwindCSS"],
-      problem: "Marca precisava de uma presença digital que transmitisse criatividade e energia.",
-      solution: "Animações complexas e paleta de cores dinâmica.",
-      result: "Prêmio de design em galeria de inspiração (Awwwards-like).",
-      image: "/projetos/Landing Page  Color Waves.png"
+      problem: "Site antigo era estático e não transmitia a criatividade da agência.",
+      solution: "Uso intenso de animações GSAP e cores vibrantes com layout fluido.",
+      result: "Melhoria significativa no tempo de permanência no site.",
+      image: "/projetos/Landing Page  Color Waves.png",
+      link: "https://colorwaves.com.br"
     },
     {
-      id: "hazap-natal",
-      title: "HAZAP NATAL",
-      description: "Landing page sazonal para campanha de marketing de alto impacto.",
-      technologies: ["React", "TailwindCSS", "Motion"],
-      problem: "Necessidade de lançamento rápido para campanha de Natal.",
-      solution: "Arquitetura modular para deploy em menos de 48 horas.",
-      result: "Recorde de vendas no período da campanha.",
-      image: "/projetos/Landing Page Hazap Natal.png",
+      id: "grund-zero",
+      title: "GRUND ZERO",
+      description: "Landing page tática para assessoria esportiva.",
+      technologies: ["React", "Framer Motion", "TailwindCSS"],
+      problem: "Necessidade de captar alunos de forma agressiva e direta.",
+      solution: "Design escuro com foco em CTAs de alta visibilidade.",
+      result: "Taxa de conversão de leads superior a 15%.",
+      image: "/projetos/Landing Page Grund Zero.png",
+      clientLogo: "/clientes/gz-team.png"
+    },
+    {
+      id: "hazap",
+      title: "HAZAP",
+      description: "Plataforma de gestão de contratos e workflow jurídico.",
+      technologies: ["Next.js", "Node.js", "PostgreSQL"],
+      problem: "Processos manuais lentos na gestão de contratos complexos.",
+      solution: "Digitalização total do workflow com assinatura eletrônica integrada.",
+      result: "Redução de 70% no tempo de fechamento de contratos.",
+      image: "/projetos/Landing Page Hazap.png",
       clientLogo: "/clientes/hazzap.jpg",
       link: "https://hazap.com.br"
     },
@@ -820,24 +845,12 @@ const ProjectSection = () => {
       title: "CASA LELLIT",
       description: "E-commerce premium de decoração e mobiliário.",
       technologies: ["Next.js", "Stripe", "TailwindCSS"],
-      problem: "Interface antiga não condizia com o ticket médio elevado dos produtos.",
-      solution: "Redesign completo focado em luxo e sofisticação visual.",
-      result: "Aumento de 45% no ticket médio por venda.",
+      problem: "Necessidade de uma plataforma que suportasse alto volume de vendas com design de luxo.",
+      solution: "Interface minimalista e checkout otimizado.",
+      result: "Aumento de 40% nas vendas recorrentes.",
       image: "/projetos/site casa lellit.png",
       clientLogo: "/clientes/casalellit.jpg",
       link: "https://casalellit.com.br"
-    },
-    {
-      id: "hazap",
-      title: "HAZAP",
-      description: "Landing page institucional para empresa de tecnologia e soluções digitais.",
-      technologies: ["React", "TailwindCSS", "Framer Motion"],
-      problem: "Site antigo era lento e não convertia bem em dispositivos móveis.",
-      solution: "Otimização de performance e foco em UX mobile-first.",
-      result: "Melhoria de 40% na velocidade de carregamento.",
-      image: "/projetos/Landing Page Hazap.png",
-      clientLogo: "/clientes/hazzap.jpg",
-      link: "https://hazap.com.br"
     },
     {
       id: "hazap-workstation",
@@ -852,36 +865,13 @@ const ProjectSection = () => {
       link: "https://hazap.com.br"
     },
     {
-      id: "grund-zero",
-      title: "GRUND ZERO",
-      description: "Landing page para startup de tecnologia e inovação.",
-      technologies: ["React", "TailwindCSS", "Motion"],
-      problem: "Necessidade de uma identidade visual forte para captação de investimento.",
-      solution: "Design futurista com animações de entrada de alto impacto.",
-      result: "Sucesso na rodada de captação de investimento anjo.",
-      image: "/projetos/Landing Page Grund Zero.png",
-      clientLogo: "/clientes/gz-team.png",
-      link: "#"
-    },
-    {
-      id: "barbearia",
-      title: "BARBEARIA PILOTO AUTOMÁTICO",
-      description: "Sistema completo de agendamento e gestão para barbearias modernas.",
-      technologies: ["Next.js", "TypeScript", "Prisma"],
-      problem: "Perda de agendamentos por falta de automatização e falha humana.",
-      solution: "Plataforma self-service de agendamento com pagamento integrado.",
-      result: "Aumento de 30% na ocupação da agenda no primeiro mês.",
-      image: "/sistemas-web.png",
-      link: "https://barbearia-no-piloto-automatico.vercel.app/"
-    },
-    {
       id: "paper-contracts",
       title: "PAPER CONTRACTS",
-      description: "Plataforma de assinatura digital e gestão de contratos.",
-      technologies: ["React", "Node.js", "Supabase"],
-      problem: "Processo de assinatura física era lento e gerava custos de logística.",
-      solution: "Fluxo de assinatura digital criptografada e segura.",
-      result: "Economia de 90% em custos de papel e envio.",
+      description: "Sistema de automação e gestão de contratos imobiliários.",
+      technologies: ["React", "Node.js", "PostgreSQL"],
+      problem: "Gerenciamento manual de contratos causava erros e atrasos.",
+      solution: "Automação total da geração de documentos.",
+      result: "Redução de 90% em erros de digitação.",
       image: "/projetos/paper-contracts.png"
     }
   ];
@@ -1016,7 +1006,7 @@ const ExpertiseSection = () => (
         { 
           num: "02", 
           title: "Sistemas de Pagamento", 
-          icon: <IconGrowth className="w-8 h-8 text-brand-cyan" />,
+          icon: <IconFintech className="w-8 h-8 text-brand-cyan" />,
           desc: "Integração robusta com Stripe, Mercado Pago e Infinity Pay, garantindo segurança e transparência financeira." 
         },
         { 
@@ -1138,7 +1128,7 @@ const TechStackGrid = () => (
         {[
           { 
             cat: "Frontend", 
-            icon: <Code2 className="w-6 h-6 text-brand-blue" />,
+            icon: <IconCodePremium className="w-6 h-6 text-brand-blue" />,
             techs: [
               { name: "React", logo: "https://cdn.simpleicons.org/react/white" },
               { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/white" },
@@ -1148,7 +1138,7 @@ const TechStackGrid = () => (
           },
           { 
             cat: "Backend", 
-            icon: <Globe className="w-6 h-6 text-brand-cyan" />,
+            icon: <IconSaaS className="w-6 h-6 text-brand-cyan" />,
             techs: [
               { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/white" },
               { name: "Express", logo: "https://cdn.simpleicons.org/express/white" },
@@ -1158,7 +1148,7 @@ const TechStackGrid = () => (
           },
           { 
             cat: "Infra & DB", 
-            icon: <Zap className="w-6 h-6 text-yellow-500" />,
+            icon: <IconPerformance className="w-6 h-6 text-yellow-500" />,
             techs: [
               { name: "AWS", logo: "https://cdn.simpleicons.org/amazonwebservices/white" },
               { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/white" },
@@ -1168,7 +1158,7 @@ const TechStackGrid = () => (
           },
           { 
             cat: "Fintech", 
-            icon: <LineChart className="w-6 h-6 text-green-500" />,
+            icon: <IconFintech className="w-6 h-6 text-green-500" />,
             techs: [
               { name: "Stripe", logo: "https://cdn.simpleicons.org/stripe/white" },
               { name: "Mercado Pago", logo: "https://cdn.simpleicons.org/mercadopago/white" },
