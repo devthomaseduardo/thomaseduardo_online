@@ -612,106 +612,106 @@ const SocialProof = () => {
 const BentoGrid = () => (
   <section id="metodologia" className="relative py-24 px-6 bg-[#0A0A0A] overflow-hidden">
     <div className="max-w-7xl mx-auto relative z-10">
-    {/* Decorative background for section */}
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-blue/5 rounded-full blur-[160px] pointer-events-none" />
+      {/* Decorative background for section */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-blue/5 rounded-full blur-[160px] pointer-events-none" />
 
-    <motion.div 
-      {...FADE_UP}
-      className="mb-16 relative z-10"
-    >
-      <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Metodologia</span>
-      <h2 className="text-4xl md:text-6xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Como transformo ideias <br />em ativos <span className="text-gradient">de alto valor</span></h2>
-      <p className="text-gray-400 text-lg">Minha metodologia é baseada em três pilares fundamentais, focados em ROI e escalabilidade brutal.</p>
-    </motion.div>
- 
-    <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
-      {/* Card 1: Diagnóstico */}
       <motion.div 
         {...FADE_UP}
-        whileHover={{ y: -5 }}
-        className="md:col-span-6 lg:col-span-8 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col justify-between group transition-all hover:bg-white/[0.04] hover:border-brand-blue/20 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+        className="mb-16 relative z-10"
       >
-        <div className="absolute inset-0 bg-linear-to-br from-brand-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-            <IconStrategy className="w-8 h-8 text-brand-blue" />
+        <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Metodologia</span>
+        <h2 className="text-4xl md:text-6xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Como transformo ideias <br />em ativos <span className="text-gradient">de alto valor</span></h2>
+        <p className="text-gray-400 text-lg">Minha metodologia é baseada em três pilares fundamentais, focados em ROI e escalabilidade brutal.</p>
+      </motion.div>
+  
+      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
+        {/* Card 1: Diagnóstico */}
+        <motion.div 
+          {...FADE_UP}
+          whileHover={{ y: -5 }}
+          className="md:col-span-6 lg:col-span-8 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col justify-between group transition-all hover:bg-white/[0.04] hover:border-brand-blue/20 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-linear-to-br from-brand-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10">
+            <div className="w-16 h-16 rounded-2xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+              <IconStrategy className="w-8 h-8 text-brand-blue" />
+            </div>
+            <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Diagnóstico Técnico <br/>& Estratégico</h3>
+            <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
+              Identifico os gargalos reais do seu negócio antes da primeira linha de código. 
+              Imersão profunda para garantir que o software resolva problemas de verdade e traga retorno financeiro direto.
+            </p>
           </div>
-          <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Diagnóstico Técnico <br/>& Estratégico</h3>
-          <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
-            Identifico os gargalos reais do seu negócio antes da primeira linha de código. 
-            Imersão profunda para garantir que o software resolva problemas de verdade e traga retorno financeiro direto.
-          </p>
-        </div>
-        <div className="mt-12 flex gap-6 text-sm font-bold font-mono text-gray-600 uppercase tracking-widest relative z-10">
-          <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Auditoria</span>
-          <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Planejamento</span>
-          <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> ROI</span>
-        </div>
-      </motion.div>
- 
-      {/* Card 2: Execução */}
-      <motion.div 
-        {...FADE_UP}
-        whileHover={{ y: -5 }}
-        className="md:col-span-6 lg:col-span-4 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col group overflow-hidden relative transition-all hover:bg-white/[0.04] hover:border-brand-cyan/20 shadow-2xl backdrop-blur-xl"
-      >
-        <div className="absolute inset-0 bg-linear-to-br from-brand-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative z-10 h-full flex flex-col">
-          <div className="w-16 h-16 rounded-2xl bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-            <IconExecution className="w-8 h-8 text-brand-cyan" />
+          <div className="mt-12 flex gap-6 text-sm font-bold font-mono text-gray-600 uppercase tracking-widest relative z-10">
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Auditoria</span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Planejamento</span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> ROI</span>
           </div>
-          <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Execução <br/>Brutal</h3>
-          <p className="text-gray-400 text-lg leading-relaxed">
-            Código limpo, testado e performático. Desenvolvimento ágil sem burocracia, focado em entregas de valor constante.
-          </p>
-        </div>
-      </motion.div>
- 
-      {/* Card 3: Escala */}
-      <motion.div 
-        {...FADE_UP}
-        whileHover={{ y: -5 }}
-        className="md:col-span-6 lg:col-span-5 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col group transition-all hover:bg-white/[0.04] hover:border-yellow-500/20 shadow-2xl backdrop-blur-xl relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-linear-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-            <IconScale className="w-8 h-8 text-yellow-500" />
+        </motion.div>
+  
+        {/* Card 2: Execução */}
+        <motion.div 
+          {...FADE_UP}
+          whileHover={{ y: -5 }}
+          className="md:col-span-6 lg:col-span-4 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col group overflow-hidden relative transition-all hover:bg-white/[0.04] hover:border-brand-cyan/20 shadow-2xl backdrop-blur-xl"
+        >
+          <div className="absolute inset-0 bg-linear-to-br from-brand-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10 h-full flex flex-col">
+            <div className="w-16 h-16 rounded-2xl bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+              <IconExecution className="w-8 h-8 text-brand-cyan" />
+            </div>
+            <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Execução <br/>Brutal</h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              Código limpo, testado e performático. Desenvolvimento ágil sem burocracia, focado em entregas de valor constante.
+            </p>
           </div>
-          <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Escala<br/> & Suporte</h3>
-          <p className="text-gray-400 text-lg leading-relaxed">
-            Arquiteturas que suportam o crescimento explosivo. Suporte contínuo para garantir que seu ativo nunca pare de performar.
-          </p>
-        </div>
-      </motion.div>
- 
-      {/* Card 4: Stack */}
-      <motion.div 
-        {...FADE_UP}
-        whileHover={{ y: -5 }}
-        className="md:col-span-6 lg:col-span-7 p-10 rounded-[32px] border border-white/5 bg-linear-to-br from-brand-blue/10 to-transparent flex flex-col md:flex-row items-start md:items-center justify-between gap-8 overflow-hidden group shadow-2xl backdrop-blur-xl"
-      >
-        <div className="max-w-md relative z-10">
-          <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Tecnologia <br/>de Ponta</h3>
-          <p className="text-gray-400 text-lg">
-            Utilizo as ferramentas mais sólidas para garantir longevidade e performance extrema ao seu produto digital.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10">
-          {['React', 'Next.js', 'Node.js', 'PostgreSQL', 'AWS', 'Docker', 'Prisma', 'Stripe'].map((tag, i) => (
-            <motion.span 
-              key={tag}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ ...SMOOTH_TRANSITION, delay: i * 0.05 }}
-              className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold font-mono text-white/70 uppercase tracking-widest hover:bg-white/10 transition-colors"
-            >
-              {tag}
-            </motion.span>
-          ))}
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+  
+        {/* Card 3: Escala */}
+        <motion.div 
+          {...FADE_UP}
+          whileHover={{ y: -5 }}
+          className="md:col-span-6 lg:col-span-5 p-10 rounded-[32px] border border-white/5 bg-white/[0.02] flex flex-col group transition-all hover:bg-white/[0.04] hover:border-yellow-500/20 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-linear-to-br from-yellow-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10">
+            <div className="w-16 h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+              <IconScale className="w-8 h-8 text-yellow-500" />
+            </div>
+            <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Escala<br/> & Suporte</h3>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              Arquiteturas que suportam o crescimento explosivo. Suporte contínuo para garantir que seu ativo nunca pare de performar.
+            </p>
+          </div>
+        </motion.div>
+  
+        {/* Card 4: Stack */}
+        <motion.div 
+          {...FADE_UP}
+          whileHover={{ y: -5 }}
+          className="md:col-span-6 lg:col-span-7 p-10 rounded-[32px] border border-white/5 bg-linear-to-br from-brand-blue/10 to-transparent flex flex-col md:flex-row items-start md:items-center justify-between gap-8 overflow-hidden group shadow-2xl backdrop-blur-xl"
+        >
+          <div className="max-w-md relative z-10">
+            <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Tecnologia <br/>de Ponta</h3>
+            <p className="text-gray-400 text-lg">
+              Utilizo as ferramentas mais sólidas para garantir longevidade e performance extrema ao seu produto digital.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10">
+            {['React', 'Next.js', 'Node.js', 'PostgreSQL', 'AWS', 'Docker', 'Prisma', 'Stripe'].map((tag, i) => (
+              <motion.span 
+                key={tag}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ ...SMOOTH_TRANSITION, delay: i * 0.05 }}
+                className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold font-mono text-white/70 uppercase tracking-widest hover:bg-white/10 transition-colors"
+              >
+                {tag}
+              </motion.span>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     </div>
   </section>
 );
