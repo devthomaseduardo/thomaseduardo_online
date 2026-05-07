@@ -31,6 +31,7 @@ import {
   Route
 } from "react-router-dom";
 import LinkBio from "./pages/LinkBio";
+import RedirectPage from "./pages/RedirectPage";
 
 // Types
 interface Project {
@@ -309,13 +310,13 @@ const AboutSection = () => (
   <section id="sobre" className="py-20 md:py-32 px-6 bg-[#0A0A0A] relative overflow-hidden">
     <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-brand-blue/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none" />
     
-    <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+    <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
       {/* Video Column */}
       <motion.div 
         {...FADE_UP}
-        className="relative order-2 lg:order-1"
+        className="relative order-2 lg:order-1 flex justify-center lg:justify-end"
       >
-        <div className="aspect-[9/16] w-full max-w-[500px] mx-auto lg:mx-0 lg:h-[800px] rounded-[32px] md:rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
+        <div className="aspect-[9/16] w-full max-w-[420px] rounded-[32px] md:rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
           <video 
             autoPlay 
             loop 
@@ -1383,6 +1384,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/links" element={<LinkBio />} />
+        <Route path="/r" element={<RedirectPage />} />
       </Routes>
     </Router>
   );
