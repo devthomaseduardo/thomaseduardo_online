@@ -1068,88 +1068,109 @@ const TrajectorySection = () => (
   </section>
 );
 
-const TechStackGrid = () => (
-  <section className="py-24 px-6 bg-[#0A0A0A]">
-    <div className="max-w-7xl mx-auto">
-      <motion.div {...FADE_UP} className="mb-16 text-center">
-        <h2 className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Arsenal <span className="text-gradient">Técnico</span></h2>
-        <p className="text-gray-400 text-lg">Ferramentas de ponta para construir ativos digitais de alta performance.</p>
-      </motion.div>
+const TechStackGrid = () => {
+  const groups = [
+    { 
+      cat: "Frontend", 
+      icon: <IconCodePremium className="w-6 h-6 text-brand-blue" />,
+      sub: "Interfaces Premium & Performance",
+      techs: [
+        { name: "React", logo: "https://cdn.simpleicons.org/react/white" },
+        { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/white" },
+        { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/white" },
+        { name: "Tailwind", logo: "https://cdn.simpleicons.org/tailwindcss/white" }
+      ] 
+    },
+    { 
+      cat: "Backend", 
+      icon: <IconSaaS className="w-6 h-6 text-brand-cyan" />,
+      sub: "Arquitetura & Escalabilidade",
+      techs: [
+        { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/white" },
+        { name: "Express", logo: "https://cdn.simpleicons.org/express/white" },
+        { name: "JWT", logo: "https://cdn.simpleicons.org/jsonwebtokens/white" },
+        { name: "Prisma", logo: "https://cdn.simpleicons.org/prisma/white" }
+      ] 
+    },
+    { 
+      cat: "Infra & DB", 
+      icon: <IconPerformance className="w-6 h-6 text-yellow-500" />,
+      sub: "Deploy & Cloud Computing",
+      techs: [
+        { name: "AWS", logo: "https://cdn.simpleicons.org/amazonwebservices/white" },
+        { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/white" },
+        { name: "PostgreSQL", logo: "https://cdn.simpleicons.org/postgresql/white" },
+        { name: "Docker", logo: "https://cdn.simpleicons.org/docker/white" }
+      ] 
+    },
+    { 
+      cat: "Fintech", 
+      icon: <IconFintech className="w-6 h-6 text-green-500" />,
+      sub: "Checkout & Monetização",
+      techs: [
+        { name: "Stripe", logo: "https://cdn.simpleicons.org/stripe/white" },
+        { name: "Mercado Pago", logo: "https://cdn.simpleicons.org/mercadopago/white" },
+        { name: "PayPal", logo: "https://cdn.simpleicons.org/paypal/white" },
+        { name: "PagSeguro", logo: "https://cdn.simpleicons.org/pagseguro/white" }
+      ] 
+    }
+  ];
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { 
-            cat: "Frontend", 
-            icon: <IconCodePremium className="w-6 h-6 text-brand-blue" />,
-            techs: [
-              { name: "React", logo: "https://cdn.simpleicons.org/react/white" },
-              { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/white" },
-              { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/white" },
-              { name: "Tailwind", logo: "https://cdn.simpleicons.org/tailwindcss/white" }
-            ] 
-          },
-          { 
-            cat: "Backend", 
-            icon: <IconSaaS className="w-6 h-6 text-brand-cyan" />,
-            techs: [
-              { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/white" },
-              { name: "Express", logo: "https://cdn.simpleicons.org/express/white" },
-              { name: "JWT", logo: "https://cdn.simpleicons.org/jsonwebtokens/white" },
-              { name: "Prisma", logo: "https://cdn.simpleicons.org/prisma/white" }
-            ] 
-          },
-          { 
-            cat: "Infra & DB", 
-            icon: <IconPerformance className="w-6 h-6 text-yellow-500" />,
-            techs: [
-              { name: "AWS", logo: "https://cdn.simpleicons.org/amazonwebservices/white" },
-              { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/white" },
-              { name: "PostgreSQL", logo: "https://cdn.simpleicons.org/postgresql/white" },
-              { name: "Docker", logo: "https://cdn.simpleicons.org/docker/white" }
-            ] 
-          },
-          { 
-            cat: "Fintech", 
-            icon: <IconFintech className="w-6 h-6 text-green-500" />,
-            techs: [
-              { name: "Stripe", logo: "https://cdn.simpleicons.org/stripe/white" },
-              { name: "Mercado Pago", logo: "https://cdn.simpleicons.org/mercadopago/white" },
-              { name: "Paypal", logo: "https://cdn.simpleicons.org/paypal/white" },
-              { name: "PagSeguro", logo: "https://cdn.simpleicons.org/pagseguro/white" }
-            ] 
-          }
-        ].map((group, i) => (
-          <motion.div 
-            key={i}
-            {...FADE_UP}
-            whileHover={{ y: -8 }}
-            className="p-8 rounded-[32px] border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500 group relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-linear-to-br from-brand-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            <div className="relative z-10">
-              <div className="mb-6 p-3 rounded-2xl bg-white/5 w-fit border border-white/10 group-hover:scale-110 transition-transform">
-                {group.icon}
-              </div>
-              <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-[0.2em]">{group.cat}</h4>
+  return (
+    <section className="py-32 px-6 bg-[#0A0A0A] relative overflow-hidden">
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-brand-blue/5 rounded-full blur-[120px] pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div {...FADE_UP} className="mb-20">
+          <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Tech Stack</span>
+          <h2 className="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter italic leading-[1.1] py-2">Arsenal <span className="text-gradient">Técnico</span></h2>
+          <p className="text-gray-400 text-xl max-w-2xl font-medium italic">Ferramentas de ponta selecionadas para máxima performance e ROI.</p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {groups.map((group, i) => (
+            <motion.div 
+              key={group.cat}
+              {...FADE_UP}
+              transition={{ delay: i * 0.1 }}
+              className="group relative p-8 md:p-10 rounded-[3rem] border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-500 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-linear-to-br from-brand-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               
-              <div className="grid grid-cols-2 gap-4">
-                {group.techs.map(t => (
-                  <div key={t.name} className="flex flex-col items-center gap-2 group/icon">
-                    <div className="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center border border-white/5 group-hover/icon:border-white/20 transition-colors">
-                      <img src={t.logo} alt={t.name} className="w-5 h-5 opacity-40 group-hover/icon:opacity-100 transition-opacity" />
-                    </div>
-                    <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">{t.name}</span>
+              <div className="relative z-10 flex flex-col sm:flex-row gap-8 items-start">
+                <div className="shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:border-brand-blue/30 transition-all duration-500 shadow-[0_0_30px_rgba(37,99,235,0.1)]">
+                    {group.icon}
                   </div>
-                ))}
+                  <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-1">{group.cat}</h3>
+                  <p className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.2em]">{group.sub}</p>
+                </div>
+
+                <div className="flex-1 grid grid-cols-2 gap-3 w-full">
+                  {group.techs.map((tech) => (
+                    <div 
+                      key={tech.name}
+                      className="p-3 rounded-2xl border border-white/5 bg-black/40 flex items-center gap-3 hover:border-brand-blue/20 hover:bg-white/5 transition-all group/tech"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover/tech:border-brand-blue/30 transition-all overflow-hidden shrink-0">
+                        <img 
+                          src={tech.logo} 
+                          alt="" 
+                          className="w-4 h-4 opacity-50 group-hover/tech:opacity-100 group-hover/tech:scale-110 transition-all" 
+                        />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 group-hover/tech:text-white transition-colors uppercase tracking-widest truncate">{tech.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const FAQSection = () => {
   const [open, setOpen] = useState<number | null>(null);
