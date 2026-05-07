@@ -1,0 +1,35 @@
+[
+  {
+    "id": 22,
+    "title": "FitFlow App",
+    "slug": "fitflow-app",
+    "description": "Plataforma completa para gestão de treinos, nutrição e acompanhamento de metas de saúde.",
+    "link": "#",
+    "image": "/clientes/fitflow.png",
+    "featuredOnHome": true,
+    "stack": ["React", "TypeScript", "Tailwind CSS"],
+    "lighthouseScore": 92
+  },
+  {
+    "id": 21,
+    "title": "Contabilidade Almeida",
+    "slug": "contabilidade-almeida",
+    "description": "Landing page premium para escritório de contabilidade.",
+    "link": "#",
+    "image": "/clientes/contabilidade-almeida.png",
+    "featuredOnHome": false,
+    "stack": ["React", "Vite", "Tailwind CSS"],
+    "lighthouseScore": 88
+  },
+  {
+    "id": 20,
+    "title": "Barbearia no Piloto Automático",
+    "slug": "barbearia-piloto-automatico",
+    "description": "Sistema de agendamento e pagamento para barbearias.",
+    "link": "https://barbearia-no-piloto-automatico.vercel.app/",
+    "image": "/sistemas-web.png",
+    "featuredOnHome": true,
+    "stack": ["Next.js", "TypeScript", "Prisma"],
+    "lighthouseScore": 90
+  }
+]
