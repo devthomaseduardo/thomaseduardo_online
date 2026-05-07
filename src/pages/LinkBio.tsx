@@ -63,9 +63,7 @@ const LinkBio = () => {
           className="text-center mb-16"
         >
           <div className="w-28 h-28 rounded-full border-2 border-brand-blue p-1 mx-auto mb-8">
-             <div className="w-full h-full rounded-full bg-linear-to-br from-brand-blue to-brand-cyan flex items-center justify-center font-display font-bold text-black text-3xl italic">
-              TE
-            </div>
+             <img src="/thomas.png" alt="Thomas Eduardo" className="w-full h-full rounded-full object-cover shadow-2xl shadow-brand-blue/20" />
           </div>
           <h1 className="text-5xl font-black uppercase italic mb-4 tracking-tighter">Thomas Eduardo</h1>
           <p className="text-gray-400 text-xl font-medium">Engenharia de Software de Alta Performance</p>

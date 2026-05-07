@@ -97,22 +97,25 @@ const IconProduct = ({ className }: { className?: string }) => (
     <path d="M21 16V8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V16C3 17.1046 3.89543 18 5 18H19C20.1046 18 21 17.1046 21 16Z" stroke="currentColor" strokeWidth="1.5" />
     <path d="M3 10H21" stroke="currentColor" strokeWidth="1.5" />
     <path d="M7 14H17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M12 6V18" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.3" />
   </svg>
 );
 
 const IconStrategy = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <path d="M12 15L12 9M12 9L15 12M12 9L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M12 3V5M12 19V21M3 12H5M19 12H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M12 3V5M12 19V21M3 12H5M19 12H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1" strokeDasharray="1 1" opacity="0.3" />
   </svg>
 );
 
 const IconExecution = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor" className="opacity-20" />
+    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor" className="opacity-10" />
     <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M17 6L21 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 2" />
+    <path d="M7 18L3 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 2" opacity="0.5" />
   </svg>
 );
 
@@ -120,6 +123,7 @@ const IconScale = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <path d="M21 7L13 15L9 11L3 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M15 7H21V13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M3 7V17H13" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.3" />
   </svg>
 );
 
@@ -128,6 +132,7 @@ const IconSaaS = ({ className }: { className?: string }) => (
     <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 2V22" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.2" />
   </svg>
 );
 
@@ -136,6 +141,7 @@ const IconEcom = ({ className }: { className?: string }) => (
     <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M3 6H21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="12" cy="18" r="1" fill="currentColor" opacity="0.5" />
   </svg>
 );
 
@@ -145,6 +151,7 @@ const IconFintech = ({ className }: { className?: string }) => (
     <path d="M2 10H22" stroke="currentColor" strokeWidth="1.5" />
     <path d="M7 14H8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M11 14H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M18 6V18" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" opacity="0.3" />
   </svg>
 );
 
@@ -155,6 +162,7 @@ const IconPerformance = ({ className }: { className?: string }) => (
     <path d="M12 7V5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M17 12H19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     <path d="M5 12H7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="2" fill="currentColor" />
   </svg>
 );
 
@@ -163,6 +171,8 @@ const IconCodePremium = ({ className }: { className?: string }) => (
     <path d="M16 18L22 12L16 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M8 6L2 12L8 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M14 4L10 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" />
+    <rect x="11" y="2" width="2" height="2" fill="currentColor" opacity="0.2" />
+    <rect x="11" y="20" width="2" height="2" fill="currentColor" opacity="0.2" />
   </svg>
 );
 
@@ -210,8 +220,8 @@ const LoadingScreen = () => {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col items-center gap-2"
           >
-            <div className="w-10 h-10 rounded-xl bg-brand-blue/10 border border-brand-blue/20 flex items-center justify-center font-bold text-brand-cyan text-xs">
-              TE
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <h2 className="text-white font-black italic uppercase tracking-[0.4em] text-[10px] text-center">
               THOMAS_EDUARDO // 2026
@@ -261,8 +271,8 @@ const Navbar = () => {
             : "bg-transparent border-transparent"
         }`}>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-brand-blue to-brand-cyan flex items-center justify-center font-display font-black text-black text-[10px]">
-              TE
+            <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-display font-bold text-white tracking-tighter uppercase italic text-sm hidden sm:block">Thomas Eduardo</span>
           </div>
@@ -305,7 +315,7 @@ const AboutSection = () => (
         {...FADE_UP}
         className="relative order-1"
       >
-        <div className="aspect-[9/16] md:h-[1100px] rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
+        <div className="aspect-[9/16] md:h-[1200px] rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
           <video 
             src="/about-video.mp4" 
             autoPlay 
@@ -337,7 +347,7 @@ const AboutSection = () => (
       {/* Text Column (Now on Right on Desktop) */}
       <motion.div {...FADE_UP} className="order-2">
         <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-6 block">Quem sou</span>
-        <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase tracking-tighter italic leading-[1.1] py-2">
+        <h2 className="text-4xl md:text-7xl font-black mb-8 uppercase tracking-tighter italic leading-[1] py-2">
           Não apenas código. <br />
           <span className="text-gradient">Estratégia de produto.</span>
         </h2>
@@ -719,24 +729,16 @@ const BentoGrid = () => (
 const ProjectSection = () => {
   const projects: Project[] = [
     {
-      id: "gravura",
-      title: "GRAVURA ESTÚDIO",
-      description: "Identidade visual e plataforma digital para estúdio de design e arte. Foco em estética minimalista.",
-      technologies: ["React", "Framer Motion", "TailwindCSS"],
-      problem: "Necessidade de uma vitrine digital que refletisse a estética minimalista e artística do estúdio.",
-      solution: "Interface ultra-limpa com transições fluidas e galeria otimizada.",
-      result: "Aumento no engajamento visual e percepção de marca premium.",
-      image: "/projetos/GRAVURA Estúdio.png"
-    },
-    {
-      id: "jtg",
-      title: "IMOBILIÁRIA JTG",
-      description: "Sistema de gestão imobiliária e catálogo de imóveis de luxo com filtros avançados.",
-      technologies: ["Next.js", "PostgreSQL", "Prisma"],
-      problem: "Dificuldade em gerenciar leads e apresentar imóveis de forma sofisticada.",
-      solution: "Dashboard administrativo robusto com integração de CRM.",
-      result: "Redução de 50% no tempo de resposta a leads.",
-      image: "/projetos/Imobiliária JTG.png"
+      id: "reis-do-manto",
+      title: "REIS DO MANTO",
+      description: "E-commerce de alta performance para vestuário esportivo premium.",
+      technologies: ["Next.js", "Stripe", "TailwindCSS"],
+      problem: "Necessidade de um checkout ultra-rápido e interface que transmitisse exclusividade.",
+      solution: "Arquitetura baseada em Next.js with otimização extrema de imagens e gateway Stripe.",
+      result: "Aumento de 50% na taxa de conversão no primeiro mês.",
+      image: "/projetos/Reis do Manto.png",
+      clientLogo: "/clientes/reis-do-manto.png",
+      link: "https://reisdomanto.com.br"
     },
     {
       id: "bras-service",
@@ -751,26 +753,15 @@ const ProjectSection = () => {
       link: "https://brasservice.com.br"
     },
     {
-      id: "color-waves",
-      title: "COLOR WAVES",
-      description: "Interface vibrante para agência de marketing digital.",
-      technologies: ["React", "GSAP", "TailwindCSS"],
-      problem: "Site antigo era estático e não transmitia a criatividade da agência.",
-      solution: "Uso intenso de animações GSAP e cores vibrantes com layout fluido.",
-      result: "Melhoria significativa no tempo de permanência no site.",
-      image: "/projetos/Landing Page  Color Waves.png",
-      link: "https://colorwaves.com.br"
-    },
-    {
-      id: "grund-zero",
-      title: "GRUND ZERO",
-      description: "Landing page tática para assessoria esportiva.",
-      technologies: ["React", "Framer Motion", "TailwindCSS"],
-      problem: "Necessidade de captar alunos de forma agressiva e direta.",
-      solution: "Design escuro com foco em CTAs de alta visibilidade.",
-      result: "Taxa de conversão de leads superior a 15%.",
-      image: "/projetos/Landing Page Grund Zero.png",
-      clientLogo: "/clientes/gz-team.png"
+      id: "barbearia-piloto",
+      title: "BARBEARIA NO PILOTO AUTOMÁTICO",
+      description: "SaaS completo para gestão e agendamento automático de barbearias.",
+      technologies: ["Next.js", "Prisma", "PostgreSQL"],
+      problem: "Dono da barbearia perdia 3h por dia gerenciando horários manualmente.",
+      solution: "Sistema de agendamento self-service com confirmação via WhatsApp.",
+      result: "Economia de 20h semanais e zero furos na agenda.",
+      image: "/sistemas-web.png",
+      link: "https://barbearia-no-piloto-automatico.vercel.app/"
     },
     {
       id: "hazap",
@@ -778,7 +769,7 @@ const ProjectSection = () => {
       description: "Plataforma de gestão de contratos e workflow jurídico.",
       technologies: ["Next.js", "Node.js", "PostgreSQL"],
       problem: "Processos manuais lentos na gestão de contratos complexos.",
-      solution: "Digitalização total do workflow com assinatura eletrônica integrada.",
+      solution: "Digitalização total do workflow with assinatura eletrônica integrada.",
       result: "Redução de 70% no tempo de fechamento de contratos.",
       image: "/projetos/Landing Page Hazap.png",
       clientLogo: "/clientes/hazzap.jpg",
@@ -797,50 +788,6 @@ const ProjectSection = () => {
       link: "https://spinmove.com.br"
     },
     {
-      id: "yazigi",
-      title: "YÁZIGI SWISS PARK",
-      description: "Portal educacional para unidade franqueada de escola de idiomas.",
-      technologies: ["React", "Node.js", "MongoDB"],
-      problem: "Falta de centralização de informações para alunos e responsáveis.",
-      solution: "Área logada para acompanhamento de progresso pedagógico.",
-      result: "Melhoria de 60% na satisfação dos pais e alunos.",
-      image: "/projetos/Landing Page Yázigi Swiss Park.png",
-      clientLogo: "/clientes/yazigi.png",
-      link: "https://yazigiswisspark.com.br"
-    },
-    {
-      id: "gil-barbosa",
-      title: "GIL BARBOSA",
-      description: "Portfólio profissional para consultor de negócios e palestrante.",
-      technologies: ["React", "Framer Motion", "TailwindCSS"],
-      problem: "Perfil profissional não transmitia a autoridade necessária no digital.",
-      solution: "Design minimalista focado em prova social e conquistas.",
-      result: "Novos contratos fechados via inbound marketing.",
-      image: "/projetos/Site  Gil Barbosa.png"
-    },
-    {
-      id: "bela-cucina",
-      title: "BELA CUCINA",
-      description: "Site institucional para restaurante de alta gastronomia italiana.",
-      technologies: ["React", "TailwindCSS", "Cloudinary"],
-      problem: "Fotos dos pratos não carregavam rapidamente em dispositivos móveis.",
-      solution: "Otimização agressiva de imagens e Lazy Loading.",
-      result: "Carregamento instantâneo e aumento nas reservas online.",
-      image: "/projetos/bela cucina.png",
-      clientLogo: "/clientes/casalellit.jpg",
-      link: "https://casalellit.com.br"
-    },
-    {
-      id: "core",
-      title: "CORE ENGINEERING",
-      description: "Plataforma de gestão de projetos de engenharia civil.",
-      technologies: ["TypeScript", "Next.js", "PostgreSQL"],
-      problem: "Descentralização de documentos técnicos gerava atrasos.",
-      solution: "Repositório central com versionamento de arquivos pesados.",
-      result: "Aumento de 25% na produtividade das equipes de campo.",
-      image: "/projetos/core.png"
-    },
-    {
       id: "casa-lellit",
       title: "CASA LELLIT",
       description: "E-commerce premium de decoração e mobiliário.",
@@ -853,26 +800,27 @@ const ProjectSection = () => {
       link: "https://casalellit.com.br"
     },
     {
-      id: "hazap-workstation",
-      title: "HAZAP WORKSTATION",
-      description: "Dashboard interno para gestão de produtividade e tarefas.",
-      technologies: ["React", "Node.js", "PostgreSQL"],
-      problem: "Equipe perdia tempo alternando entre múltiplas ferramentas de gestão.",
-      solution: "Centralização de fluxo de trabalho em uma única workstation customizada.",
-      result: "Redução de 20% no tempo gasto em tarefas administrativas.",
-      image: "/projetos/hazap workstation.png",
-      clientLogo: "/clientes/hazzap.jpg",
-      link: "https://hazap.com.br"
+      id: "yazigi",
+      title: "YÁZIGI SWISS PARK",
+      description: "Portal educacional para unidade franqueada de escola de idiomas.",
+      technologies: ["React", "Node.js", "MongoDB"],
+      problem: "Falta de centralização de informações para alunos e responsáveis.",
+      solution: "Área logada para acompanhamento de progresso pedagógico.",
+      result: "Melhoria de 60% na satisfação dos pais e alunos.",
+      image: "/projetos/Landing Page Yázigi Swiss Park.png",
+      clientLogo: "/clientes/yazigi.png",
+      link: "https://yazigiswisspark.com.br"
     },
     {
-      id: "paper-contracts",
-      title: "PAPER CONTRACTS",
-      description: "Sistema de automação e gestão de contratos imobiliários.",
-      technologies: ["React", "Node.js", "PostgreSQL"],
-      problem: "Gerenciamento manual de contratos causava erros e atrasos.",
-      solution: "Automação total da geração de documentos.",
-      result: "Redução de 90% em erros de digitação.",
-      image: "/projetos/paper-contracts.png"
+      id: "grund-zero",
+      title: "GRUND ZERO",
+      description: "Landing page tática para assessoria esportiva.",
+      technologies: ["React", "Framer Motion", "TailwindCSS"],
+      problem: "Necessidade de captar alunos de forma agressiva e direta.",
+      solution: "Design escuro com foco em CTAs de alta visibilidade.",
+      result: "Taxa de conversão de leads superior a 15%.",
+      image: "/projetos/Landing Page Grund Zero.png",
+      clientLogo: "/clientes/gz-team.png"
     }
   ];
 
@@ -1253,7 +1201,7 @@ const Contact = () => {
         className="max-w-5xl mx-auto text-center relative z-10"
       >
         <span className="text-brand-cyan font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-8 block italic">Let's build something real</span>
-        <h2 className="text-3xl sm:text-4xl md:text-[5.5rem] font-black mb-12 uppercase tracking-tighter leading-[1.1] italic py-4">
+        <h2 className="text-3xl sm:text-5xl md:text-[clamp(3.5rem,8vw,5.5rem)] font-black mb-12 uppercase tracking-tighter leading-[1] italic py-4">
           VAMOS TRANSFORMAR <br className="md:hidden" />
           <span className="text-gradient drop-shadow-[0_0_40px_rgba(37,99,235,0.3)]">SUA IDEIA EM PRODUTO?</span>
         </h2>
@@ -1305,8 +1253,8 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-blue to-brand-cyan flex items-center justify-center font-display font-black text-black text-xs shadow-xl shadow-brand-blue/20">
-              TE
+            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl shadow-brand-blue/20">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-display font-black text-white tracking-tighter uppercase italic text-xl">thomaseduardo</span>
           </div>
