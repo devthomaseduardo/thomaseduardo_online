@@ -1,223 +1,247 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
-  <head>
-    <script>
-      (function() {
-        var theme = localStorage.getItem('theme');
-        if (theme === 'light') document.documentElement.classList.remove('dark');
-        else document.documentElement.classList.add('dark');
-      })();
-    </script>
-    <meta charset="UTF-8" />
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PJ5D58CX');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Google Analytics 4 (fluxo: site · thomaseduardo.online) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDPK0Y7234"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
-      gtag('js', new Date());
-      // SPA: o page_view é disparado pelo React Router (src/lib/analytics.ts)
-      gtag('config', 'G-GDPK0Y7234', { send_page_view: false });
-    </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)</title>
 
-    <!-- SEO - palavras que as pessoas pesquisam -->
-    <meta name="description" content="Thomas Eduardo, desenvolvedor full stack (React e Node.js). Aplicações web focadas em performance, experiência do usuário e resultados reais." />
-    <link rel="canonical" href="https://www.thomaseduardo.online/" />
+<head>
+  <script>
+    (function () {
+      var theme = localStorage.getItem('theme');
+      if (theme === 'light') document.documentElement.classList.remove('dark');
+      else document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-PJ5D58CX');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Google Analytics 4 (fluxo: site · thomaseduardo.online) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDPK0Y7234"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    // SPA: o page_view é disparado pelo React Router (se necessário)
+    gtag('config', 'G-GDPK0Y7234', { send_page_view: false });
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <title>Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)</title>
 
-    <!-- Open Graph -->
-    <meta property="og:site_name" content="Thomas Eduardo" />
-    <meta property="og:locale" content="pt_BR" />
-    <meta property="og:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
-    <meta property="og:description" content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.thomaseduardo.online/" />
-    <meta property="og:image" content="https://thomaseduardo.online/og.png" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1024" />
-    <meta property="og:image:height" content="682" />
-    <meta property="og:image:alt" content="Thomas Eduardo · Desenvolvedor Full Stack" />
+  <!-- SEO -->
+  <meta name="description"
+    content="Thomas Eduardo, desenvolvedor full stack (React e Node.js). Aplicações web focadas em performance, experiência do usuário e resultados reais." />
+  <link rel="canonical" href="https://www.thomaseduardo.online/" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
-    <meta name="twitter:description" content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
-    <meta name="twitter:image" content="https://thomaseduardo.online/og.png" />
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="Thomas Eduardo" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
+  <meta property="og:description"
+    content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.thomaseduardo.online/" />
+  <meta property="og:image" content="https://thomaseduardo.online/og.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1024" />
+  <meta property="og:image:height" content="682" />
+  <meta property="og:image:alt" content="Thomas Eduardo · Desenvolvedor Full Stack" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Clash Display via CDN -->
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
-    <meta name="theme-color" content="#050505" />
-    
-    <!-- LinkedIn Badge Script -->
-    <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
+  <meta name="twitter:description"
+    content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
+  <meta name="twitter:image" content="https://thomaseduardo.online/og.png" />
 
-    <style>
-      /* Splash (pre-hydration) */
-      #splash {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: #050505;
-        color: rgba(255, 255, 255, 0.92);
-        display: grid;
-        place-items: center;
-        overflow: hidden;
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <!-- Clash Display via CDN -->
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#050505" />
+
+  <!-- LinkedIn Badge Script -->
+  <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
+
+  <style>
+    /* Splash (pre-hydration) */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #050505;
+      color: rgba(255, 255, 255, 0.92);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    #splash::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(closest-side at 20% 30%, rgba(59, 130, 246, 0.22), transparent 60%),
+        radial-gradient(closest-side at 80% 40%, rgba(37, 99, 235, 0.18), transparent 62%),
+        radial-gradient(closest-side at 55% 80%, rgba(16, 185, 129, 0.10), transparent 65%);
+      filter: blur(40px);
+      transform: translate3d(0, 0, 0);
+      animation: splash-float 6.5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes splash-float {
+      from {
+        transform: translate3d(-2%, -1%, 0) scale(1.02);
+        opacity: 0.9;
       }
 
-      #splash::before {
-        content: "";
-        position: absolute;
-        inset: -40%;
-        background:
-          radial-gradient(closest-side at 20% 30%, rgba(59, 130, 246, 0.22), transparent 60%),
-          radial-gradient(closest-side at 80% 40%, rgba(37, 99, 235, 0.18), transparent 62%),
-          radial-gradient(closest-side at 55% 80%, rgba(16, 185, 129, 0.10), transparent 65%);
-        filter: blur(40px);
-        transform: translate3d(0, 0, 0);
-        animation: splash-float 6.5s ease-in-out infinite alternate;
-        pointer-events: none;
+      to {
+        transform: translate3d(2%, 1%, 0) scale(1.08);
+        opacity: 1;
+      }
+    }
+
+    .splash-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.32;
+      filter: saturate(1) contrast(1) brightness(1.05);
+      transform: scale(1.03);
+    }
+
+    .splash-inner {
+      position: relative;
+      z-index: 1;
+      width: min(720px, calc(100% - 48px));
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .splash-title {
+      font-family: "Syne", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: clamp(18px, 2.4vw, 22px);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .splash-sub {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .splash-bar {
+      width: min(460px, 92%);
+      height: 2px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .splash-bar>span {
+      display: block;
+      width: 45%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 1), rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0));
+      filter: blur(0.2px);
+      animation: splash-scan 1.2s ease-in-out infinite;
+    }
+
+    @keyframes splash-scan {
+      0% {
+        transform: translateX(-120%);
+        opacity: 0.2;
       }
 
-      @keyframes splash-float {
-        from { transform: translate3d(-2%, -1%, 0) scale(1.02); opacity: 0.9; }
-        to { transform: translate3d(2%, 1%, 0) scale(1.08); opacity: 1; }
+      40% {
+        opacity: 1;
       }
 
-      .splash-video {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        opacity: 0.32;
-        filter: saturate(1) contrast(1) brightness(1.05);
-        transform: scale(1.03);
+      100% {
+        transform: translateX(260%);
+        opacity: 0.25;
       }
+    }
 
-      .splash-inner {
-        position: relative;
-        z-index: 1;
-        width: min(720px, calc(100% - 48px));
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        align-items: center;
-      }
+    #splash.splash-exit {
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 420ms ease, transform 420ms ease;
+      pointer-events: none;
+    }
+  </style>
+</head>
 
-      .splash-title {
-        font-family: "Syne", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        font-size: clamp(18px, 2.4vw, 22px);
-        color: rgba(255, 255, 255, 0.9);
-      }
-
-      .splash-sub {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        font-size: 11px;
-        letter-spacing: 0.35em;
-        text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.45);
-      }
-
-      .splash-bar {
-        width: min(460px, 92%);
-        height: 2px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        overflow: hidden;
-      }
-
-      .splash-bar > span {
-        display: block;
-        width: 45%;
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(90deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 1), rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0));
-        filter: blur(0.2px);
-        animation: splash-scan 1.2s ease-in-out infinite;
-      }
-
-      @keyframes splash-scan {
-        0% { transform: translateX(-120%); opacity: 0.2; }
-        40% { opacity: 1; }
-        100% { transform: translateX(260%); opacity: 0.25; }
-      }
-
-      #splash.splash-exit {
-        opacity: 0;
-        transform: translateY(6px);
-        transition: opacity 420ms ease, transform 420ms ease;
-        pointer-events: none;
-      }
-    </style>
-  </head>
-
-  <body class="antialiased bg-background text-foreground transition-colors duration-300">
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJ5D58CX"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    <div id="splash" role="status" aria-live="polite" aria-label="Carregando o site">
-      <video class="splash-video" autoplay muted playsinline loop preload="auto">
-        <!-- Background video (splash) -->
-        <source src="/videohome.mp4" type="video/mp4" />
-        <source src="/about-video.mp4" type="video/mp4" />
-      </video>
-      <div class="splash-inner">
-        <div class="splash-title">Thomas Eduardo</div>
-        <div class="splash-sub">carregando…</div>
-        <div class="splash-bar" aria-hidden="true"><span></span></div>
-      </div>
+<body class="antialiased bg-background text-foreground transition-colors duration-300">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJ5D58CX" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <div id="splash" role="status" aria-live="polite" aria-label="Carregando o site">
+    <video class="splash-video" autoplay muted playsinline loop preload="auto">
+      <source src="/videohome.mp4" type="video/mp4" />
+    </video>
+    <div class="splash-inner">
+      <div class="splash-title">Thomas Eduardo</div>
+      <div class="splash-sub">carregando…</div>
+      <div class="splash-bar" aria-hidden="true"><span></span></div>
     </div>
+  </div>
 
-    <div id="root"></div>
+  <div id="root"></div>
 
-    <script>
-      (function () {
-        var splash = document.getElementById('splash');
-        if (!splash) return;
+  <script>
+    (function () {
+      var splash = document.getElementById('splash');
+      if (!splash) return;
 
-        // Splash longa só na vitrine: no /admin* atrasava login e parecia “tela preta”.
-        var isAdmin = /^\/admin(\/|$)/i.test(window.location.pathname || '');
-        var MIN_MS = isAdmin ? 200 : 5000;   // 5s na home (pedido); ~instantâneo no painel
-        var MAX_MS = isAdmin ? 4000 : 10000;  // 10s na home (pedido)
-        var startedAt = Date.now();
-        var removed = false;
+      var isAdmin = /^\/admin(\/|$)/i.test(window.location.pathname || '');
+      var MIN_MS = isAdmin ? 200 : 5000;
+      var MAX_MS = isAdmin ? 4000 : 10000;
+      var startedAt = Date.now();
+      var removed = false;
 
-        function removeSplash() {
-          if (removed) return;
-          removed = true;
-          splash.classList.add('splash-exit');
-          window.setTimeout(function () {
-            try { splash.remove(); } catch (e) {}
-          }, 500);
-        }
+      function removeSplash() {
+        if (removed) return;
+        removed = true;
+        splash.classList.add('splash-exit');
+        window.setTimeout(function () {
+          try { splash.remove(); } catch (e) { }
+        }, 500);
+      }
 
-        function tryFinish() {
-          var elapsed = Date.now() - startedAt;
-          if (elapsed >= MIN_MS) removeSplash();
-          else window.setTimeout(removeSplash, Math.max(0, MIN_MS - elapsed));
-        }
+      function tryFinish() {
+        var elapsed = Date.now() - startedAt;
+        if (elapsed >= MIN_MS) removeSplash();
+        else window.setTimeout(removeSplash, Math.max(0, MIN_MS - elapsed));
+      }
 
-        window.addEventListener('app:ready', tryFinish, { once: true });
-        window.setTimeout(removeSplash, MAX_MS);
-      })();
-    </script>
+      window.addEventListener('app:ready', tryFinish, { once: true });
+      window.setTimeout(removeSplash, MAX_MS);
+    })();
+  </script>
 
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

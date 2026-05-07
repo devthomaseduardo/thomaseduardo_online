@@ -306,48 +306,49 @@ const Navbar = () => {
 };
 
 const AboutSection = () => (
-  <section id="sobre" className="py-32 px-6 bg-[#0A0A0A] relative">
-    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/5 rounded-full blur-[150px] pointer-events-none" />
+  <section id="sobre" className="py-20 md:py-32 px-6 bg-[#0A0A0A] relative overflow-hidden">
+    <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-brand-blue/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none" />
     
-    <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
-      {/* Video Column (Now on Left on Desktop) */}
+    <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      {/* Video Column */}
       <motion.div 
         {...FADE_UP}
-        className="relative order-1"
+        className="relative order-2 lg:order-1"
       >
-        <div className="aspect-[9/16] md:h-[1200px] rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
+        <div className="aspect-[9/16] w-full max-w-[500px] mx-auto lg:mx-0 lg:h-[800px] rounded-[32px] md:rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
           <video 
-            src="/about-video.mp4" 
             autoPlay 
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent" />
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          >
+            <source src="/about-video.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
           
-          <div className="absolute bottom-10 left-10 right-10 p-8 rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl">
-            <div className="flex items-center gap-6">
+          <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl">
+            <div className="flex items-center gap-4 md:gap-6">
               <div className="flex-1">
-                <span className="block text-[10px] font-mono text-brand-blue uppercase tracking-widest mb-2 italic">Status Atual</span>
-                <span className="block text-lg font-bold text-white uppercase italic leading-tight">Engenheiro Fullstack Senior & Product Leader</span>
+                <span className="block text-[9px] md:text-[10px] font-mono text-brand-blue uppercase tracking-widest mb-1 md:mb-2 italic">Status Atual</span>
+                <span className="block text-base md:text-lg font-bold text-white uppercase italic leading-tight">Engenheiro Fullstack Senior & Product Leader</span>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-brand-blue/20 flex items-center justify-center shrink-0">
-                <Zap className="w-6 h-6 text-brand-blue animate-pulse" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-brand-blue/20 flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5 md:w-6 md:h-6 text-brand-blue animate-pulse" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Floating Decorative Elements */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-cyan/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl" />
+        <div className="absolute -top-6 -right-6 md:-top-10 md:-right-10 w-24 md:w-32 h-24 md:h-32 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 w-32 md:w-40 h-32 md:h-40 bg-brand-blue/10 rounded-full blur-3xl pointer-events-none" />
       </motion.div>
 
       {/* Text Column (Now on Right on Desktop) */}
-      <motion.div {...FADE_UP} className="order-2">
+      <motion.div {...FADE_UP} className="order-1 lg:order-2">
         <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-6 block">Quem sou</span>
-        <h2 className="text-4xl md:text-7xl font-black mb-8 uppercase tracking-tighter italic leading-[1] py-2">
+        <h2 className="text-4xl md:text-6xl lg:text-7xl font-black mb-8 uppercase tracking-tighter italic leading-[1] py-2">
           Não apenas código. <br />
           <span className="text-gradient">Estratégia de produto.</span>
         </h2>
@@ -375,7 +376,7 @@ const ProcessSection = () => (
         <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-[1.1] py-2">Processo <span className="text-gradient">Alta Performance</span></h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { step: "01", title: "IMERSÃO", desc: "Entendimento profundo do seu modelo de negócio e gargalos." },
           { step: "02", title: "DESIGN", desc: "Arquitetura da experiência com foco em conversão e usabilidade." },
@@ -578,10 +579,7 @@ const SocialProof = () => {
     { name: "FitFlow", url: "/clientes/fitflow.png" },
     { name: "GZ Team", url: "/clientes/gz-team.png" },
     { name: "Hazzap", url: "/clientes/hazzap.jpg" },
-    { name: "Kell", url: "/clientes/kell.jpg" },
-    { name: "Reis do Manto", url: "/clientes/reis-do-manto.png" },
-    { name: "Spinmove", url: "/clientes/spinmove.jpg" },
-    { name: "Yázigi", url: "/clientes/yazigi.png" }
+    { name: "Kell", url: "/clientes/kell.jpg" }
   ];
   
   return (
@@ -602,15 +600,21 @@ const SocialProof = () => {
         <div className="absolute inset-y-0 left-0 w-32 bg-linear-to-r from-[#0A0A0A] to-transparent z-10" />
         <div className="absolute inset-y-0 right-0 w-32 bg-linear-to-l from-[#0A0A0A] to-transparent z-10" />
         
-        <div className="py-12 animate-marquee whitespace-nowrap flex items-center">
-          {[...logos, ...logos, ...logos].map((logo, i) => (
-            <div key={i} className="flex items-center mx-16 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all duration-700 ease-in-out">
-              <img 
-                src={logo.url} 
-                alt={logo.name} 
-                className="h-10 md:h-12 w-auto object-contain brightness-125"
-                referrerPolicy="no-referrer"
-              />
+        <div className="flex animate-marquee whitespace-nowrap py-12">
+          {/* We repeat the logos twice for a seamless loop with translateX(-50%) */}
+          {[...logos, ...logos].map((logo, i) => (
+            <div key={i} className="flex-none flex items-center gap-6 px-12 md:px-20 group/logo">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center transition-all duration-500 group-hover/logo:border-brand-blue/30 group-hover/logo:bg-brand-blue/10 shadow-2xl">
+                <img 
+                  src={logo.url} 
+                  alt={logo.name} 
+                  className="w-full h-full object-cover brightness-110 group-hover/logo:scale-110 transition-transform duration-500"
+                  loading="eager"
+                />
+              </div>
+              <span className="text-sm md:text-base font-bold text-white/40 group-hover/logo:text-white transition-colors uppercase tracking-widest font-display italic">
+                {logo.name}
+              </span>
             </div>
           ))}
         </div>
