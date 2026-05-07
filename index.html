@@ -33,43 +33,58 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <title>Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)</title>
 
-  <!-- SEO -->
-  <meta name="description"
-    content="Thomas Eduardo, desenvolvedor full stack (React e Node.js). Aplicações web focadas em performance, experiência do usuário e resultados reais." />
+  <!-- SEO & Social Meta -->
+  <meta name="description" content="Engenheiro Full Stack e Especialista em Produtos Digitais. Transformo ideias em ativos de alto valor com performance extrema e design impecável." />
   <link rel="canonical" href="https://www.thomaseduardo.online/" />
+  <link rel="apple-touch-icon" href="/logo.png" />
 
-  <!-- Open Graph -->
+  <!-- Open Graph / Facebook -->
   <meta property="og:site_name" content="Thomas Eduardo" />
   <meta property="og:locale" content="pt_BR" />
-  <meta property="og:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
-  <meta property="og:description"
-    content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
+  <meta property="og:title" content="Thomas Eduardo | Engenharia de Software & Estratégia de Produto" />
+  <meta property="og:description" content="Sistemas de alta performance e interfaces premium para empresas que buscam o próximo nível." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.thomaseduardo.online/" />
   <meta property="og:image" content="https://thomaseduardo.online/og.png" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1024" />
-  <meta property="og:image:height" content="682" />
-  <meta property="og:image:alt" content="Thomas Eduardo · Desenvolvedor Full Stack" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Thomas Eduardo | Desenvolvedor Full Stack (React e Node.js)" />
-  <meta name="twitter:description"
-    content="Landing pages e sistemas web sob medida com performance, conversao e foco em resultado." />
+  <meta name="twitter:title" content="Thomas Eduardo | Engenharia de Software" />
+  <meta name="twitter:description" content="Sistemas de alta performance e interfaces premium." />
   <meta name="twitter:image" content="https://thomaseduardo.online/og.png" />
 
+  <!-- Optimized Fonts & Critical Assets -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <!-- Clash Display via CDN -->
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet" />
-  <meta name="theme-color" content="#050505" />
+  <link rel="preload" href="/videohome.mp4" as="video" type="video/mp4" fetchpriority="high" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,900&display=swap" rel="stylesheet" />
+  
+  <meta name="theme-color" content="#0A0A0A" />
+  <meta name="robots" content="index, follow" />
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- LinkedIn Badge Script -->
   <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Thomas Eduardo",
+      "jobTitle": "Full Stack Software Engineer & Product Specialist",
+      "url": "https://thomaseduardo.online",
+      "sameAs": [
+        "https://linkedin.com/in/thomas-eduardo",
+        "https://github.com/devthomaseduardo"
+      ],
+      "knowsAbout": ["React", "Node.js", "TypeScript", "UI/UX Design", "Software Architecture"],
+      "description": "Engenheiro Full Stack focado em criar sistemas de alta performance e interfaces premium."
+    }
+  </script>
 
   <style>
     /* Splash (pre-hydration) */
@@ -133,20 +148,22 @@
     }
 
     .splash-title {
-      font-family: "Syne", system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-      font-weight: 800;
-      letter-spacing: 0.08em;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
-      font-size: clamp(18px, 2.4vw, 22px);
-      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(32px, 5vw, 48px);
+      color: #fff;
+      font-style: italic;
     }
 
     .splash-sub {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 11px;
-      letter-spacing: 0.35em;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.5em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.45);
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 500;
     }
 
     .splash-bar {
@@ -216,8 +233,8 @@
       if (!splash) return;
 
       var isAdmin = /^\/admin(\/|$)/i.test(window.location.pathname || '');
-      var MIN_MS = isAdmin ? 200 : 5000;
-      var MAX_MS = isAdmin ? 4000 : 10000;
+      var MIN_MS = isAdmin ? 200 : 3500;
+      var MAX_MS = isAdmin ? 4000 : 8000;
       var startedAt = Date.now();
       var removed = false;
 
