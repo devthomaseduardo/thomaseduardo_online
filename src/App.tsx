@@ -292,8 +292,7 @@ const Navbar = () => {
           </div>
 
           <a 
-            href="https://wa.me/5511977070209"
-            target="_blank"
+            href="/r"
             className={`px-6 py-3 rounded-xl bg-brand-blue text-white text-[10px] font-black uppercase italic tracking-widest shadow-lg shadow-brand-blue/20 hover:scale-105 transition-all ${
               scrolled ? "opacity-100" : "hidden sm:block"
             }`}
@@ -310,11 +309,11 @@ const AboutSection = () => (
   <section id="sobre" className="py-20 md:py-32 px-6 bg-[#0A0A0A] relative overflow-hidden">
     <div className="absolute top-0 right-0 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-brand-blue/5 rounded-full blur-[100px] md:blur-[150px] pointer-events-none" />
     
-    <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+    <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
       {/* Video Column */}
       <motion.div 
         {...FADE_UP}
-        className="relative order-2 lg:order-1 flex justify-center lg:justify-end"
+        className="relative order-2 lg:order-1 flex justify-center"
       >
         <div className="aspect-[9/16] w-full max-w-[420px] rounded-[32px] md:rounded-[40px] overflow-hidden border border-white/5 bg-white/[0.02] relative group shadow-2xl">
           <video 
@@ -501,11 +500,11 @@ const Hero = () => (
           className="flex flex-col sm:flex-row items-center justify-center gap-6"
         >
           <motion.a 
-            whileHover={{ scale: 1.05, y: -4 }}
+            whileHover={{ scale: 1.05, y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
             whileTap={{ scale: 0.95 }}
             onClick={(e) => handleSmoothScroll(e, '#cases')}
             href="#cases"
-            className="w-full sm:w-auto px-12 py-6 rounded-2xl bg-brand-blue text-white font-black uppercase italic tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-4 group relative overflow-hidden shadow-[0_20px_50px_rgba(37,99,235,0.3)]"
+            className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group"
           >
             <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
@@ -515,7 +514,7 @@ const Hero = () => (
           <motion.a 
             whileHover={{ scale: 1.05, y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
             whileTap={{ scale: 0.95 }}
-            href={`https://wa.me/5511977070209?text=${encodeURIComponent("Olá Thomas, vi seu portfólio e gostaria de iniciar um diagnóstico para meu projeto.")}`}
+            href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de iniciar um diagnóstico para meu projeto.")}`}
             target="_blank"
             className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group"
           >
@@ -524,38 +523,28 @@ const Hero = () => (
         </motion.div>
       </motion.div>
     </div>
-
-    {/* Metadata Footer for Hero */}
-    <div className="absolute bottom-10 left-10 right-10 flex flex-col md:flex-row items-center justify-between gap-6 opacity-30 pointer-events-none">
-      <div className="flex items-center gap-4">
-        <span className="text-[10px] font-mono text-white uppercase tracking-[0.5em]">SYSTEM_VERSION_2026</span>
-      </div>
-      <div className="flex gap-8">
-        {[
-          { label: "STACK", val: "FULL_STACK" },
-          { label: "FOCUS", val: "PERFORMANCE" },
-          { label: "LOC", val: "BRAZIL" }
-        ].map(item => (
-          <div key={item.label} className="text-right">
-            <span className="block text-[8px] font-mono mb-1">{item.label}</span>
-            <span className="block text-[10px] font-mono font-bold">{item.val}</span>
-          </div>
-        ))}
-      </div>
-    </div>
   </section>
 );
 
-const GlobalStats = () => (
-  <section className="py-12 bg-[#0A0A0A] relative z-10">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-        {[
-          { label: "Projetos Reais", val: "25+" },
-          { label: "Tecnologias", val: "12+" },
-          { label: "Anos Exp", val: "04+" },
-          { label: "Foco Total", val: "ROI" }
-        ].map((stat, i) => (
+const GlobalStats = () => {
+  const yearsExp = (() => {
+    const start = new Date(2023, 7);
+    const now = new Date();
+    let diff = now.getFullYear() - start.getFullYear();
+    if (now.getMonth() < start.getMonth()) diff--;
+    return String(Math.max(1, diff)).padStart(2, '0') + "+";
+  })();
+
+  return (
+    <section className="py-12 bg-[#0A0A0A] relative z-10">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+          {[
+            { label: "Projetos Reais", val: "25+" },
+            { label: "Tecnologias", val: "12+" },
+            { label: "Anos Exp", val: yearsExp },
+            { label: "Satisfação", val: "100%" }
+          ].map((stat, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}
@@ -571,6 +560,7 @@ const GlobalStats = () => (
     </div>
   </section>
 );
+};
 
 const SocialProof = () => {
   const logos = [
@@ -627,7 +617,6 @@ const SocialProof = () => {
 const BentoGrid = () => (
   <section id="metodologia" className="relative py-24 px-6 bg-[#0A0A0A] overflow-hidden">
     <div className="max-w-7xl mx-auto relative z-10">
-      {/* Decorative background for section */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-blue/5 rounded-full blur-[160px] pointer-events-none" />
 
       <motion.div 
@@ -640,7 +629,6 @@ const BentoGrid = () => (
       </motion.div>
   
       <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
-        {/* Card 1: Diagnóstico */}
         <motion.div 
           {...FADE_UP}
           whileHover={{ y: -5 }}
@@ -664,7 +652,6 @@ const BentoGrid = () => (
           </div>
         </motion.div>
   
-        {/* Card 2: Execução */}
         <motion.div 
           {...FADE_UP}
           whileHover={{ y: -5 }}
@@ -682,7 +669,6 @@ const BentoGrid = () => (
           </div>
         </motion.div>
   
-        {/* Card 3: Escala */}
         <motion.div 
           {...FADE_UP}
           whileHover={{ y: -5 }}
@@ -700,7 +686,6 @@ const BentoGrid = () => (
           </div>
         </motion.div>
   
-        {/* Card 4: Stack */}
         <motion.div 
           {...FADE_UP}
           whileHover={{ y: -5 }}
@@ -712,17 +697,14 @@ const BentoGrid = () => (
               Utilizo as ferramentas mais sólidas para garantir longevidade e performance extrema ao seu produto digital.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10">
-            {['React', 'Next.js', 'Node.js', 'PostgreSQL', 'AWS', 'Docker', 'Prisma', 'Stripe'].map((tag, i) => (
-              <motion.span 
+          <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+            {['React', 'Next.js', 'Node.js', 'AWS', 'Docker', 'Stripe'].map((tag) => (
+              <span 
                 key={tag}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ ...SMOOTH_TRANSITION, delay: i * 0.05 }}
-                className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs font-bold font-mono text-white/70 uppercase tracking-widest hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold font-mono text-white/50 uppercase tracking-widest"
               >
                 {tag}
-              </motion.span>
+              </span>
             ))}
           </div>
         </motion.div>
@@ -830,22 +812,22 @@ const ProjectSection = () => {
   ];
 
   return (
-    <section id="cases" className="py-32 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
+    <section id="cases" className="py-16 md:py-32 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
       <motion.div 
         {...FADE_UP}
-        className="mb-20"
+        className="mb-12"
       >
         <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Portfolio</span>
         <h2 className="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter italic leading-[1.1] py-2">Projetos que <br/><span className="text-gradient">Resolvem o Jogo.</span></h2>
         <p className="text-gray-400 text-xl max-w-3xl font-medium">Cada projeto é tratado como um produto. Foco total em UI/UX, performance e impacto no faturamento.</p>
       </motion.div>
 
-      <div className="space-y-32">
+      <div className="space-y-20 md:space-y-32">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
             {...FADE_UP}
-            className={`grid lg:grid-cols-2 gap-16 items-center ${index % 2 !== 0 ? 'lg:direction-rtl' : ''}`}
+            className={`grid lg:grid-cols-2 gap-8 md:gap-16 items-center ${index % 2 !== 0 ? 'lg:direction-rtl' : ''}`}
           >
             <div className={`space-y-8 ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
               <div className="flex items-center gap-4">
@@ -853,13 +835,13 @@ const ProjectSection = () => {
                 <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{project.technologies[0]} + {project.technologies[1]}</span>
               </div>
               
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 md:gap-6">
                 {project.clientLogo && (
-                  <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-3 group-hover:border-brand-blue/30 transition-colors">
-                    <img src={project.clientLogo} alt="Client" className="w-full h-full object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group-hover:border-brand-blue/30 transition-colors">
+                    <img src={project.clientLogo} alt="Client" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
                   </div>
                 )}
-                <h3 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter text-white">{project.title}</h3>
+                <h3 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">{project.title}</h3>
               </div>
               
               <p className="text-gray-400 text-lg leading-relaxed font-medium">
@@ -888,7 +870,7 @@ const ProjectSection = () => {
               <div className="flex flex-wrap gap-6 mt-8">
                 <motion.a
                   whileHover={{ x: 10 }}
-                  href={`https://wa.me/5511977070209?text=${encodeURIComponent(`Olá Thomas, vi o case ${project.title} e gostaria de algo similar.`)}`}
+                  href={`/r?to=${encodeURIComponent(`https://wa.me/5511977070209?text=Olá Thomas, vi o case ${project.title} e gostaria de algo similar.`)}`}
                   className="inline-flex items-center gap-4 text-brand-blue font-black uppercase italic tracking-widest group text-xs"
                 >
                   SOLICITAR DIAGNÓSTICO SIMILAR
@@ -912,7 +894,7 @@ const ProjectSection = () => {
 
             <motion.div 
               whileHover={{ scale: 1.02 }}
-              className={`relative aspect-[16/10] rounded-[40px] overflow-hidden border border-white/10 group bg-white/5 ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
+              className={`relative aspect-[16/10] rounded-[24px] md:rounded-[40px] overflow-hidden border border-white/10 group bg-white/5 ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
             >
               <img 
                 src={project.image} 
@@ -942,7 +924,7 @@ const ProjectSection = () => {
 };
 
 const ExpertiseSection = () => (
-  <section id="sobre" className="py-24 px-6 max-w-7xl mx-auto bg-[#0A0A0A]">
+  <section id="expertise" className="py-24 px-6 max-w-7xl mx-auto bg-[#0A0A0A]">
     <motion.div {...FADE_UP} className="mb-16">
       <h2 className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Minha <span className="text-gradient">expertise</span></h2>
       <p className="text-gray-400">Soluções ponta-a-ponta focadas em conversão.</p>
@@ -1125,7 +1107,7 @@ const TechStackGrid = () => {
         <motion.div {...FADE_UP} className="mb-20">
           <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Tech Stack</span>
           <h2 className="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tighter italic leading-[1.1] py-2">Arsenal <span className="text-gradient">Técnico</span></h2>
-          <p className="text-gray-400 text-xl max-w-2xl font-medium italic">Ferramentas de ponta selecionadas para máxima performance e ROI.</p>
+          <p className="text-gray-400 text-xl max-w-2xl font-medium italic">Ferramentas de ponta selecionadas para máxima performance e impacto nos negócios.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1241,7 +1223,7 @@ const Contact = () => {
           <motion.a 
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            href="https://wa.me/5511977070209" 
+            href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de reservar um horário para diagnóstico do meu projeto.")}`}
             target="_blank"
             className="flex items-center justify-center gap-5 px-10 py-8 rounded-3xl bg-brand-blue text-white font-black uppercase italic tracking-widest hover:brightness-110 transition-all shadow-2xl shadow-brand-blue/30 group"
           >

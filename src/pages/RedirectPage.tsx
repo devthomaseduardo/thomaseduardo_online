@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { Loader2, ShieldCheck, ArrowRight } from "lucide-react";
+import { Loader2, ShieldCheck, ArrowRight, MessageCircle } from "lucide-react";
 
 const RedirectPage = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState("checking"); // checking, ready, redirecting
-  const target = searchParams.get("to") || "https://thomaseduardo.online";
+  const target = searchParams.get("to") || "https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de solicitar um orçamento.";
+  const isWhatsApp = target.includes("wa.me") || target.includes("whatsapp.com");
 
   useEffect(() => {
     const timer1 = setTimeout(() => setStatus("ready"), 1500);
@@ -60,13 +61,17 @@ const RedirectPage = () => {
               className="flex flex-col items-center"
             >
               <div className="w-20 h-20 rounded-full bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(34,211,238,0.1)]">
-                <ShieldCheck className="w-10 h-10 text-brand-cyan" />
+                {isWhatsApp ? (
+                  <MessageCircle className="w-10 h-10 text-brand-cyan" />
+                ) : (
+                  <ShieldCheck className="w-10 h-10 text-brand-cyan" />
+                )}
               </div>
               <h1 className="text-3xl font-black uppercase italic text-white tracking-tighter mb-2">
-                Ambiente Seguro
+                {isWhatsApp ? "Iniciando Conversa" : "Ambiente Seguro"}
               </h1>
               <p className="text-gray-400 font-medium italic mb-8">
-                Você será redirecionado em instantes.
+                {isWhatsApp ? "Preparando chat com Thomas Eduardo..." : "Você será redirecionado em instantes."}
               </p>
               
               <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
