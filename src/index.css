@@ -18,6 +18,33 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-display text-white tracking-tight;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-[#0A0A0A];
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full border-[3px] border-[#0A0A0A] transition-colors duration-300;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-brand-blue/50;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+
+  html {
+    scrollbar-gutter: stable;
+  }
 }
 
 .bg-grid-white {

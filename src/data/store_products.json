@@ -1,0 +1,26 @@
+[
+  {
+    "id": "code-review",
+    "title": "Code Review Premium",
+    "price": "R$ 497",
+    "description": "Análise profunda de arquitetura, segurança e performance do seu código.",
+    "image": "/produtos/code-review.png",
+    "link": "https://wa.me/5511977070209?text=Quero+saber+mais+sobre+o+Code+Review+Premium"
+  },
+  {
+    "id": "mentoria",
+    "title": "Mentoria Tech 1:1",
+    "price": "R$ 850/h",
+    "description": "Acelere sua carreira ou resolva travamentos técnicos complexos comigo.",
+    "image": "/produtos/mentoria.png",
+    "link": "https://wa.me/5511977070209?text=Quero+marcar+uma+mentoria+tech"
+  },
+  {
+    "id": "uikit",
+    "title": "Imperial UI Kit",
+    "price": "R$ 197",
+    "description": "Acesso ao meu sistema de design exclusivo para projetos de alta conversão.",
+    "image": "/produtos/uikit.png",
+    "link": "https://wa.me/5511977070209?text=Quero+o+acesso+ao+Imperial+UI+Kit"
+  }
+]

@@ -21,7 +21,8 @@ import {
   Store,
   Truck,
   FileText,
-  ArrowUpRight
+  ArrowUpRight,
+  Instagram
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
@@ -90,6 +91,12 @@ const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, 
 const WhatsAppIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.631 1.434h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+  </svg>
+);
+
+const TikTokIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.13-1.47V18.77a7.07 7.07 0 01-1.48 4.31c-1.41 1.76-3.8 2.58-5.99 2.11-2.43-.53-4.47-2.6-4.9-5.07a7.07 7.07 0 012.33-6.64c1.19-.89 2.68-1.29 4.16-1.15v4.11c-.72-.11-1.47.06-2.07.47a3.03 3.03 0 00-1.28 2.6c.11.96.79 1.83 1.71 2.11 1.09.33 2.37-.15 2.87-1.18.15-.3.21-.63.21-.96V.02z" />
   </svg>
 );
 
@@ -504,9 +511,9 @@ const Hero = () => (
             whileTap={{ scale: 0.95 }}
             onClick={(e) => handleSmoothScroll(e, '#cases')}
             href="#cases"
-            className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group"
+            className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
             <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             VER PROJETOS
           </motion.a>
@@ -516,8 +523,9 @@ const Hero = () => (
             whileTap={{ scale: 0.95 }}
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de iniciar um diagnóstico para meu projeto.")}`}
             target="_blank"
-            className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group"
+            className="w-full sm:w-auto px-12 py-6 rounded-2xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest transition-all flex items-center justify-center gap-4 backdrop-blur-md group relative overflow-hidden"
           >
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none rounded-2xl" />
             ENTRAR EM CONTATO
           </motion.a>
         </motion.div>
@@ -615,17 +623,17 @@ const SocialProof = () => {
 };
 
 const BentoGrid = () => (
-  <section id="metodologia" className="relative py-24 px-6 bg-[#0A0A0A] overflow-hidden">
+  <section id="metodologia" className="relative py-16 px-6 bg-[#0A0A0A] overflow-hidden">
     <div className="max-w-7xl mx-auto relative z-10">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-brand-blue/5 rounded-full blur-[160px] pointer-events-none" />
 
       <motion.div 
         {...FADE_UP}
-        className="mb-16 relative z-10"
+        className="mb-10 relative z-10"
       >
         <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Metodologia</span>
         <h2 className="text-4xl md:text-6xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Como transformo ideias <br />em ativos <span className="text-gradient">de alto valor</span></h2>
-        <p className="text-gray-400 text-lg">Minha metodologia é baseada em três pilares fundamentais, focados em ROI e escalabilidade brutal.</p>
+        <p className="text-gray-400 text-lg">Minha metodologia é baseada em três pilares fundamentais, focados em escala e lucratividade sustentável.</p>
       </motion.div>
   
       <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
@@ -648,7 +656,7 @@ const BentoGrid = () => (
           <div className="mt-12 flex gap-6 text-sm font-bold font-mono text-gray-600 uppercase tracking-widest relative z-10">
             <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Auditoria</span>
             <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Planejamento</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> ROI</span>
+            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-brand-blue" /> Resultados</span>
           </div>
         </motion.div>
   
@@ -812,120 +820,109 @@ const ProjectSection = () => {
   ];
 
   return (
-    <section id="cases" className="py-16 md:py-32 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
+    <section id="cases" className="py-12 md:py-20 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
       <motion.div 
         {...FADE_UP}
-        className="mb-12"
+        className="mb-10"
       >
         <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Portfolio</span>
         <h2 className="text-4xl md:text-7xl font-black mb-6 uppercase tracking-tighter italic leading-[1.1] py-2">Projetos que <br/><span className="text-gradient">Resolvem o Jogo.</span></h2>
-        <p className="text-gray-400 text-xl max-w-3xl font-medium">Cada projeto é tratado como um produto. Foco total em UI/UX, performance e impacto no faturamento.</p>
+        <p className="text-gray-400 text-xl max-w-3xl font-medium">Cada projeto é tratado como um produto. Engenharia de resultados focada em UI/UX, performance e impacto no faturamento.</p>
       </motion.div>
 
-      <div className="space-y-20 md:space-y-32">
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            {...FADE_UP}
-            className={`grid lg:grid-cols-2 gap-8 md:gap-16 items-center ${index % 2 !== 0 ? 'lg:direction-rtl' : ''}`}
-          >
-            <div className={`space-y-8 ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
-              <div className="flex items-center gap-4">
-                <span className="text-brand-blue font-mono font-bold">0{index + 1}</span>
-                <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{project.technologies[0]} + {project.technologies[1]}</span>
-              </div>
-              
-              <div className="flex flex-col gap-4 md:gap-6">
-                {project.clientLogo && (
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden group-hover:border-brand-blue/30 transition-colors">
-                    <img src={project.clientLogo} alt="Client" className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
-                  </div>
-                )}
-                <h3 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">{project.title}</h3>
-              </div>
-              
-              <p className="text-gray-400 text-lg leading-relaxed font-medium">
-                {project.description}
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y border-white/5">
-                <div>
-                  <span className="block text-[10px] font-mono text-brand-blue uppercase tracking-widest mb-3 italic">O Desafio</span>
-                  <p className="text-sm text-gray-400 leading-relaxed italic">"{project.problem}"</p>
-                </div>
-                <div>
-                  <span className="block text-[10px] font-mono text-brand-cyan uppercase tracking-widest mb-3 italic">O Resultado</span>
-                  <p className="text-sm text-white font-bold tracking-tight">{project.result}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {project.technologies.slice(0, 4).map(tech => (
-                  <span key={tech} className="px-4 py-2 rounded-full border border-white/5 bg-white/[0.02] text-[10px] font-mono text-white tracking-widest uppercase">
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-6 mt-8">
-                <motion.a
-                  whileHover={{ x: 10 }}
-                  href={`/r?to=${encodeURIComponent(`https://wa.me/5511977070209?text=Olá Thomas, vi o case ${project.title} e gostaria de algo similar.`)}`}
-                  className="inline-flex items-center gap-4 text-brand-blue font-black uppercase italic tracking-widest group text-xs"
-                >
-                  SOLICITAR DIAGNÓSTICO SIMILAR
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
-                </motion.a>
-
-                {project.link && project.link !== "#" && (
-                  <motion.a
-                    whileHover={{ scale: 1.05 }}
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-white/10 transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    VISITAR SITE
-                  </motion.a>
-                )}
-              </div>
-            </div>
-
-            <motion.div 
-              whileHover={{ scale: 1.02 }}
-              className={`relative aspect-[16/10] rounded-[24px] md:rounded-[40px] overflow-hidden border border-white/10 group bg-white/5 ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
+      <div className="flex flex-col lg:space-y-24 space-y-12">
+        <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory pb-8 lg:pb-0 -mx-6 px-6 lg:mx-0 lg:px-0 scrollbar-hide gap-6 lg:gap-24">
+          {projects.map((project, index) => (
+            <motion.div
+              key={project.id}
+              {...FADE_UP}
+              className={`flex-none w-[85vw] lg:w-auto snap-center grid lg:grid-cols-2 gap-8 md:gap-16 items-center ${index % 2 !== 0 ? 'lg:direction-rtl' : ''}`}
             >
-              <img 
-                src={project.image} 
-                alt={project.title}
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-20 transition-opacity" />
-              
-              {/* Overlapping small detail for premium feel */}
-              <div className="absolute bottom-10 right-10 p-6 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 hidden md:block">
+              <div className={`space-y-6 lg:space-y-8 ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-brand-blue flex items-center justify-center">
-                    <ExternalLink className="w-5 h-5 text-white" />
+                  <span className="text-brand-blue font-mono font-bold">0{index + 1}</span>
+                  <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{project.technologies[0]} + {project.technologies[1]}</span>
+                </div>
+                
+                <div className="flex flex-col gap-4">
+                  {project.clientLogo && (
+                    <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                      <img src={project.clientLogo} alt="Client" className="w-full h-full object-cover grayscale opacity-50" />
+                    </div>
+                  )}
+                  <h3 className="text-2xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">{project.title}</h3>
+                </div>
+                
+                <p className="text-gray-400 text-sm md:text-lg leading-relaxed font-medium line-clamp-3 lg:line-clamp-none">
+                  {project.description}
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 py-4 lg:py-8 border-y border-white/5">
+                  <div>
+                    <span className="block text-[8px] lg:text-[10px] font-mono text-brand-blue uppercase tracking-widest mb-2 italic">O Desafio</span>
+                    <p className="text-[10px] lg:text-sm text-gray-400 leading-relaxed italic line-clamp-2">"{project.problem}"</p>
                   </div>
                   <div>
-                    <span className="block text-[10px] font-mono text-white/50 uppercase tracking-widest">Case_Study</span>
-                    <span className="block text-xs font-bold text-white uppercase tracking-widest">Full_Deployment</span>
+                    <span className="block text-[8px] lg:text-[10px] font-mono text-brand-cyan uppercase tracking-widest mb-2 italic">O Resultado</span>
+                    <p className="text-[10px] lg:text-sm text-white font-bold tracking-tight">{project.result}</p>
                   </div>
                 </div>
+
+                <div className="flex flex-wrap gap-2 lg:gap-3">
+                  {project.technologies.slice(0, 3).map(tech => (
+                    <span key={tech} className="px-3 py-1 lg:px-4 lg:py-2 rounded-full border border-white/5 bg-white/[0.02] text-[8px] lg:text-[10px] font-mono text-white tracking-widest uppercase">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 mt-4 lg:mt-8">
+                  <motion.a
+                    whileHover={{ x: 10 }}
+                    href={`/r?to=${encodeURIComponent(`https://wa.me/5511977070209?text=Olá Thomas, vi o case ${project.title} e gostaria de algo similar.`)}`}
+                    className="inline-flex items-center gap-3 text-brand-blue font-black uppercase italic tracking-widest group text-[10px] lg:text-xs"
+                  >
+                    SOLICITAR DIAGNÓSTICO
+                    <ArrowRight className="w-3 h-3 lg:w-4 lg:h-4 group-hover:translate-x-2 transition-transform" />
+                  </motion.a>
+
+                  {project.link && project.link !== "#" && (
+                    <motion.a
+                      whileHover={{ scale: 1.05 }}
+                      href={project.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-6 lg:py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[8px] lg:text-[10px] hover:bg-white/10 transition-colors"
+                    >
+                      <ExternalLink className="w-3 h-3 lg:w-4 lg:h-4" />
+                      VISITAR SITE
+                    </motion.a>
+                  )}
+                </div>
               </div>
+
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className={`relative aspect-[16/10] rounded-[20px] lg:rounded-[40px] overflow-hidden border border-white/10 group bg-white/5 ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
+              >
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 via-transparent to-transparent opacity-60" />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
 const ExpertiseSection = () => (
-  <section id="expertise" className="py-24 px-6 max-w-7xl mx-auto bg-[#0A0A0A]">
-    <motion.div {...FADE_UP} className="mb-16">
+  <section id="expertise" className="py-16 px-6 max-w-7xl mx-auto bg-[#0A0A0A]">
+    <motion.div {...FADE_UP} className="mb-10">
       <h2 className="text-3xl md:text-5xl font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Minha <span className="text-gradient">expertise</span></h2>
       <p className="text-gray-400">Soluções ponta-a-ponta focadas em conversão.</p>
     </motion.div>
@@ -972,8 +969,8 @@ const ExpertiseSection = () => (
 );
 
 const TrajectorySection = () => (
-  <section id="trajetoria" className="relative py-24 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
-    <motion.div {...FADE_UP} className="mb-16 relative z-10">
+  <section id="trajetoria" className="relative py-16 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
+    <motion.div {...FADE_UP} className="mb-10 relative z-10">
       <span className="text-brand-blue font-mono text-[10px] uppercase font-bold tracking-[0.4em] mb-4 block">Experiência</span>
       <h2 className="text-3xl md:text-[5rem] font-black mb-4 uppercase tracking-tighter italic leading-[1.1] py-2">Minha <span className="text-gradient">Jornada</span></h2>
       <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -988,7 +985,7 @@ const TrajectorySection = () => (
           title: "Full Stack Engineer",
           company: "Thomas Eduardo (Freelance)",
           icon: <IconCodePremium className="w-5 h-5 text-brand-blue" />,
-          desc: "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e ROI.",
+          desc: "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e geração de valor.",
           color: "hover:border-brand-blue/30 shadow-brand-blue/5",
           glow: "bg-brand-blue/10"
         },
@@ -1300,6 +1297,12 @@ const Footer = () => (
               </a>
               <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
                 <Linkedin className="w-6 h-6" />
+              </a>
+              <a href="https://www.tiktok.com/@devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+                <TikTokIcon className="w-6 h-6" />
+              </a>
+              <a href="https://instagram.com/devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+                <Instagram className="w-6 h-6" />
               </a>
             </li>
           </ul>
