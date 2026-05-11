@@ -58,7 +58,8 @@
   <!-- Optimized Fonts & Critical Assets -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="preload" href="/videohome.mp4" as="video" type="video/mp4" fetchpriority="high" />
+  <link rel="preload" href="/videohome.mp4" as="video" type="video/mp4" media="(min-width: 768px)" fetchpriority="high" />
+  <link rel="preload" href="/video-mobile.mp4" as="video" type="video/mp4" media="(max-width: 767px)" fetchpriority="high" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,900&display=swap" rel="stylesheet" />
   
@@ -99,105 +100,22 @@
       overflow: hidden;
     }
 
-    #splash::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(closest-side at 20% 30%, rgba(59, 130, 246, 0.22), transparent 60%),
-        radial-gradient(closest-side at 80% 40%, rgba(37, 99, 235, 0.18), transparent 62%),
-        radial-gradient(closest-side at 55% 80%, rgba(16, 185, 129, 0.10), transparent 65%);
-      filter: blur(40px);
-      transform: translate3d(0, 0, 0);
-      animation: splash-float 6.5s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-
-    @keyframes splash-float {
-      from {
-        transform: translate3d(-2%, -1%, 0) scale(1.02);
-        opacity: 0.9;
-      }
-
-      to {
-        transform: translate3d(2%, 1%, 0) scale(1.08);
-        opacity: 1;
-      }
-    }
-
     .splash-video {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.32;
+      opacity: 1;
       filter: saturate(1) contrast(1) brightness(1.05);
       transform: scale(1.03);
+      display: none;
     }
 
-    .splash-inner {
-      position: relative;
-      z-index: 1;
-      width: min(720px, calc(100% - 48px));
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .splash-title {
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
-      font-size: clamp(32px, 5vw, 48px);
-      color: #fff;
-      font-style: italic;
-    }
-
-    .splash-sub {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 10px;
-      letter-spacing: 0.5em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.4);
-      font-weight: 500;
-    }
-
-    .splash-bar {
-      width: min(460px, 92%);
-      height: 2px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-    }
-
-    .splash-bar>span {
-      display: block;
-      width: 45%;
-      height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 1), rgba(16, 185, 129, 0.9), rgba(59, 130, 246, 0));
-      filter: blur(0.2px);
-      animation: splash-scan 1.2s ease-in-out infinite;
-    }
-
-    @keyframes splash-scan {
-      0% {
-        transform: translateX(-120%);
-        opacity: 0.2;
-      }
-
-      40% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateX(260%);
-        opacity: 0.25;
-      }
+    .splash-video.is-mobile { display: block; }
+    @media (min-width: 768px) {
+      .splash-video.is-mobile { display: none; }
+      .splash-video.is-desktop { display: block; }
     }
 
     #splash.splash-exit {
@@ -215,14 +133,12 @@
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <div id="splash" role="status" aria-live="polite" aria-label="Carregando o site">
-    <video class="splash-video" autoplay muted playsinline loop preload="auto">
+    <video class="splash-video is-desktop" autoplay muted playsinline loop preload="auto">
       <source src="/videohome.mp4" type="video/mp4" />
     </video>
-    <div class="splash-inner">
-      <div class="splash-title">Thomas Eduardo</div>
-      <div class="splash-sub">carregando…</div>
-      <div class="splash-bar" aria-hidden="true"><span></span></div>
-    </div>
+    <video class="splash-video is-mobile" autoplay muted playsinline loop preload="auto">
+      <source src="/video-mobile.mp4" type="video/mp4" />
+    </video>
   </div>
 
   <div id="root"></div>
