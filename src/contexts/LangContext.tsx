@@ -13,8 +13,8 @@ const translations = {
     },
     hero: {
       badge: "Disponível para novos projetos · Q3 2026",
-      h1a: "ENGENHARIA QUE",
-      h1b: "GERA LUCRO.",
+      h1a: "DO CÓDIGO",
+      h1b: "À ENTREGA DE VALOR.",
       desc: "Não apenas código. Estratégia de produto. Transformo ideias em ativos digitais que trabalham por você, unindo engenharia de alta performance com visão de negócio real.",
       ctaProjects: "VER PROJETOS",
       ctaContact: "ENTRAR EM CONTATO",
@@ -22,7 +22,7 @@ const translations = {
     stats: {
       projects: "Projetos Reais",
       technologies: "Tecnologias",
-      experience: "Anos Exp",
+      experience: "Anos no Mercado",
       satisfaction: "Satisfação",
     },
     socialProof: {
@@ -97,9 +97,31 @@ const translations = {
       ],
     },
     tech: {
-      eyebrow: "Ferramentas",
-      h2a: "Stack",
-      h2b: "Completa.",
+      eyebrow: "Stack Técnica",
+      h1a: "Arsenal",
+      h1b: "Técnico.",
+      groups: {
+        frontend: {
+          cat: "Frontend",
+          sub: "Interfaces de Alto Impacto",
+          desc: "Especialista em criar interfaces que unem design premium com performance técnica extrema."
+        },
+        infra: {
+          cat: "Infra & DB",
+          sub: "Cloud & Performance",
+          desc: "Infraestrutura resiliente e bancos de dados otimizados para escala global."
+        },
+        backend: {
+          cat: "Backend",
+          sub: "Arquiteturas Escaláveis",
+          desc: "Construção de APIs robustas e sistemas distribuídos de alta disponibilidade."
+        },
+        solutions: {
+          cat: "Soluções",
+          sub: "Pagamentos & Integrações",
+          desc: "Integração nativa com os principais gateways de pagamento e serviços de terceiro."
+        }
+      }
     },
     trajectory: {
       eyebrow: "Trajetória",
@@ -136,8 +158,8 @@ const translations = {
     },
     hero: {
       badge: "Available for new projects · Q3 2026",
-      h1a: "ENGINEERING THAT",
-      h1b: "DRIVES PROFIT.",
+      h1a: "FROM CODE",
+      h1b: "TO VALUE DELIVERY.",
       desc: "Not just code. Product strategy. I transform ideas into digital assets that work for you, combining high-performance engineering with real business vision.",
       ctaProjects: "VIEW PROJECTS",
       ctaContact: "GET IN TOUCH",
@@ -145,7 +167,7 @@ const translations = {
     stats: {
       projects: "Real Projects",
       technologies: "Technologies",
-      experience: "Years Exp",
+      experience: "Years in Market",
       satisfaction: "Satisfaction",
     },
     socialProof: {
@@ -220,9 +242,31 @@ const translations = {
       ],
     },
     tech: {
-      eyebrow: "Tools",
-      h2a: "Full",
-      h2b: "Stack.",
+      eyebrow: "Tech Stack",
+      h1a: "Technical",
+      h1b: "Arsenal.",
+      groups: {
+        frontend: {
+          cat: "Frontend",
+          sub: "High-Impact Interfaces",
+          desc: "Specialist in creating interfaces that blend premium design with extreme technical performance."
+        },
+        infra: {
+          cat: "Infra & DB",
+          sub: "Cloud & Performance",
+          desc: "Resilient infrastructure and databases optimized for global scale."
+        },
+        backend: {
+          cat: "Backend",
+          sub: "Scalable Architectures",
+          desc: "Building robust APIs and high-availability distributed systems."
+        },
+        solutions: {
+          cat: "Solutions",
+          sub: "Payments & Integrations",
+          desc: "Native integration with major payment gateways and third-party services."
+        }
+      }
     },
     trajectory: {
       eyebrow: "Trajectory",

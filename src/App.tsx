@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useInView, useScroll } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useInView, useScroll, animate } from "motion/react";
 import { 
   Code2, 
   LineChart, 
@@ -200,10 +200,10 @@ const TextReveal = ({ children, delay = 0 }: { children: string; delay?: number 
       className="inline-block"
     >
       {words.map((word, i) => (
-        <span key={i} className="inline-block overflow-hidden mr-[0.2em] -mb-[0.1em]">
+        <span key={i} className="inline-block overflow-hidden mr-[0.2em] py-[1em] -my-[1em] leading-none">
           <motion.span
             variants={{
-              hidden: { y: "110%" },
+              hidden: { y: "115%" },
               visible: { y: 0, transition: { duration: 0.8, ease: CUBIC_BEZIER } }
             }}
             className="inline-block"
@@ -346,15 +346,17 @@ const LoadingScreen = () => (
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useLang();
+  const { scrollYProgress } = useScroll();
 
-  const navIds: Record<string, string> = {
-    [t.nav.about]:       "sobre",
-    [t.nav.methodology]: "metodologia",
-    [t.nav.cases]:       "cases",
-    [t.nav.contact]:     "contato",
-  };
+  const navLinks = [
+    { label: t.nav.about, id: "sobre" },
+    { label: t.nav.methodology, id: "metodologia" },
+    { label: t.nav.cases, id: "cases" },
+    { label: t.nav.contact, id: "contato" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -362,419 +364,439 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const { scrollYProgress } = useScroll();
-
   return (
-    <motion.nav
-      initial={{ opacity: 0, y: -16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed top-0 inset-x-0 z-50 py-4"
-    >
-      {/* Scroll Progress Bar */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/20 origin-left"
-        style={{ scaleX: scrollYProgress }}
-      />
-      
-      <div className="max-w-6xl mx-auto px-6">
-        <div className={`px-5 py-3 rounded-2xl flex items-center justify-between transition-all duration-500 ${
-          scrolled ? "bg-black/75 backdrop-blur-2xl border border-white/[0.08] shadow-2xl" : ""
-        }`}>
-
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl overflow-hidden bg-white/8 border border-white/10 flex items-center justify-center">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 inset-x-0 z-[100] py-6"
+      >
+        <div className="max-w-full mx-auto px-6 md:px-12 flex justify-center">
+          <div className={`
+            flex items-center gap-8 px-6 py-2 rounded-full
+            transition-all duration-700 border relative overflow-hidden
+            ${scrolled 
+              ? "bg-black/40 backdrop-blur-3xl border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] scale-100" 
+              : "bg-transparent border-transparent scale-105"}
+          `}>
+            {/* Logo & Name */}
+            <div className="flex items-center gap-3 relative z-10 border-r border-white/10 pr-6">
+              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="text-[11px] font-black text-white uppercase tracking-tighter italic whitespace-nowrap">Thomas Eduardo</span>
             </div>
-            <span className="text-[13px] font-semibold text-white/90 tracking-tight hidden sm:block">Thomas Eduardo</span>
-          </div>
 
-          {/* Nav links */}
-          <div className="hidden md:flex items-center gap-7">
-            {Object.entries(navIds).map(([label, id]) => (
+            {/* Desktop Nav Links */}
+            <div className="hidden md:flex items-center gap-1 relative z-10">
+              {navLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => handleSmoothScroll(e, `#${link.id}`)}
+                  className="px-4 py-2 text-[10px] font-bold text-white/40 hover:text-white transition-all uppercase tracking-widest italic"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Controls & CTA */}
+            <div className="flex items-center gap-4 relative z-10 pl-2">
+              <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/10">
+                <button
+                  onClick={() => setLang(lang === "pt" ? "en" : "pt")}
+                  className="w-7 h-7 flex items-center justify-center rounded-full text-[9px] font-black text-white/40 hover:text-white hover:bg-white/10 transition-all uppercase"
+                >
+                  {lang === "pt" ? "EN" : "PT"}
+                </button>
+                <div className="w-[1px] h-3 bg-white/10 mx-1" />
+                <button
+                  onClick={toggleTheme}
+                  className="w-7 h-7 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                >
+                  {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
               <a
-                key={id}
-                href={`#${id}`}
-                onClick={(e) => handleSmoothScroll(e, `#${id}`)}
-                className="text-[13px] font-medium text-white/55 hover:text-white transition-colors"
+                href="/r"
+                className="hidden sm:flex items-center justify-center px-6 py-2 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest italic hover:bg-white/90 transition-all"
               >
-                {label}
+                {t.nav.cta}
               </a>
-            ))}
-          </div>
 
-          {/* Controls */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLang(lang === "pt" ? "en" : "pt")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/[0.12] bg-white/[0.06] hover:bg-white/[0.10] transition-all text-[11px] font-medium text-white/60 hover:text-white"
-              style={{ borderColor: "var(--pg-border-md)", backgroundColor: "var(--pg-surface)", color: "var(--pg-muted)" }}
-            >
-              <Globe className="w-3 h-3" />
-              {lang === "pt" ? "EN" : "PT"}
-            </button>
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 text-white"
+              >
+                <motion.span 
+                  animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 3 : 0 }}
+                  className="w-5 h-[1.5px] bg-current rounded-full" 
+                />
+                <motion.span 
+                  animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -3 : 0 }}
+                  className="w-5 h-[1.5px] bg-current rounded-full" 
+                />
+              </button>
+            </div>
 
-            <button
-              onClick={toggleTheme}
-              className="w-8 h-8 rounded-full border border-white/[0.12] bg-white/[0.06] hover:bg-white/[0.10] transition-all flex items-center justify-center text-white/60 hover:text-white"
-              style={{ borderColor: "var(--pg-border-md)", backgroundColor: "var(--pg-surface)", color: "var(--pg-muted)" }}
-              title={theme === "dark" ? "Tema claro" : "Tema escuro"}
-            >
-              {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-            </button>
-
-            <a
-              href="/r"
-              className="px-5 py-2 rounded-full bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-all hidden sm:block"
-            >
-              {t.nav.cta}
-            </a>
+            {/* Scroll Progress Line */}
+            <motion.div
+              className="absolute bottom-0 left-0 h-[1.5px] bg-white origin-left z-20"
+              style={{ scaleX: scrollYProgress, width: "100%" }}
+            />
           </div>
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
+
+      {/* Mobile Menu Overlay - Full Screen Minimal */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/95 backdrop-blur-2xl md:hidden flex flex-col p-12 pt-32"
+          >
+            <button 
+              onClick={() => setMobileMenuOpen(false)}
+              className="absolute top-10 right-10 text-white/40 hover:text-white text-xs font-mono uppercase tracking-[0.3em]"
+            >
+              Close
+            </button>
+
+            <div className="flex flex-col gap-8">
+              {navLinks.map((link, i) => (
+                <motion.a
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    handleSmoothScroll(e, `#${link.id}`);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-5xl font-black text-white uppercase italic tracking-tighter hover:text-white/40 transition-colors"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+              
+              <motion.div 
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.5 }}
+                className="w-full h-[1px] bg-white/10 origin-left mt-8" 
+              />
+              
+              <motion.a
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                href="/r"
+                className="inline-flex items-center gap-4 text-white hover:gap-6 transition-all"
+              >
+                <span className="text-2xl font-bold uppercase italic tracking-widest">{t.nav.cta}</span>
+                <ArrowRight className="w-6 h-6" />
+              </motion.a>
+            </div>
+
+            <div className="mt-auto flex justify-between items-center text-white/20 font-mono text-[9px] uppercase tracking-[0.4em]">
+              <span>© 2026 THOMAS EDUARDO</span>
+              <div className="flex gap-4">
+                <button onClick={() => setLang(lang === "pt" ? "en" : "pt")}>{lang.toUpperCase()}</button>
+                <button onClick={toggleTheme}>{theme.toUpperCase()}</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
-const AboutSection = () => (
-  <section id="sobre" className="relative min-h-screen py-32 px-6 flex items-center justify-center overflow-hidden">
-    {/* Cinematic Video Background */}
-    <div className="absolute inset-0 z-0">
-      <video 
-        autoPlay 
-        loop 
-        muted 
-        playsInline
-        className="w-full h-full object-cover scale-105"
-      >
-        <source src="/about-video.mp4" type="video/mp4" />
-      </video>
-      {/* Dynamic Overlays for Readability */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
-      <div className="absolute inset-0 bg-linear-to-b from-black via-transparent to-black" />
-      <div className="absolute inset-0 bg-radial-at-center from-transparent via-transparent to-black/80" />
-    </div>
 
-    <div className="max-w-7xl mx-auto relative z-10 w-full">
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
-        {/* Text Column */}
-        <motion.div {...FADE_UP} className="max-w-2xl">
-          <span className="text-white/50 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-8 block">Sobre a Visão</span>
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-10 tracking-tighter leading-[0.95] text-white">
-            <TextReveal>Não apenas código.</TextReveal> <br />
-            <span className="text-white/40 italic"><TextReveal delay={0.2}>Estratégia Digital.</TextReveal></span>
-          </h2>
-          
-          <div className="space-y-8 text-gray-300 text-lg md:text-xl leading-relaxed font-medium">
-            <p className="border-l-2 border-white/10 pl-8">
-              Minha jornada no desenvolvimento começou com a necessidade de resolver problemas reais. Percebi que o código é apenas o meio; o fim é como essa tecnologia transforma <span className="text-white font-bold italic">ideias em ativos lucrativos</span>.
-            </p>
-            <p className="pl-8">
-              Hoje, atuo como um parceiro estratégico. Desenvolvo sistemas que unem <span className="text-white font-bold">design impecável</span> com uma <span className="text-white font-bold">arquitetura técnica</span> preparada para escala global.
-            </p>
-          </div>
-
-          <div className="mt-12 flex flex-wrap gap-4 items-center pl-8">
-            <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold text-white/80 uppercase tracking-widest">Disponível para Projetos High-End</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Certifications & Stats Column */}
-        <div className="space-y-12">
-          <motion.div 
-            {...FADE_UP}
-            transition={{ delay: 0.3 }}
-            className="p-10 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-2xl"
-          >
-            <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-10 block">Credenciais & Autoridade</span>
+const AboutSection = () => {
+  const { t } = useLang();
+  return (
+    <section id="sobre" className="relative py-16 px-6 flex items-center justify-center overflow-hidden">
+      <div className="max-w-full mx-auto relative z-10 w-full px-6 md:px-12">
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
+          {/* Text Column */}
+          <motion.div {...FADE_UP} className="max-w-2xl">
+            <span className="text-white/30 font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-6 block">{t.about.eyebrow}</span>
+            <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter leading-tight text-white">
+              <TextReveal>{t.about.h2a}</TextReveal> <br />
+              <TextReveal delay={0.2}>{t.about.h2b}</TextReveal>
+            </h2>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                {
-                  title: "AWS re/Start",
-                  issuer: "Amazon",
-                  logo: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-                  logoBg: "bg-[#232F3E]"
-                },
-                {
-                  title: "Cybersecurity",
-                  issuer: "Cisco",
-                  logo: "https://cdn.simpleicons.org/cisco/white",
-                  logoBg: "bg-[#00BCEB]"
-                },
-                {
-                  title: "API REST",
-                  issuer: "Ada Tech",
-                  logo: "https://avatars.githubusercontent.com/u/53894610?v=4",
-                  logoBg: "bg-[#22C55E]"
-                },
-                {
-                  title: "UX Essentials",
-                  issuer: "FIAP",
-                  logo: "https://on.fiap.com.br/theme/fiapv2/pix/logo-fiap.png",
-                  logoBg: "bg-[#ED1C24]"
-                }
-              ].map((cert, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.4 + (i * 0.1) }}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/20 transition-all group cursor-default"
-                >
-                  <div className={`w-10 h-10 rounded-xl ${cert.logoBg} flex items-center justify-center shrink-0 border border-white/10 p-1.5`}>
-                    <img src={cert.logo} alt={cert.issuer} className="w-full h-full object-contain" />
-                  </div>
-                  <div>
-                    <span className="block text-[11px] font-bold text-white tracking-tight">{cert.title}</span>
-                    <span className="block text-[9px] font-mono text-white/30 uppercase tracking-widest">{cert.issuer}</span>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="space-y-6 text-gray-400 text-lg md:text-xl leading-tight font-medium">
+              <p>{t.about.p1}</p>
+              <p>
+                {t.about.p2a} <span className="text-white font-bold italic underline decoration-white/20 underline-offset-8">{t.about.p2bold1}</span> {t.about.p2mid} <span className="text-white font-bold italic underline decoration-white/20 underline-offset-8">{t.about.p2bold2}</span> {t.about.p2end}
+              </p>
+              <p>{t.about.p3}</p>
+            </div>
+
+            <div className="mt-10 flex items-center gap-4">
+              <div className="w-12 h-[1px] bg-white/20" />
+              <span className="text-[11px] font-bold text-white/40 uppercase tracking-[0.3em]">Thomas Eduardo · {t.about.statusValue}</span>
             </div>
           </motion.div>
 
-          <motion.div 
-            {...FADE_UP}
-            transition={{ delay: 0.5 }}
-            className="grid grid-cols-2 gap-4"
-          >
-            <div className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-xl text-center">
-              <span className="block text-4xl font-black text-white mb-1 tracking-tighter">40+</span>
-              <span className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">Projetos Entregues</span>
+          {/* Certifications Column - NO BOXES */}
+          <div className="lg:pt-12 space-y-12">
+            <div>
+              <span className="text-white/20 font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-6 block">{t.about.certifications}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+                {[
+                  {
+                    title: "AWS re/Start",
+                    issuer: "Amazon Web Services",
+                    logo: "https://cdn.simpleicons.org/amazonaws/white",
+                  },
+                  {
+                    title: "Cybersecurity",
+                    issuer: "Cisco Systems",
+                    logo: "https://cdn.simpleicons.org/cisco/white",
+                  },
+                  {
+                    title: "API REST Expert",
+                    issuer: "Ada Tech",
+                    logo: "https://ada-site-frontend.s3.sa-east-1.amazonaws.com/home/logo-ada.svg",
+                  },
+                  {
+                    title: "UX Essentials",
+                    issuer: "FIAP",
+                    logo: "https://www.fiap.com.br/wp-content/themes/fiap2016/images/logo-fiap.png",
+                  }
+                ].map((cert, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-center gap-6 group"
+                  >
+                    <div className="w-14 h-14 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center p-3 group-hover:bg-white/[0.08] transition-all">
+                      <img src={cert.logo} alt={cert.issuer} className="w-full h-full object-contain filter grayscale brightness-0 invert group-hover:grayscale-0 group-hover:brightness-100 group-hover:invert-0 transition-all duration-500" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-bold text-sm tracking-tight">{cert.title}</h4>
+                      <p className="text-white/40 text-[10px] uppercase tracking-widest font-mono mt-1">{cert.issuer}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-            <div className="p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-xl text-center">
-              <span className="block text-4xl font-black text-white mb-1 tracking-tighter">5+</span>
-              <span className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">Anos Exp.</span>
+
+            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/5">
+              <div>
+                <span className="block text-5xl font-bold text-white mb-2 tracking-tighter italic">40+</span>
+                <span className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">{t.stats.projects}</span>
+              </div>
+              <div>
+                <span className="block text-5xl font-bold text-white mb-2 tracking-tighter italic">05+</span>
+                <span className="block text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">{t.stats.experience}</span>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 
 
-const ProcessSection = () => (
-  <section id="metodologia" className="py-32 bg-[#0A0A0A] overflow-hidden">
-    <div className="max-w-7xl mx-auto px-6">
-      <motion.div {...FADE_UP} className="mb-20 text-center">
-        <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-6 block">Como eu trabalho</span>
-        <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[1.1] py-2">
-          <TextReveal>Processo</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>Alta Performance</TextReveal></span>
-        </h2>
-      </motion.div>
+const ProcessSection = () => {
+  const { t } = useLang();
+  return (
+    <section id="metodologia" className="py-16 overflow-hidden">
+      <div className="max-w-full mx-auto px-6 md:px-12">
+        <motion.div {...FADE_UP} className="mb-10 text-center">
+          <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-4 block">{t.process.eyebrow}</span>
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[1.1] py-2 text-white">
+            <TextReveal>{t.process.h2a}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{t.process.h2b}</TextReveal></span>
+          </h2>
+        </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {[
-          { step: "01", title: "IMERSÃO", desc: "Entendimento profundo do seu modelo de negócio e gargalos." },
-          { step: "02", title: "DESIGN", desc: "Arquitetura da experiência com foco em conversão e usabilidade." },
-          { step: "03", title: "CODING", desc: "Desenvolvimento ágil com código limpo e tecnologias de ponta." },
-          { step: "04", title: "POLIMENTO", desc: "Testes rigorosos e otimização de performance extrema." },
-          { step: "05", title: "ESCALA", desc: "Deploy estratégico e monitoramento contínuo de resultados." }
-        ].map((item, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {t.process.steps.map((item, i) => (
+            <motion.div 
+              key={item.step}
+              variants={FADE_UP_VARIANT}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              transition={{ ...SMOOTH_TRANSITION, delay: i * 0.1 }}
+              className="p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all relative group"
+            >
+              <span className="text-3xl font-display font-black text-white/5 block mb-4 group-hover:text-white/20 transition-colors">{item.step}</span>
+              <h3 className="text-xl font-semibold mb-4 text-white tracking-tight">{item.title}</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const DifferentiatorsSection = () => {
+  const { t } = useLang();
+  const icons = [<IconSaaS className="w-8 h-8" />, <IconPerformance className="w-8 h-8" />, <IconProduct className="w-8 h-8" />];
+  
+  return (
+    <section className="py-16 px-6">
+      <div className="max-w-full mx-auto px-6 md:px-12 grid lg:grid-cols-3 gap-8">
+        {t.differentiators.items.map((item, i) => (
           <motion.div 
-            key={item.step}
-            variants={FADE_UP_VARIANT}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ ...SMOOTH_TRANSITION, delay: i * 0.1 }}
-            className="p-8 rounded-[32px] border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all relative group"
+            key={i}
+            {...FADE_UP}
+            className="p-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04] transition-all group"
           >
-            <span className="text-4xl font-display font-black text-white/5 block mb-6 group-hover:text-white/20 transition-colors">{item.step}</span>
-            <h3 className="text-xl font-semibold mb-4 text-white tracking-tight">{item.title}</h3>
-            <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center mb-6 text-white/70 group-hover:scale-110 transition-transform">
+              {icons[i]}
+            </div>
+            <h3 className="text-2xl font-semibold mb-4 text-white tracking-tight">{item.title}</h3>
+            <p className="text-white/50 text-base leading-relaxed">{item.desc}</p>
           </motion.div>
         ))}
       </div>
-    </div>
-  </section>
-);
-
-const DifferentiatorsSection = () => (
-  <section className="py-32 px-6 bg-[#0A0A0A]">
-    <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-8">
-      {[
-        { 
-          title: "SaaS Expertise", 
-          desc: "Especialista em softwares multi-tenant, dashboards administrativos e fluxos complexos.",
-          icon: <IconSaaS className="w-8 h-8" />
-        },
-        { 
-          title: "Performance", 
-          desc: "Otimização focada em Core Web Vitals e Lighthouse 100 para máxima retenção.",
-          icon: <IconPerformance className="w-8 h-8" />
-        },
-        { 
-          title: "Visão de Produto", 
-          desc: "Não apenas sigo tarefas, ajudo a refinar a estratégia de negócio do software.",
-          icon: <IconProduct className="w-8 h-8" />
-        }
-      ].map((item, i) => (
-        <motion.div 
-          key={i}
-          {...FADE_UP}
-          className="p-10 rounded-[40px] border border-white/[0.07] bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04] transition-all group"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center mb-8 text-white/70 group-hover:scale-110 transition-transform">
-            {item.icon}
-          </div>
-          <h3 className="text-2xl font-semibold mb-4 text-white tracking-tight">{item.title}</h3>
-          <p className="text-white/50 text-base leading-relaxed">{item.desc}</p>
-        </motion.div>
-      ))}
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const Hero = () => {
+  const { t } = useLang();
   const { scrollY } = useScroll();
   const orbY = useTransform(scrollY, [0, 500], [0, -120]);
 
   return (
-  <section className="relative min-h-screen flex items-center justify-center pt-24 pb-24 px-6 overflow-hidden bg-black">
-    {/* Parallax orbs */}
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <motion.div style={{ y: orbY }}
-        className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-white/[0.025] rounded-full blur-[180px]"
-      />
-      {/* Floating micro-orbs */}
-      {[{w:180,h:180,t:"20%",l:"10%",d:0},{w:120,h:120,t:"60%",l:"80%",d:1.5},{w:80,h:80,t:"80%",l:"20%",d:3}].map((o,i)=>(
-        <motion.div key={i}
-          animate={{ y: [0, -24, 0], opacity: [0.03, 0.07, 0.03] }}
-          transition={{ duration: 5 + i * 1.5, repeat: Infinity, ease: "easeInOut", delay: o.d }}
-          style={{ width: o.w, height: o.h, top: o.t, left: o.l }}
-          className="absolute rounded-full bg-white blur-[60px]"
+    <section className="relative min-h-screen flex items-center justify-center pt-20 pb-16 px-6 overflow-hidden">
+      {/* Parallax orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div style={{ y: orbY }}
+          className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-white/[0.025] rounded-full blur-[180px]"
         />
-      ))}
-    </div>
+      </div>
 
-    <div className="max-w-5xl mx-auto relative z-10 w-full text-center">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.14, delayChildren: 0.25 } } }}
-      >
-        {/* Badge */}
+      <div className="max-w-full mx-auto relative z-10 w-full text-center px-6 md:px-12">
         <motion.div
-          variants={FADE_UP_VARIANT}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.10] bg-white/[0.04] backdrop-blur mb-10"
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.14, delayChildren: 0.25 } } }}
         >
+          {/* Badge */}
           <motion.div
-            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]"
-          />
-          <span className="text-[12px] font-medium text-white/55 tracking-wide">
-            Disponível para novos projetos · Q3 2026
-          </span>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          variants={FADE_UP_VARIANT}
-          className="text-[11vw] md:text-[7rem] lg:text-[8rem] font-bold leading-[1.04] tracking-[-0.04em] mb-7"
-        >
-          <TextReveal>Engenharia que</TextReveal><br />
-          <motion.span
-            className="text-gradient inline-block"
-            animate={{ opacity: [0.85, 1, 0.85] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            variants={FADE_UP_VARIANT}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02] backdrop-blur mb-6"
           >
-            <TextReveal delay={0.4}>gera lucro.</TextReveal>
-          </motion.span>
-        </motion.h1>
+            <motion.div
+              animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-1 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+            />
+            <span className="text-[11px] font-bold text-white/60 uppercase tracking-[0.2em]">
+              {t.hero.badge}
+            </span>
+          </motion.div>
 
-        {/* Description */}
-        <motion.p
-          variants={FADE_UP_VARIANT}
-          className="text-[17px] md:text-xl text-white/55 max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
-        >
-          Não apenas código.{" "}
-          <span className="text-white font-medium">Estratégia de produto.</span>{" "}
-          Transformo ideias em{" "}
-          <span className="text-white font-medium">ativos digitais</span>{" "}
-          que trabalham por você.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div variants={FADE_UP_VARIANT} className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Magnetic>
-            <motion.a
-              whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(255,255,255,0.15)" }}
-              whileTap={{ scale: 0.96 }}
-              onClick={(e) => handleSmoothScroll(e, '#cases')}
-              href="#cases"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white text-black text-[15px] font-semibold transition-all flex items-center justify-center gap-2"
+          {/* Headline */}
+          <motion.h1
+            variants={FADE_UP_VARIANT}
+            className="text-[10vw] md:text-[6rem] lg:text-[7rem] font-bold leading-[0.9] tracking-[-0.05em] mb-6 text-white uppercase italic"
+          >
+            <div className="overflow-visible py-2">
+              <TextReveal>{t.hero.h1a}</TextReveal>
+            </div>
+            <motion.div
+              className="text-white/80 italic overflow-visible py-2"
+              animate={{ opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <ArrowRight className="w-4 h-4" />
-              Ver projetos
-            </motion.a>
-          </Magnetic>
+              <TextReveal delay={0.4}>{t.hero.h1b}</TextReveal>
+            </motion.div>
+          </motion.h1>
 
-          <Magnetic>
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.96 }}
-              href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de iniciar um diagnóstico para meu projeto.")}`}
-              target="_blank"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/[0.08] text-white text-[15px] font-semibold hover:bg-white/[0.13] transition-all border border-white/[0.12] flex items-center justify-center gap-2"
-            >
-              Entrar em contato
-            </motion.a>
-          </Magnetic>
+          {/* Description */}
+          <motion.p
+            variants={FADE_UP_VARIANT}
+            className="text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-medium" style={{ color: '#A1A1A6' }}
+          >
+            {t.hero.desc}
+          </motion.p>
+
+          {/* CTAs - Apple Style */}
+          <motion.div variants={FADE_UP_VARIANT} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Magnetic>
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={(e) => handleSmoothScroll(e, '#cases')}
+                href="#cases"
+                className="btn-primary w-full sm:w-auto px-10 py-4 shadow-2xl flex items-center justify-center gap-2"
+              >
+                {t.hero.ctaProjects}
+                <ArrowRight className="w-4 h-4" />
+              </motion.a>
+            </Magnetic>
+
+            <Magnetic>
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de iniciar um diagnóstico para meu projeto.")}`}
+                target="_blank"
+                className="btn-secondary w-full sm:w-auto px-10 py-4 backdrop-blur-xl flex items-center justify-center gap-2"
+              >
+                {t.hero.ctaContact}
+              </motion.a>
+            </Magnetic>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </div>
-  </section>
-);
+      </div>
+    </section>
+  );
 };
 
 
 const GlobalStats = () => {
-  const yearsExp = (() => {
-    const start = new Date(2023, 7);
-    const now = new Date();
-    let diff = now.getFullYear() - start.getFullYear();
-    if (now.getMonth() < start.getMonth()) diff--;
-    return String(Math.max(1, diff)).padStart(2, '0') + "+";
-  })();
+  const { t } = useLang();
 
   return (
-    <section className="py-12 bg-[#0A0A0A] relative z-10">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-12 relative z-10">
+      <div className="max-w-full mx-auto px-6 md:px-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
           {[
-            { label: "Projetos Reais", val: "25+" },
-            { label: "Tecnologias", val: "12+" },
-            { label: "Anos Exp", val: yearsExp },
-            { label: "Satisfação", val: "100%" }
+            { label: t.stats.projects, val: "25+" },
+            { label: t.stats.technologies, val: "12+" },
+            { label: t.stats.experience, val: "03+" },
+            { label: t.stats.satisfaction, val: "100%" }
           ].map((stat, i) => (
-          <motion.div 
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="text-center md:text-left"
-          >
-            <span className="block text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-1">{stat.val}</span>
-            <span className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.3em] font-bold">{stat.label}</span>
-          </motion.div>
-        ))}
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="text-center md:text-left"
+            >
+              <span className="block text-3xl md:text-5xl font-black text-white italic tracking-tighter mb-1">{stat.val}</span>
+              <span className="label-caps block">{stat.label}</span>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
 };
 
 const SocialProof = () => {
+  const { t } = useLang();
   const logos = [
     { name: "Bras Service", url: "/clientes/brasservice.jpg" },
     { name: "Casa Lellit", url: "/clientes/casalellit.jpg" },
@@ -786,24 +808,23 @@ const SocialProof = () => {
   ];
   
   return (
-    <section className="py-32 bg-[#0A0A0A] border-y border-white/[0.03] overflow-hidden relative">
-      {/* Background Glow */}
+    <section className="py-12 overflow-hidden relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 mb-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12">
+      <div className="max-w-full mx-auto px-6 md:px-12 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="max-w-2xl">
             <motion.span 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-6 block"
+              className="label-caps mb-6 block"
             >
-              Expertise & Confiança
+              {t.socialProof.eyebrow}
             </motion.span>
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-[0.95] text-white">
-              <TextReveal>Marcas que</TextReveal> <br/>
-              <span className="text-gradient"><TextReveal delay={0.2}>Confiam no Trabalho.</TextReveal></span>
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-tight text-white">
+              <TextReveal>{t.socialProof.h2a}</TextReveal> <br/>
+              <span className="text-white/50"><TextReveal delay={0.2}>{t.socialProof.h2b}</TextReveal></span>
             </h2>
           </div>
           <motion.p 
@@ -811,26 +832,25 @@ const SocialProof = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="text-gray-500 text-xs md:text-sm max-w-xs font-mono uppercase tracking-widest leading-relaxed border-l border-white/10 pl-6"
+            className="text-[13px] max-w-xs font-mono uppercase tracking-widest leading-relaxed border-l border-white/10 pl-6" style={{ color: '#A1A1A6' }}
           >
-            Sistemas de alta performance e interfaces premium para empresas que buscam o próximo nível digital.
+            {t.socialProof.desc}
           </motion.p>
         </div>
       </div>
       
-      <div className="relative flex overflow-x-hidden border-y border-white/[0.03] bg-white/[0.01] py-8">
-        {/* Edge Fades */}
-        <div className="absolute inset-y-0 left-0 w-60 bg-linear-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-60 bg-linear-to-l from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10" />
+      <div className="relative flex overflow-x-hidden py-8">
+        <div className="absolute inset-y-0 left-0 w-60 bg-linear-to-r from-[var(--pg-bg)] via-[var(--pg-bg)]/80 to-transparent z-10" />
+        <div className="absolute inset-y-0 right-0 w-60 bg-linear-to-l from-[var(--pg-bg)] via-[var(--pg-bg)]/80 to-transparent z-10" />
         
         <div className="flex animate-marquee whitespace-nowrap">
           {[...logos, ...logos, ...logos].map((logo, i) => (
             <div 
               key={i} 
-              className="flex-none flex items-center gap-8 px-12 md:px-20 group/logo"
+              className="flex-none flex items-center gap-6 px-8 md:px-14 group/logo"
             >
               <div className="relative">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl overflow-hidden border border-white/[0.05] bg-white/[0.02] flex items-center justify-center grayscale opacity-30 group-hover/logo:grayscale-0 group-hover/logo:opacity-100 group-hover/logo:scale-110 transition-all duration-700">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl overflow-hidden border border-white/[0.1] bg-white/[0.05] flex items-center justify-center grayscale group-hover/logo:grayscale-0 opacity-80 group-hover/logo:opacity-100 group-hover/logo:scale-110 transition-all duration-700 p-2">
                   <img 
                     src={logo.url} 
                     alt={logo.name} 
@@ -840,136 +860,138 @@ const SocialProof = () => {
               </div>
               
               <div className="flex flex-col">
-                <span className="text-[10px] font-mono text-white/10 uppercase tracking-[0.3em] group-hover/logo:text-white/20 transition-colors">Client</span>
-                <span className="text-base md:text-lg font-bold text-white/20 group-hover/logo:text-white transition-all duration-500 uppercase tracking-tighter">
-                  {logo.name}
-                </span>
+                <span className="text-[10px] font-mono text-white/50 uppercase tracking-[0.3em] group-hover/logo:text-white/70 transition-colors">Client</span>
+                <span className="text-base md:text-lg font-bold text-white/60 group-hover/logo:text-white transition-all duration-500 uppercase tracking-tighter">
+                   {logo.name}
+                 </span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Bottom decorative line */}
-      <div className="max-w-7xl mx-auto px-6 mt-16">
+      <div className="max-w-full mx-auto px-6 md:px-12 mt-8">
         <div className="h-[1px] w-full bg-linear-to-r from-transparent via-white/5 to-transparent" />
       </div>
     </section>
   );
 };
 
-const BentoGrid = () => (
-  <section id="metodologia" className="relative py-16 px-6 bg-[#0A0A0A] overflow-hidden">
-    <div className="max-w-7xl mx-auto relative z-10">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.02] rounded-full blur-[160px] pointer-events-none" />
+const BentoGrid = () => {
+  const { t } = useLang();
+  return (
+    <section id="metodologia" className="relative py-16 px-6 bg-(--pg-bg) overflow-hidden">
+      <div className="max-w-full mx-auto relative z-10 px-6 md:px-12">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.01] rounded-full blur-[160px] pointer-events-none" />
 
-      <motion.div 
-        {...FADE_UP}
-        className="mb-10 relative z-10"
-      >
-        <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-4 block">Metodologia</span>
-        <h2 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter leading-[1.1] py-2">
-          <TextReveal>Como transformo ideias</TextReveal> <br />
-          <TextReveal delay={0.2}>em ativos</TextReveal> <span className="text-white/50"><TextReveal delay={0.4}>de alto valor</TextReveal></span>
-        </h2>
-        <p className="text-white/40 text-lg">Minha metodologia é baseada em três pilares fundamentais, focados em escala e lucratividade sustentável.</p>
-      </motion.div>
-  
-      <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
         <motion.div 
           {...FADE_UP}
-          whileHover={{ y: -5 }}
-          className="md:col-span-6 lg:col-span-8 p-10 rounded-[32px] border border-white/[0.07] bg-white/[0.02] flex flex-col justify-between group transition-all hover:bg-white/[0.04] hover:border-white/15 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+          className="mb-10 relative z-10"
         >
-          <div className="absolute inset-0 bg-linear-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-              <IconStrategy className="w-8 h-8 text-white/60" />
+          <span className="label-caps mb-4 block">{t.bento.eyebrow}</span>
+          <h2 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter leading-[1.1] py-2">
+            <TextReveal>{t.bento.h2a}</TextReveal> <br />
+            <TextReveal delay={0.2}>{t.bento.h2b}</TextReveal> <span className="text-white/50"><TextReveal delay={0.4}>{t.bento.h2c}</TextReveal></span>
+          </h2>
+          <p className="text-lg leading-relaxed" style={{ color: '#A1A1A6' }}>{t.bento.desc}</p>
+        </motion.div>
+    
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 relative z-10">
+          <motion.div 
+            {...FADE_UP}
+            whileHover={{ y: -5 }}
+            className="md:col-span-6 lg:col-span-8 p-6 rounded-2xl border border-white/[0.04] bg-white/[0.01] flex flex-col justify-between group transition-all hover:bg-white/[0.02] hover:border-white/5 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-linear-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                <IconStrategy className="w-8 h-8 text-white/60" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4 tracking-tight text-white">{t.bento.card1Title}</h3>
+              <p className="text-lg leading-relaxed max-w-xl" style={{ color: '#A1A1A6' }}>
+                {t.bento.card1Desc}
+              </p>
             </div>
-            <h3 className="text-3xl font-semibold mb-6 tracking-tight">Diagnóstico Técnico &amp; Estratégico</h3>
-            <p className="text-white/50 text-lg leading-relaxed max-w-xl">
-              Identifico os gargalos reais do seu negócio antes da primeira linha de código. 
-              Imersão profunda para garantir que o software resolva problemas de verdade e traga retorno financeiro direto.
-            </p>
-          </div>
-          <div className="mt-12 flex gap-6 text-sm font-medium font-mono text-white/30 uppercase tracking-widest relative z-10">
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white/40" /> Auditoria</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white/40" /> Planejamento</span>
-            <span className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white/40" /> Resultados</span>
-          </div>
-        </motion.div>
-  
-        <motion.div 
-          {...FADE_UP}
-          whileHover={{ y: -5 }}
-          className="md:col-span-6 lg:col-span-4 p-10 rounded-[32px] border border-white/[0.07] bg-white/[0.02] flex flex-col group overflow-hidden relative transition-all hover:bg-white/[0.04] hover:border-white/15 shadow-2xl backdrop-blur-xl"
-        >
-          <div className="absolute inset-0 bg-linear-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10 h-full flex flex-col">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-              <IconExecution className="w-8 h-8 text-white/60" />
+            <div className="mt-8 flex gap-4 text-sm font-medium font-mono text-white/30 uppercase tracking-widest relative z-10">
+              {t.bento.tags.map(tag => (
+                <span key={tag} className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white/40" /> {tag}</span>
+              ))}
             </div>
-            <h3 className="text-3xl font-semibold mb-6 tracking-tight">Execução Brutal</h3>
-            <p className="text-white/50 text-lg leading-relaxed">
-              Código limpo, testado e performático. Desenvolvimento ágil sem burocracia, focado em entregas de valor constante.
-            </p>
-          </div>
-        </motion.div>
-  
-        <motion.div 
-          {...FADE_UP}
-          whileHover={{ y: -5 }}
-          className="md:col-span-6 lg:col-span-5 p-10 rounded-[32px] border border-white/[0.07] bg-white/[0.02] flex flex-col group transition-all hover:bg-white/[0.04] hover:border-white/15 shadow-2xl backdrop-blur-xl relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-linear-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.06] border border-white/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
-              <IconScale className="w-8 h-8 text-white/60" />
+          </motion.div>
+    
+          <motion.div 
+            {...FADE_UP}
+            whileHover={{ y: -5 }}
+            className="md:col-span-6 lg:col-span-4 p-6 rounded-2xl border border-white/[0.04] bg-white/[0.01] flex flex-col group overflow-hidden relative transition-all hover:bg-white/[0.02] hover:border-white/5 shadow-2xl backdrop-blur-xl"
+          >
+            <div className="absolute inset-0 bg-linear-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative z-10 h-full flex flex-col">
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                <IconExecution className="w-8 h-8 text-white/60" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4 tracking-tight text-white">{t.bento.card2Title}</h3>
+              <p className="text-lg leading-relaxed" style={{ color: '#A1A1A6' }}>
+                {t.bento.card2Desc}
+              </p>
             </div>
-            <h3 className="text-3xl font-semibold mb-6 tracking-tight">Escala &amp; Suporte</h3>
-            <p className="text-white/50 text-lg leading-relaxed">
-              Arquiteturas que suportam o crescimento explosivo. Suporte contínuo para garantir que seu ativo nunca pare de performar.
-            </p>
-          </div>
-        </motion.div>
-  
-        <motion.div 
-          {...FADE_UP}
-          whileHover={{ y: -5 }}
-          className="md:col-span-6 lg:col-span-7 p-10 rounded-[32px] border border-white/[0.07] bg-white/[0.03] flex flex-col md:flex-row items-start md:items-center justify-between gap-8 overflow-hidden group shadow-2xl backdrop-blur-xl"
-        >
-          <div className="max-w-md relative z-10">
-            <h3 className="text-3xl font-bold mb-6 uppercase tracking-tight italic">Tecnologia <br/>de Ponta</h3>
-            <p className="text-gray-400 text-lg">
-              Utilizo as ferramentas mais sólidas para garantir longevidade e performance extrema ao seu produto digital.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
-            {['React', 'Next.js', 'Node.js', 'AWS', 'Docker', 'Stripe'].map((tag) => (
-              <span 
-                key={tag}
-                className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-bold font-mono text-white/50 uppercase tracking-widest"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+          </motion.div>
+    
+          <motion.div 
+            {...FADE_UP}
+            whileHover={{ y: -5 }}
+            className="md:col-span-6 lg:col-span-5 p-6 rounded-2xl border border-white/[0.04] bg-white/[0.01] flex flex-col group transition-all hover:bg-white/[0.02] hover:border-white/5 shadow-2xl backdrop-blur-xl relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-linear-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative z-10">
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                <IconScale className="w-8 h-8 text-white/60" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-4 tracking-tight text-white">{t.bento.card3Title}</h3>
+              <p className="text-lg leading-relaxed" style={{ color: '#A1A1A6' }}>
+                {t.bento.card3Desc}
+              </p>
+            </div>
+          </motion.div>
+    
+          <motion.div 
+            {...FADE_UP}
+            whileHover={{ y: -5 }}
+            className="md:col-span-6 lg:col-span-7 p-6 rounded-2xl border border-white/[0.04] bg-white/[0.01] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden group shadow-2xl backdrop-blur-xl"
+          >
+            <div className="max-w-md relative z-10">
+              <h3 className="text-2xl font-bold mb-4 uppercase tracking-tight italic">{t.bento.card4Title}</h3>
+              <p className="text-lg leading-relaxed" style={{ color: '#A1A1A6' }}>
+                {t.bento.card4Desc}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3 justify-start md:justify-end max-w-full md:max-w-[280px] relative z-10 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+              {['React', 'Next.js', 'Node.js', 'AWS', 'Docker', 'Stripe'].map((tag) => (
+                <span 
+                  key={tag}
+                  className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-[9px] font-bold font-mono text-white/50 uppercase tracking-widest"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const ProjectSection = () => {
+  const { t, lang } = useLang();
   const projects: Project[] = [
     {
       id: "reis-do-manto",
       title: "REIS DO MANTO",
-      description: "E-commerce de alta performance para vestuário esportivo premium.",
+      description: lang === "pt" ? "E-commerce de alta performance para vestuário esportivo premium." : "High-performance e-commerce for premium sportswear.",
       technologies: ["Next.js", "Stripe", "TailwindCSS"],
-      problem: "Necessidade de um checkout ultra-rápido e interface que transmitisse exclusividade.",
+      problem: lang === "pt" ? "Necessidade de um checkout ultra-rápido e interface que transmitisse exclusividade." : "Need for ultra-fast checkout and an interface conveying exclusivity.",
       solution: "Arquitetura baseada em Next.js with otimização extrema de imagens e gateway Stripe.",
-      result: "Aumento de 50% na taxa de conversão no primeiro mês.",
+      result: lang === "pt" ? "Aumento de 50% na taxa de conversão no primeiro mês." : "50% increase in conversion rate in the first month.",
       image: "/projetos/Reis do Manto.png",
       clientLogo: "/clientes/reis-do-manto.png",
       link: "https://reisdomanto.com.br"
@@ -977,11 +999,11 @@ const ProjectSection = () => {
     {
       id: "bras-service",
       title: "BRAS SERVICE",
-      description: "Landing page de alta conversão para serviços de manutenção industrial.",
+      description: lang === "pt" ? "Landing page de alta conversão para serviços de manutenção industrial." : "High-conversion landing page for industrial maintenance services.",
       technologies: ["React", "TailwindCSS", "Framer Motion"],
-      problem: "Baixa taxa de conversão em leads qualificados no site antigo.",
+      problem: lang === "pt" ? "Baixa taxa de conversão em leads qualificados no site antigo." : "Low conversion rate of qualified leads on the old site.",
       solution: "Copy focado em autoridade e design industrial agressivo.",
-      result: "Aumento de 200% na geração de leads orgânicos.",
+      result: lang === "pt" ? "Aumento de 200% na geração de leads orgânicos." : "200% increase in organic lead generation.",
       image: "/projetos/Landing Page  Bras Service.png",
       clientLogo: "/clientes/brasservice.jpg",
       link: "https://brasservice.com.br"
@@ -989,22 +1011,22 @@ const ProjectSection = () => {
     {
       id: "barbearia-piloto",
       title: "BARBEARIA NO PILOTO AUTOMÁTICO",
-      description: "SaaS completo para gestão e agendamento automático de barbearias.",
+      description: lang === "pt" ? "SaaS completo para gestão e agendamento automático de barbearias." : "Complete SaaS for automatic management and scheduling for barber shops.",
       technologies: ["Next.js", "Prisma", "PostgreSQL"],
-      problem: "Dono da barbearia perdia 3h por dia gerenciando horários manualmente.",
+      problem: lang === "pt" ? "Dono da barbearia perdia 3h por dia gerenciando horários manualmente." : "Barber shop owner lost 3h a day managing schedules manually.",
       solution: "Sistema de agendamento self-service com confirmação via WhatsApp.",
-      result: "Economia de 20h semanais e zero furos na agenda.",
+      result: lang === "pt" ? "Economia de 20h semanais e zero furos na agenda." : "Saving 20h weekly and zero schedule gaps.",
       image: "/sistemas-web.png",
       link: "https://barbearia-no-piloto-automatico.vercel.app/"
     },
     {
       id: "hazap",
       title: "HAZAP",
-      description: "Plataforma de gestão de contratos e workflow jurídico.",
+      description: lang === "pt" ? "Plataforma de gestão de contratos e workflow jurídico." : "Contract management and legal workflow platform.",
       technologies: ["Next.js", "Node.js", "PostgreSQL"],
-      problem: "Processos manuais lentos na gestão de contratos complexos.",
+      problem: lang === "pt" ? "Processos manuais lentos na gestão de contratos complexos." : "Slow manual processes in managing complex contracts.",
       solution: "Digitalização total do workflow with assinatura eletrônica integrada.",
-      result: "Redução de 70% no tempo de fechamento de contratos.",
+      result: lang === "pt" ? "Redução de 70% no tempo de fechamento de contratos." : "70% reduction in contract closing time.",
       image: "/projetos/Landing Page Hazap.png",
       clientLogo: "/clientes/hazzap.jpg",
       link: "https://hazap.com.br"
@@ -1012,11 +1034,11 @@ const ProjectSection = () => {
     {
       id: "spinmove",
       title: "SPINMOVE",
-      description: "E-commerce de moda urbana com experiência de compra fluida.",
+      description: lang === "pt" ? "E-commerce de moda urbana com experiência de compra fluida." : "Urban fashion e-commerce with a fluid shopping experience.",
       technologies: ["Next.js", "Stripe", "TailwindCSS"],
-      problem: "Checkout complexo causava desistência de compra.",
+      problem: lang === "pt" ? "Checkout complexo causava desistência de compra." : "Complex checkout caused purchase abandonment.",
       solution: "Simplificação radical do fluxo de compra (One-click checkout).",
-      result: "Redução de 35% no abandono de carrinho.",
+      result: lang === "pt" ? "Redução de 35% no abandono de carrinho." : "35% reduction in cart abandonment.",
       image: "/projetos/Landing Page Spinmove.png",
       clientLogo: "/clientes/spinmove.jpg",
       link: "https://spinmove.com.br"
@@ -1024,11 +1046,11 @@ const ProjectSection = () => {
     {
       id: "casa-lellit",
       title: "CASA LELLIT",
-      description: "E-commerce premium de decoração e mobiliário.",
+      description: lang === "pt" ? "E-commerce premium de decoração e mobiliário." : "Premium home decor and furniture e-commerce.",
       technologies: ["Next.js", "Stripe", "TailwindCSS"],
-      problem: "Necessidade de uma plataforma que suportasse alto volume de vendas com design de luxo.",
+      problem: lang === "pt" ? "Necessidade de uma plataforma que suportasse alto volume de vendas com design de luxo." : "Need for a platform supporting high sales volume with luxury design.",
       solution: "Interface minimalista e checkout otimizado.",
-      result: "Aumento de 40% nas vendas recorrentes.",
+      result: lang === "pt" ? "Aumento de 40% nas vendas recorrentes." : "40% increase in recurring sales.",
       image: "/projetos/site casa lellit.png",
       clientLogo: "/clientes/casalellit.jpg",
       link: "https://casalellit.com.br"
@@ -1036,11 +1058,11 @@ const ProjectSection = () => {
     {
       id: "yazigi",
       title: "YÁZIGI SWISS PARK",
-      description: "Portal educacional para unidade franqueada de escola de idiomas.",
+      description: lang === "pt" ? "Portal educacional para unidade franqueada de escola de idiomas." : "Educational portal for a language school franchise unit.",
       technologies: ["React", "Node.js", "MongoDB"],
-      problem: "Falta de centralização de informações para alunos e responsáveis.",
+      problem: lang === "pt" ? "Falta de centralização de informações para alunos e responsáveis." : "Lack of centralized information for students and guardians.",
       solution: "Área logada para acompanhamento de progresso pedagógico.",
-      result: "Melhoria de 60% na satisfação dos pais e alunos.",
+      result: lang === "pt" ? "Melhoria de 60% na satisfação dos pais e alunos." : "60% improvement in parent and student satisfaction.",
       image: "/projetos/Landing Page Yázigi Swiss Park.png",
       clientLogo: "/clientes/yazigi.png",
       link: "https://yazigiswisspark.com.br"
@@ -1048,29 +1070,28 @@ const ProjectSection = () => {
     {
       id: "grund-zero",
       title: "GRUND ZERO",
-      description: "Landing page tática para assessoria esportiva.",
+      description: lang === "pt" ? "Landing page tática para assessoria esportiva." : "Tactical landing page for sports consultancy.",
       technologies: ["React", "Framer Motion", "TailwindCSS"],
-      problem: "Necessidade de captar alunos de forma agressiva e direta.",
+      problem: lang === "pt" ? "Necessidade de captar alunos de forma agressiva e direta." : "Need to capture students aggressively and directly.",
       solution: "Design escuro com foco em CTAs de alta visibilidade.",
-      result: "Taxa de conversão de leads superior a 15%.",
+      result: lang === "pt" ? "Taxa de conversão de leads superior a 15%." : "Lead conversion rate exceeding 15%.",
       image: "/projetos/Landing Page Grund Zero.png",
-      clientLogo: "/clientes/gz-team.png"
     }
   ];
 
   return (
-    <section id="cases" className="py-12 md:py-20 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
+    <section id="cases" className="py-12 md:py-20 px-6 md:px-12 max-w-full mx-auto overflow-hidden bg-(--pg-bg)">
       <motion.div 
         {...FADE_UP}
         className="mb-10"
       >
-        <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-4 block">Portfolio</span>
-        <h2 className="text-4xl md:text-7xl font-bold mb-6 tracking-tighter leading-[1.1] py-2">Projetos que <br/><span className="text-white/50">Resolvem o Jogo.</span></h2>
-        <p className="text-white/50 text-xl max-w-3xl font-medium">Cada projeto é tratado como um produto. Engenharia de resultados focada em UI/UX, performance e impacto no faturamento.</p>
+        <span className="label-caps mb-4 block">{t.projects.eyebrow}</span>
+        <h2 className="text-4xl md:text-7xl font-bold mb-6 tracking-tighter leading-[1.1] py-2">{t.projects.h2a} <br/><span className="text-white/50">{t.projects.h2b}</span></h2>
+        <p className="text-xl max-w-3xl font-medium" style={{ color: '#A1A1A6' }}>{lang === "pt" ? "Cada projeto é tratado como um produto. Engenharia de resultados focada em UI/UX, performance e impacto no faturamento." : "Each project is treated as a product. Results engineering focused on UI/UX, performance, and revenue impact."}</p>
       </motion.div>
 
-      <div className="flex flex-col lg:space-y-24 space-y-12">
-        <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory pb-8 lg:pb-0 -mx-6 px-6 lg:mx-0 lg:px-0 scrollbar-hide gap-6 lg:gap-24">
+      <div className="flex flex-col lg:space-y-16 space-y-8">
+        <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory pb-8 lg:pb-0 -mx-6 px-6 lg:mx-0 lg:px-0 scrollbar-hide gap-6 lg:gap-16">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
@@ -1080,29 +1101,29 @@ const ProjectSection = () => {
               <div className={`space-y-6 lg:space-y-8 ${index % 2 !== 0 ? 'lg:order-2' : ''}`}>
                 <div className="flex items-center gap-4">
                   <span className="text-white/40 font-mono font-medium">0{index + 1}</span>
-                  <span className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{project.technologies[0]} + {project.technologies[1]}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest" style={{ color: '#6E6E73' }}>{project.technologies[0]} + {project.technologies[1]}</span>
                 </div>
                 
                 <div className="flex flex-col gap-4">
                   {project.clientLogo && (
-                    <div className="w-10 h-10 md:w-16 md:h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-                      <img src={project.clientLogo} alt="Client" className="w-full h-full object-cover grayscale opacity-50" />
+                    <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center overflow-hidden p-2">
+                      <img src={project.clientLogo} alt="Client" className="w-full h-full object-contain" />
                     </div>
                   )}
                   <h3 className="text-2xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">{project.title}</h3>
                 </div>
                 
-                <p className="text-gray-400 text-sm md:text-lg leading-relaxed font-medium line-clamp-3 lg:line-clamp-none">
+                <p className="text-sm md:text-lg leading-relaxed font-medium" style={{ color: '#A1A1A6' }}>
                   {project.description}
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 py-4 lg:py-8 border-y border-white/5">
                   <div>
-                    <span className="block text-[8px] lg:text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2">O Desafio</span>
-                    <p className="text-[10px] lg:text-sm text-white/50 leading-relaxed line-clamp-2">"{project.problem}"</p>
+                    <span className="block text-[8px] lg:text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2">{t.projects.problem}</span>
+                    <p className="text-[10px] lg:text-sm text-white/50 leading-relaxed">"{project.problem}"</p>
                   </div>
                   <div>
-                    <span className="block text-[8px] lg:text-[10px] font-mono text-white/60 uppercase tracking-widest mb-2">O Resultado</span>
+                    <span className="block text-[8px] lg:text-[10px] font-mono text-white/60 uppercase tracking-widest mb-2">{t.projects.result}</span>
                     <p className="text-[10px] lg:text-sm text-white font-semibold tracking-tight">{project.result}</p>
                   </div>
                 </div>
@@ -1121,7 +1142,7 @@ const ProjectSection = () => {
                     href={`/r?to=${encodeURIComponent(`https://wa.me/5511977070209?text=Olá Thomas, vi o case ${project.title} e gostaria de algo similar.`)}`}
                     className="inline-flex items-center gap-3 text-white/60 font-semibold uppercase tracking-widest group text-[10px] lg:text-xs hover:text-white transition-colors"
                   >
-                    SOLICITAR DIAGNÓSTICO
+                    {lang === "pt" ? "SOLICITAR DIAGNÓSTICO" : "REQUEST DIAGNOSIS"}
                     <ArrowRight className="w-3 h-3 lg:w-4 lg:h-4 group-hover:translate-x-2 transition-transform" />
                   </motion.a>
 
@@ -1131,10 +1152,10 @@ const ProjectSection = () => {
                       href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-6 lg:py-3 rounded-full bg-white/5 border border-white/10 text-white font-bold uppercase tracking-widest text-[8px] lg:text-[10px] hover:bg-white/10 transition-colors"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 lg:px-6 lg:py-3 rounded-full bg-white/[0.03] border border-white/5 text-white font-bold uppercase tracking-widest text-[8px] lg:text-[10px] hover:bg-white/10 transition-colors"
                     >
                       <ExternalLink className="w-3 h-3 lg:w-4 lg:h-4" />
-                      VISITAR SITE
+                      {t.projects.btnSite}
                     </motion.a>
                   )}
                 </div>
@@ -1142,14 +1163,14 @@ const ProjectSection = () => {
 
               <motion.div 
                 whileHover={{ scale: 1.02 }}
-                className={`relative aspect-[16/10] rounded-[20px] lg:rounded-[40px] overflow-hidden border border-white/10 group bg-white/5 ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
+                className={`relative aspect-[16/10] rounded-2xl overflow-hidden border border-white/5 group bg-white/[0.02] ${index % 2 !== 0 ? 'lg:order-1' : ''}`}
               >
                 <img 
                   src={project.image} 
                   alt={project.title}
                   className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/80 via-transparent to-transparent opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--pg-bg)]/80 via-transparent to-transparent opacity-60" />
               </motion.div>
             </motion.div>
           ))}
@@ -1159,145 +1180,156 @@ const ProjectSection = () => {
   );
 };
 
-const ExpertiseSection = () => (
-  <section id="expertise" className="py-16 px-6 max-w-7xl mx-auto bg-[#0A0A0A]">
-    <motion.div {...FADE_UP} className="mb-10">
-      <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tighter leading-[1.1] py-2">
-        <TextReveal>Minha</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>expertise</TextReveal></span>
-      </h2>
-      <p className="text-white/50">Soluções ponta-a-ponta focadas em conversão.</p>
-    </motion.div>
+const ExpertiseSection = () => {
+  const { t, lang } = useLang();
+  const expertiseItems = [
+    { 
+      num: "01", 
+      title: "SaaS & Dashboards", 
+      icon: <IconSaaS className="w-8 h-8 text-white/60" />,
+      desc: lang === "pt" ? "Desenvolvimento de plataformas multi-tenant escaláveis com foco em automação de processos e gestão eficiente." : "Development of scalable multi-tenant platforms focused on process automation and efficient management."
+    },
+    { 
+      num: "02", 
+      title: lang === "pt" ? "Sistemas de Pagamento" : "Payment Systems", 
+      icon: <IconFintech className="w-8 h-8 text-white/60" />,
+      desc: lang === "pt" ? "Integração robusta com Stripe, Mercado Pago e Infinity Pay, garantindo segurança e transparência financeira." : "Robust integration with Stripe, Mercado Pago, and Infinity Pay, ensuring security and financial transparency."
+    },
+    { 
+      num: "03", 
+      title: lang === "pt" ? "Arquitetura Full Stack" : "Full Stack Architecture", 
+      icon: <IconCodePremium className="w-8 h-8 text-white/60" />,
+      desc: lang === "pt" ? "APIs REST seguras com JWT e interfaces responsivas de alta performance em Next.js e AWS." : "Secure REST APIs with JWT and high-performance responsive interfaces in Next.js and AWS."
+    }
+  ];
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {[
-        { 
-          num: "01", 
-          title: "SaaS & Dashboards", 
-          icon: <IconSaaS className="w-8 h-8 text-white/60" />,
-          desc: "Desenvolvimento de plataformas multi-tenant escaláveis com foco em automação de processos e gestão eficiente." 
-        },
-        { 
-          num: "02", 
-          title: "Sistemas de Pagamento", 
-          icon: <IconFintech className="w-8 h-8 text-white/60" />,
-          desc: "Integração robusta com Stripe, Mercado Pago e Infinity Pay, garantindo segurança e transparência financeira." 
-        },
-        { 
-          num: "03", 
-          title: "Arquitetura Full Stack", 
-          icon: <IconCodePremium className="w-8 h-8 text-white/60" />,
-          desc: "APIs REST seguras com JWT e interfaces responsivas de alta performance em Next.js e AWS." 
-        }
-      ].map((item, i) => (
-        <motion.div 
-          key={i}
-          {...FADE_UP}
-          whileHover={{ y: -10 }}
-          className="p-8 rounded-3xl border border-white/[0.07] bg-white/[0.02] transition-all hover:border-white/15 hover:bg-white/[0.04]"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-5xl font-display font-black text-white/10">{item.num}</span>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              {item.icon}
+  return (
+    <section id="expertise" className="py-16 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
+      <motion.div {...FADE_UP} className="mb-10">
+        <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tighter leading-tight py-2 text-white">
+          <TextReveal>{t.expertise.h2a}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{t.expertise.h2b}</TextReveal></span>
+        </h2>
+        <p className="text-white/50">{lang === "pt" ? "Soluções ponta-a-ponta focadas em conversão." : "End-to-end solutions focused on conversion."}</p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {expertiseItems.map((item, i) => (
+          <motion.div 
+            key={i}
+            {...FADE_UP}
+            whileHover={{ y: -10 }}
+            className="p-6 rounded-2xl border border-white/[0.04] bg-white/[0.01] transition-all hover:border-white/10 hover:bg-white/[0.03]"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-5xl font-display font-black text-white/5">{item.num}</span>
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                {item.icon}
+              </div>
             </div>
-          </div>
-          <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">{item.title}</h3>
-          <p className="text-gray-400 text-base leading-relaxed">{item.desc}</p>
-        </motion.div>
-      ))}
-    </div>
-  </section>
-);
-
-const TrajectorySection = () => (
-  <section id="trajetoria" className="relative py-16 px-6 max-w-7xl mx-auto overflow-hidden bg-[#0A0A0A]">
-    <motion.div {...FADE_UP} className="mb-10 relative z-10">
-      <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-4 block">Experiência</span>
-      <h2 className="text-3xl md:text-[5rem] font-bold mb-4 tracking-tighter leading-[1.1] py-2">
-        <TextReveal>Minha</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>Jornada</TextReveal></span>
-      </h2>
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <p className="text-gray-400 text-lg">De operações críticas à engenharia de software de alta performance.</p>
+            <h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tight">{item.title}</h3>
+            <p className="text-base leading-relaxed" style={{ color: '#A1A1A6' }}>{item.desc}</p>
+          </motion.div>
+        ))}
       </div>
-    </motion.div>
+    </section>
+  );
+};
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-      {[
-        {
-          year: "2023 / Atualmente",
-          title: "Full Stack Engineer",
-          company: "Thomas Eduardo (Freelance)",
-          icon: <IconCodePremium className="w-6 h-6 text-white/60" />,
-          desc: "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e geração de valor.",
-          color: "hover:border-white/20",
-          glow: "bg-white/[0.04]"
-        },
-        {
-          year: "2023 / 2024",
-          title: "Suporte & Gestão",
-          company: "CCAA",
-          icon: <IconStrategy className="w-5 h-5 text-white/60" />,
-          desc: "Gestão operacional de matrículas e fluxos administrativos. Onde refinei meu entendimento sobre processos de negócio e UX.",
-          color: "hover:border-white/20",
-          glow: "bg-white/[0.04]"
-        },
-        {
-          year: "2021 / 2023",
-          title: "Operação & Vendas",
-          company: "Lojas Renner",
-          desc: "Trabalho em escala. Gestão de estoque e atendimento sob alta demanda em um dos maiores varejistas do país.",
-          icon: <IconStrategy className="w-5 h-5 text-white/60" />,
-          color: "hover:border-white/20",
-          glow: "bg-white/[0.04]"
-        },
-        {
-          year: "Anterior",
-          title: "Logística & Fiscal",
-          company: "MRB Express",
-          desc: "Raízes na eficiência operacional. Controle de frotas e prazos críticos. A base da minha mentalidade de 'zero atraso'.",
-          icon: <IconCodePremium className="w-5 h-5 text-white/60" />,
-          color: "hover:border-white/20",
-          glow: "bg-white/[0.04]"
-        }
-      ].map((item, i) => (
-        <motion.div 
-          key={i}
-          {...FADE_UP}
-          whileHover={{ y: -5 }}
-          className={`relative p-8 rounded-[32px] border border-white/5 bg-white/[0.02] transition-all overflow-hidden group shadow-2xl backdrop-blur-sm ${item.color}`}
-        >
-          <div className="absolute inset-x-0 bottom-0 h-[1px] bg-linear-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          
-          <div className="flex items-center justify-between mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-              {item.icon}
+const TrajectorySection = () => {
+  const { t, lang } = useLang();
+  const trajectoryItems = [
+    {
+      year: lang === "pt" ? "2023 / Atualmente" : "2023 / Present",
+      title: "Full Stack Engineer",
+      company: "Thomas Eduardo (Freelance)",
+      icon: <IconCodePremium className="w-6 h-6 text-white/60" />,
+      desc: lang === "pt" ? "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e geração de valor." : "Focus on SaaS and Fintech. Developed 'Barber Shop on Autopilot' and 'Paper Contracts', focusing on automation and value generation.",
+      color: "hover:border-white/10",
+      glow: "bg-white/[0.02]"
+    },
+    {
+      year: "2023 / 2024",
+      title: lang === "pt" ? "Suporte & Gestão" : "Support & Management",
+      company: "CCAA",
+      icon: <IconStrategy className="w-5 h-5 text-white/60" />,
+      desc: lang === "pt" ? "Gestão operacional de matrículas e fluxos administrativos. Onde refinei meu entendimento sobre processos de negócio e UX." : "Operational management of enrollments and administrative workflows. Where I refined my understanding of business processes and UX.",
+      color: "hover:border-white/10",
+      glow: "bg-white/[0.02]"
+    },
+    {
+      year: "2021 / 2023",
+      title: lang === "pt" ? "Operação & Vendas" : "Operation & Sales",
+      company: "Lojas Renner",
+      desc: lang === "pt" ? "Trabalho em escala. Gestão de estoque e atendimento sob alta demanda em um dos maiores varejistas do país." : "Work at scale. Inventory management and customer service under high demand in one of the country's largest retailers.",
+      icon: <IconStrategy className="w-5 h-5 text-white/60" />,
+      color: "hover:border-white/10",
+      glow: "bg-white/[0.02]"
+    },
+    {
+      year: lang === "pt" ? "Anterior" : "Previous",
+      title: lang === "pt" ? "Logística & Fiscal" : "Logistics & Tax",
+      company: "MRB Express",
+      desc: lang === "pt" ? "Raízes na eficiência operacional. Controle de frotas e prazos críticos. A base da minha mentalidade de 'zero atraso'." : "Roots in operational efficiency. Fleet control and critical deadlines. The foundation of my 'zero delay' mentality.",
+      icon: <IconCodePremium className="w-5 h-5 text-white/60" />,
+      color: "hover:border-white/10",
+      glow: "bg-white/[0.02]"
+    }
+  ];
+
+  return (
+    <section id="trajetoria" className="relative py-16 px-6 md:px-12 max-w-full mx-auto overflow-hidden bg-(--pg-bg)">
+      <motion.div {...FADE_UP} className="mb-10 relative z-10">
+        <span className="label-caps mb-4 block">{t.trajectory.eyebrow}</span>
+        <h2 className="text-3xl md:text-[5rem] font-bold mb-4 tracking-tighter leading-[1.1] py-2 text-white">
+          <TextReveal>{lang === "pt" ? "Minha" : "My"}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{lang === "pt" ? "Jornada" : "Journey"}</TextReveal></span>
+        </h2>
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <p className="text-lg" style={{ color: '#A1A1A6' }}>{lang === "pt" ? "De operações críticas à engenharia de software de alta performance." : "From critical operations to high-performance software engineering."}</p>
+        </div>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+        {trajectoryItems.map((item, i) => (
+          <motion.div 
+            key={i}
+            {...FADE_UP}
+            whileHover={{ y: -5 }}
+            className={`relative p-6 rounded-2xl border border-white/5 bg-white/[0.01] transition-all overflow-hidden group shadow-2xl backdrop-blur-sm ${item.color}`}
+          >
+            <div className="absolute inset-x-0 bottom-0 h-[1px] bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                {item.icon}
+              </div>
+              <span className="font-mono text-[10px] uppercase font-bold tracking-widest bg-white/[0.02] px-3 py-1 rounded-full border border-white/5" style={{ color: '#6E6E73' }}>
+                {item.year}
+              </span>
             </div>
-            <span className="font-mono text-[10px] uppercase font-bold tracking-widest text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-              {item.year}
-            </span>
-          </div>
-          <div className="relative z-10">
-            <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-tight italic">{item.title}</h3>
-            <span className="text-sm text-white/50 font-medium uppercase tracking-widest mb-4 block">{item.company}</span>
-            <p className="text-gray-400 text-base leading-relaxed">
-              {item.desc}
-            </p>
-          </div>
-          {/* Subtle Background Glow on Hover */}
-          <div className={`absolute -bottom-20 -right-20 w-40 h-40 ${item.glow} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-        </motion.div>
-      ))}
-    </div>
-  </section>
-);
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-tight italic">{item.title}</h3>
+              <span className="text-sm text-white/50 font-medium uppercase tracking-widest mb-4 block">{item.company}</span>
+              <p className="text-base leading-relaxed" style={{ color: '#A1A1A6' }}>
+                {item.desc}
+              </p>
+            </div>
+            {/* Subtle Background Glow on Hover */}
+            <div className={`absolute -bottom-20 -right-20 w-40 h-40 ${item.glow} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+};
 
 const TechStackGrid = () => {
+  const { t, lang } = useLang();
   const groups = [
     { 
-      cat: "Frontend", 
+      cat: t.tech.groups.frontend.cat, 
       icon: <IconCodePremium className="w-6 h-6 text-white" />,
-      sub: "Interfaces de Alto Impacto",
-      desc: "Especialista em criar interfaces que unem design premium com performance técnica extrema.",
+      sub: t.tech.groups.frontend.sub,
+      desc: t.tech.groups.frontend.desc,
       techs: [
         { name: "React", logo: "https://cdn.simpleicons.org/react/white" },
         { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/white" },
@@ -1307,10 +1339,10 @@ const TechStackGrid = () => {
       colSpan: "md:col-span-4"
     },
     { 
-      cat: "Infra & DB", 
+      cat: t.tech.groups.infra.cat, 
       icon: <IconPerformance className="w-6 h-6 text-white" />,
-      sub: "Cloud & Performance",
-      desc: "Infraestrutura resiliente e bancos de dados otimizados para escala global.",
+      sub: t.tech.groups.infra.sub,
+      desc: t.tech.groups.infra.desc,
       techs: [
         { name: "AWS", logo: "https://cdn.simpleicons.org/amazonwebservices/white" },
         { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/white" },
@@ -1320,10 +1352,10 @@ const TechStackGrid = () => {
       colSpan: "md:col-span-2"
     },
     { 
-      cat: "Backend", 
+      cat: t.tech.groups.backend.cat, 
       icon: <IconSaaS className="w-6 h-6 text-white" />,
-      sub: "Arquiteturas Escaláveis",
-      desc: "Construção de APIs robustas e sistemas distribuídos de alta disponibilidade.",
+      sub: t.tech.groups.backend.sub,
+      desc: t.tech.groups.backend.desc,
       techs: [
         { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/white" },
         { name: "Express", logo: "https://cdn.simpleicons.org/express/white" },
@@ -1333,10 +1365,10 @@ const TechStackGrid = () => {
       colSpan: "md:col-span-3"
     },
     { 
-      cat: "Soluções", 
+      cat: t.tech.groups.solutions.cat, 
       icon: <IconFintech className="w-6 h-6 text-white" />,
-      sub: "Pagamentos & Integrações",
-      desc: "Integração nativa com os principais gateways de pagamento e serviços de terceiro.",
+      sub: t.tech.groups.solutions.sub,
+      desc: t.tech.groups.solutions.desc,
       techs: [
         { name: "Stripe", logo: "https://cdn.simpleicons.org/stripe/white" },
         { name: "Mercado Pago", logo: "https://cdn.simpleicons.org/mercadopago/white" },
@@ -1348,21 +1380,21 @@ const TechStackGrid = () => {
   ];
 
   return (
-    <section className="py-32 px-6 bg-black relative overflow-hidden">
+    <section className="py-16 px-6 bg-(--pg-bg) relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.015] rounded-full blur-[140px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-white/[0.01] rounded-full blur-[120px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
       
-      <div className="max-w-7xl mx-auto relative z-10">
-        <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div className="max-w-full mx-auto relative z-10 px-6 md:px-12">
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <motion.div {...FADE_UP}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span className="text-white/40 font-mono text-[10px] uppercase font-bold tracking-[0.4em]">Inventory of Excellence</span>
+              <span className="text-white/40 font-mono text-[10px] uppercase font-bold tracking-[0.4em]">{t.tech.eyebrow}</span>
             </div>
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.05] max-w-2xl">
-              <TextReveal>Arsenal</TextReveal> <br />
-              <span className="text-white/30 italic font-medium"><TextReveal delay={0.2}>Técnico</TextReveal></span>
+            <h2 className="text-5xl md:text-8xl font-bold tracking-tighter leading-[1.1] max-w-4xl text-white pb-4">
+              <TextReveal>{t.tech.h1a}</TextReveal> <br />
+              <span className="text-white/30 italic font-medium"><TextReveal delay={0.2}>{t.tech.h1b}</TextReveal></span>
             </h2>
           </motion.div>
           
@@ -1371,7 +1403,7 @@ const TechStackGrid = () => {
             transition={{ delay: 0.3 }}
             className="text-white/40 text-lg max-w-sm font-medium border-l border-white/10 pl-6 py-2"
           >
-            Ferramentas selecionadas criteriosamente para entregar sistemas de classe mundial.
+            {lang === "pt" ? "Ferramentas selecionadas criteriosamente para entregar sistemas de classe mundial." : "Carefully selected tools to deliver world-class systems."}
           </motion.p>
         </header>
 
@@ -1381,23 +1413,23 @@ const TechStackGrid = () => {
               key={group.cat}
               {...FADE_UP}
               transition={{ delay: i * 0.1 + 0.4 }}
-              className={`group relative ${group.colSpan} p-10 md:p-12 rounded-[2.5rem] border border-white/[0.05] bg-white/[0.02] backdrop-blur-3xl hover:bg-white/[0.04] hover:border-white/10 transition-all duration-700 flex flex-col justify-between min-h-[420px] overflow-hidden`}
+              className={`group relative ${group.colSpan} p-6 md:p-8 rounded-2xl border border-white/[0.04] bg-white/[0.01] backdrop-blur-3xl hover:bg-white/[0.02] hover:border-white/5 transition-all duration-700 flex flex-col justify-between min-h-[360px] overflow-hidden`}
             >
               {/* Shine effect */}
-              <div className="absolute inset-0 bg-radial-at-tl from-white/[0.05] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="absolute inset-0 bg-radial-at-tl from-white/[0.02] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               
               <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/10 transition-all duration-500 text-white/40 group-hover:text-white">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/[0.04] transition-all duration-500 text-white/40 group-hover:text-white">
                     {group.icon}
                   </div>
                   <span className="text-[10px] font-mono text-white/10 uppercase tracking-[0.4em] font-bold">Stack_{group.cat.slice(0,3).toUpperCase()}</span>
                 </div>
                 
-                <div className="mb-8">
+                <div className="mb-6">
                   <h3 className="text-3xl font-bold text-white tracking-tighter mb-2">{group.cat}</h3>
-                  <p className="text-sm font-medium text-white/40 mb-4">{group.sub}</p>
-                  <p className="text-sm leading-relaxed text-white/20 max-w-[280px] font-medium group-hover:text-white/40 transition-colors duration-500">
+                  <p className="text-sm font-medium mb-4" style={{ color: '#6E6E73' }}>{group.sub}</p>
+                  <p className="text-sm leading-relaxed max-w-[280px] font-medium group-hover:text-white/60 transition-colors duration-500" style={{ color: '#A1A1A6' }}>
                     {group.desc}
                   </p>
                 </div>
@@ -1407,7 +1439,7 @@ const TechStackGrid = () => {
                 {group.techs.map((tech) => (
                   <div 
                     key={tech.name}
-                    className="group/item flex items-center gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/[0.03] hover:bg-white/[0.08] hover:border-white/[0.1] transition-all duration-300"
+                    className="group/item flex items-center gap-3 p-3 rounded-2xl bg-white/[0.01] border border-white/[0.02] hover:bg-white/[0.04] hover:border-white/[0.05] transition-all duration-300"
                   >
                     <div className="w-6 h-6 flex items-center justify-center shrink-0">
                       <img 
@@ -1416,7 +1448,7 @@ const TechStackGrid = () => {
                         className="w-4 h-4 grayscale opacity-40 group-hover/item:grayscale-0 group-hover/item:opacity-100 transition-all duration-500" 
                       />
                     </div>
-                    <span className="text-[10px] font-mono text-white/30 group-hover/item:text-white/80 uppercase tracking-widest transition-colors">
+                    <span className="text-[10px] font-mono group-hover/item:text-white uppercase tracking-widest transition-colors" style={{ color: '#6E6E73' }}>
                       {tech.name}
                     </span>
                   </div>
@@ -1434,19 +1466,25 @@ const TechStackGrid = () => {
 };
 
 const FAQSection = () => {
+  const { t, lang } = useLang();
   const [open, setOpen] = useState<number | null>(null);
-  const faqs = [
+  const faqs = lang === "pt" ? [
     { q: "Qual o prazo médio de entrega?", a: "Depende da complexidade, mas uma Landing Page de alta performance costuma levar de 7 a 15 dias, enquanto um SaaS completo pode levar de 30 a 90 dias." },
     { q: "Você faz integração com qualquer gateway?", a: "Sim, tenho vasta experiência com Mercado Pago, Stripe e gateways nacionais como Infinity Pay, garantindo checkout transparente." },
     { q: "O software é entregue pronto para escalar?", a: "Sim, utilizo tecnologias modernas como Next.js e Cloud (AWS/Vercel) para garantir que seu sistema suporte picos de tráfego sem lentidão." },
     { q: "Como funciona o suporte pós-entrega?", a: "Ofereço pacotes de manutenção mensal que garantem segurança, atualizações e suporte prioritário para o seu ativo digital." }
+  ] : [
+    { q: "What is the average delivery time?", a: "It depends on complexity, but a high-performance Landing Page usually takes 7 to 15 days, while a full SaaS can take 30 to 90 days." },
+    { q: "Do you integrate with any gateway?", a: "Yes, I have extensive experience with Mercado Pago, Stripe, and national gateways like Infinity Pay, ensuring transparent checkout." },
+    { q: "Is the software delivered ready to scale?", a: "Yes, I use modern technologies like Next.js and Cloud (AWS/Vercel) to ensure your system handles traffic peaks without slowdowns." },
+    { q: "How does post-delivery support work?", a: "I offer monthly maintenance packages that guarantee security, updates, and priority support for your digital asset." }
   ];
 
   return (
-    <section className="py-24 px-6 max-w-3xl mx-auto bg-[#0A0A0A]">
-      <motion.div {...FADE_UP} className="mb-16 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold tracking-tighter leading-[1.1] py-2">
-          <TextReveal>Dúvidas</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>Frequentes</TextReveal></span>
+    <section className="py-16 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
+      <motion.div {...FADE_UP} className="mb-10 text-center">
+        <h2 className="text-3xl md:text-5xl font-bold tracking-tighter leading-[1.1] py-2 text-white">
+          <TextReveal>{t.faq.h2a}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{t.faq.h2b}</TextReveal></span>
         </h2>
       </motion.div>
       <div className="space-y-4">
@@ -1461,14 +1499,14 @@ const FAQSection = () => {
               className="w-full py-6 flex items-center justify-between text-left group"
             >
               <span className="text-lg font-semibold text-white group-hover:text-white/80 transition-colors">{faq.q}</span>
-              <ChevronRight className={`w-5 h-5 text-gray-600 transition-transform ${open === i ? 'rotate-90' : ''}`} />
+              <ChevronRight className={`w-5 h-5 transition-transform ${open === i ? 'rotate-90' : ''}`} style={{ color: '#6E6E73' }} />
             </button>
             <motion.div
               initial={false}
               animate={{ height: open === i ? 'auto' : 0, opacity: open === i ? 1 : 0 }}
               className="overflow-hidden"
             >
-              <p className="pb-6 text-gray-400 leading-relaxed">{faq.a}</p>
+              <p className="pb-6 leading-relaxed" style={{ color: '#A1A1A6' }}>{faq.a}</p>
             </motion.div>
           </motion.div>
         ))}
@@ -1479,49 +1517,50 @@ const FAQSection = () => {
 
 
 const Contact = () => {
+  const { t, lang } = useLang();
   return (
-    <section id="contato" className="py-32 px-6 relative overflow-hidden bg-[#0A0A0A]">
+    <section id="contato" className="py-16 px-6 relative overflow-hidden bg-(--pg-bg)">
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-white/[0.015] rounded-full blur-[120px] pointer-events-none" />
       
       <motion.div 
         {...FADE_UP}
-        className="max-w-5xl mx-auto text-center relative z-10"
+        className="max-w-full mx-auto text-center relative z-10 px-6 md:px-12"
       >
-        <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.5em] mb-8 block">Let's build something real</span>
-        <h2 className="text-3xl sm:text-5xl md:text-[clamp(3.5rem,8vw,5.5rem)] font-bold mb-12 tracking-tighter leading-[1] py-4">
-          <TextReveal>VAMOS TRANSFORMAR</TextReveal> <br className="md:hidden" />
-          <span className="text-white/60"><TextReveal delay={0.3}>SUA IDEIA EM PRODUTO?</TextReveal></span>
+        <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.5em] mb-8 block">{t.contact.eyebrow}</span>
+        <h2 className="text-3xl sm:text-5xl md:text-[clamp(3.5rem,8vw,5.5rem)] font-bold mb-12 tracking-tighter leading-[1] py-4 text-white">
+          <TextReveal>{t.contact.h2a}</TextReveal> <br className="md:hidden" />
+          <span className="text-white/60"><TextReveal delay={0.3}>{t.contact.h2b + " " + (t.contact.h2c || "")}</TextReveal></span>
         </h2>
         
-        <p className="text-gray-400 text-xl md:text-2xl mb-20 max-w-2xl mx-auto leading-relaxed font-medium">
-          Aceitando novos projetos e consultorias estratégicas. <br className="hidden md:block"/>
-          <span className="text-white italic">Garanta sua vaga no roadmap de 2026.</span>
+        <p className="text-lg md:text-xl mb-12 max-w-4xl mx-auto leading-relaxed font-medium" style={{ color: '#A1A1A6' }}>
+          {t.contact.desc} <br className="hidden md:block"/>
+          <span className="text-white italic">{lang === "pt" ? "Garanta sua vaga no roadmap de 2026." : "Secure your spot on the 2026 roadmap."}</span>
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           <motion.a 
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de reservar um horário para diagnóstico do meu projeto.")}`}
             target="_blank"
-            className="flex items-center justify-center gap-5 px-10 py-8 rounded-3xl bg-white text-black font-bold uppercase tracking-widest hover:bg-white/90 transition-all shadow-2xl shadow-white/10 group"
+            className="btn-primary flex items-center justify-center gap-5 px-10 py-8 rounded-3xl font-bold uppercase tracking-widest shadow-2xl shadow-white/10 group"
           >
             <WhatsAppIcon className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            WHATSAPP DIRETO
+            {t.contact.btnWhatsapp}
           </motion.a>
           
           <motion.a 
             whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
             href="mailto:devthomaseduardo@gmail.com" 
-            className="flex items-center justify-center gap-5 px-10 py-8 rounded-3xl border border-white/10 bg-white/5 text-white font-black uppercase italic tracking-widest hover:bg-white/10 transition-all backdrop-blur-md"
+            className="btn-secondary flex items-center justify-center gap-5 px-10 py-8 rounded-3xl font-black uppercase italic tracking-widest backdrop-blur-md"
           >
             <Mail className="w-8 h-8" />
-            ENVIAR E-MAIL
+            {t.contact.btnEmail}
           </motion.a>
         </div>
 
-        <div className="mt-24 flex flex-wrap justify-center gap-12 font-mono text-[10px] uppercase font-black tracking-[0.3em] text-white/20">
+        <div className="mt-12 flex flex-wrap justify-center gap-8 font-mono text-[10px] uppercase font-black tracking-[0.3em] text-white/20">
           <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" className="hover:text-white transition-colors">LinkedIn</a>
           <a href="https://github.com/devthomaseduardo" target="_blank" className="hover:text-white transition-colors">GitHub</a>
           <div className="flex items-center gap-2">
@@ -1534,56 +1573,63 @@ const Contact = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="pt-32 pb-12 border-t border-white/5 bg-[#0A0A0A] relative overflow-hidden">
-    <div className="max-w-7xl mx-auto px-6 relative z-10">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
-        <div className="md:col-span-2">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+const Footer = () => {
+  const { t } = useLang();
+  return (
+    <footer className="pt-16 pb-8 border-t border-white/5 relative overflow-hidden">
+      <div className="max-w-full mx-auto px-6 md:px-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-xl">
+                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <span className="font-display font-black text-white tracking-tighter uppercase italic text-xl">thomaseduardo</span>
             </div>
-            <span className="font-display font-black text-white tracking-tighter uppercase italic text-xl">thomaseduardo</span>
+            <p className="text-lg max-w-sm leading-relaxed font-medium" style={{ color: '#A1A1A6' }}>
+              {t.footer.desc}
+            </p>
           </div>
-          <p className="text-gray-500 text-lg max-w-sm leading-relaxed font-medium">
-            Engenharia de software estratégica focada em performance, design e lucratividade.
-          </p>
-        </div>
-        
-        <div>
-          <h4 className="text-white font-black mb-8 text-xs uppercase tracking-[0.3em] font-mono italic opacity-50">Navegação</h4>
-          <ul className="space-y-6">
-            {['Sobre', 'Metodologia', 'Cases', 'Contato'].map(link => (
-              <li key={link}>
-                <a 
-                  href={`#${link.toLowerCase()}`} 
-                  onClick={(e) => handleSmoothScroll(e, `#${link.toLowerCase()}`)}
-                  className="text-gray-500 hover:text-white transition-colors uppercase tracking-[0.2em] text-[10px] font-black italic block"
-                >
-                  {link}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+          
+          <div>
+            <h4 className="text-white font-black mb-4 text-xs uppercase tracking-[0.3em] font-mono italic opacity-50">{t.footer.nav}</h4>
+            <ul className="space-y-4">
+              {[
+                { label: t.nav.about, id: "sobre" },
+                { label: t.nav.methodology, id: "metodologia" },
+                { label: t.nav.cases, id: "cases" },
+                { label: t.nav.contact, id: "contato" }
+              ].map(link => (
+                <li key={link.id}>
+                  <a 
+                    href={`#${link.id}`} 
+                    onClick={(e) => handleSmoothScroll(e, `#${link.id}`)}
+                    className="hover:text-white transition-colors uppercase tracking-[0.2em] text-[10px] font-black italic block" style={{ color: '#6E6E73' }}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h4 className="text-white font-black mb-8 text-xs uppercase tracking-[0.3em] font-mono italic opacity-50">Contato</h4>
-          <ul className="space-y-6">
-            <li>
-              <a href="mailto:devthomaseduardo@gmail.com" className="text-white/40 hover:text-white transition-colors font-mono text-sm tracking-tight">devthomaseduardo@gmail.com</a>
-            </li>
+          <div>
+            <h4 className="text-white font-black mb-4 text-xs uppercase tracking-[0.3em] font-mono italic opacity-50">{t.footer.contact}</h4>
+            <ul className="space-y-4">
+              <li>
+                <a href="mailto:devthomaseduardo@gmail.com" className="text-white/40 hover:text-white transition-colors font-mono text-sm tracking-tight">devthomaseduardo@gmail.com</a>
+              </li>
             <li className="flex gap-6 pt-4 border-t border-white/5">
-              <a href="https://github.com/devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+              <a href="https://github.com/devthomaseduardo" target="_blank" className="hover:text-white transition-colors" style={{ color: '#6E6E73' }}>
                 <Github className="w-6 h-6" />
               </a>
-              <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+              <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" className="hover:text-white transition-colors" style={{ color: '#6E6E73' }}>
                 <Linkedin className="w-6 h-6" />
               </a>
-              <a href="https://www.tiktok.com/@devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+              <a href="https://www.tiktok.com/@devthomaseduardo" target="_blank" className="hover:text-white transition-colors" style={{ color: '#6E6E73' }}>
                 <TikTokIcon className="w-6 h-6" />
               </a>
-              <a href="https://instagram.com/devthomaseduardo" target="_blank" className="text-gray-600 hover:text-white transition-colors">
+              <a href="https://instagram.com/devthomaseduardo" target="_blank" className="hover:text-white transition-colors" style={{ color: '#6E6E73' }}>
                 <Instagram className="w-6 h-6" />
               </a>
             </li>
@@ -1591,17 +1637,18 @@ const Footer = () => (
         </div>
       </div>
       
-      <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-gray-700 text-[9px] font-mono uppercase tracking-[0.5em] font-bold">
+      <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-white/30 text-[9px] font-mono uppercase tracking-[0.5em] font-bold">
         <span>© 2026 Thomas Eduardo. Premium Digital Assets.</span>
         <span className="flex items-center gap-2">
-          <div className="text-white/50">Fullstack_Architect</div>
+          <div className="text-white/40">Fullstack_Architect</div>
           <div className="w-1 h-1 bg-white/10 rounded-full" />
           CODED_WITH_EXCELLENCE
         </span>
       </div>
     </div>
   </footer>
-);
+    );
+};
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -1615,7 +1662,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="pg-root min-h-screen selection:bg-white/20 overflow-x-hidden relative bg-[#0A0A0A]">
+    <div className="pg-root min-h-screen selection:bg-white/20 overflow-x-hidden relative">
       {/* Global Noise Texture Overlay */}
       <div className="fixed inset-0 pointer-events-none z-[999] opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
