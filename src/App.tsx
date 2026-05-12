@@ -349,168 +349,201 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang, t } = useLang();
-  const { scrollYProgress } = useScroll();
 
   const navLinks = [
-    { label: t.nav.about, id: "sobre" },
-    { label: t.nav.methodology, id: "metodologia" },
-    { label: t.nav.cases, id: "cases" },
-    { label: t.nav.contact, id: "contato" },
+    { label: lang === "pt" ? "Trabalhos" : "Work", id: "cases" },
+    { label: lang === "pt" ? "Serviços" : "Services", id: "expertise" },
+    { label: lang === "pt" ? "Processo" : "Process", id: "metodologia" },
+    { label: lang === "pt" ? "Arsenal" : "Arsenal", id: "arsenal" },
+    { label: lang === "pt" ? "Jornada" : "Journey", id: "trajetoria" },
   ];
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 inset-x-0 z-[100] py-6"
+      <nav
+        className="fixed top-0 left-0 right-0 z-[999] flex items-center h-[52px] px-5 md:px-8 transition-all duration-300 ease-in-out"
+        style={{
+          background: scrolled ? "rgba(0,0,0,0.72)" : "transparent",
+          backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
+        }}
       >
-        <div className="max-w-full mx-auto px-6 md:px-12 flex justify-center">
-          <div className={`
-            flex items-center gap-8 px-6 py-2 rounded-full
-            transition-all duration-700 border relative overflow-hidden
-            ${scrolled 
-              ? "bg-black/40 backdrop-blur-3xl border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] scale-100" 
-              : "bg-transparent border-transparent scale-105"}
-          `}>
-            {/* Logo & Name */}
-            <div className="flex items-center gap-3 relative z-10 border-r border-white/10 pr-6">
-              <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
-                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
-              </div>
-              <span className="text-[11px] font-black text-white uppercase tracking-tighter italic whitespace-nowrap">Thomas Eduardo</span>
-            </div>
-
-            {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-1 relative z-10">
-              {navLinks.map((link) => (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={(e) => handleSmoothScroll(e, `#${link.id}`)}
-                  className="px-4 py-2 text-[10px] font-bold text-white/40 hover:text-white transition-all uppercase tracking-widest italic"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-
-            {/* Controls & CTA */}
-            <div className="flex items-center gap-4 relative z-10 pl-2">
-              <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/10">
-                <button
-                  onClick={() => setLang(lang === "pt" ? "en" : "pt")}
-                  className="w-7 h-7 flex items-center justify-center rounded-full text-[9px] font-black text-white/40 hover:text-white hover:bg-white/10 transition-all uppercase"
-                >
-                  {lang === "pt" ? "EN" : "PT"}
-                </button>
-                <div className="w-[1px] h-3 bg-white/10 mx-1" />
-                <button
-                  onClick={toggleTheme}
-                  className="w-7 h-7 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all"
-                >
-                  {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-
-              <a
-                href="/r"
-                className="hidden sm:flex items-center justify-center px-6 py-2 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest italic hover:bg-white/90 transition-all"
-              >
-                {t.nav.cta}
-              </a>
-
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-1 text-white"
-              >
-                <motion.span 
-                  animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 3 : 0 }}
-                  className="w-5 h-[1.5px] bg-current rounded-full" 
-                />
-                <motion.span 
-                  animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -3 : 0 }}
-                  className="w-5 h-[1.5px] bg-current rounded-full" 
-                />
-              </button>
-            </div>
-
-            {/* Scroll Progress Line */}
-            <motion.div
-              className="absolute bottom-0 left-0 h-[1.5px] bg-white origin-left z-20"
-              style={{ scaleX: scrollYProgress, width: "100%" }}
-            />
+        {/* Logo / Name */}
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          className="flex items-center gap-2.5 shrink-0 select-none"
+        >
+          <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-        </div>
-      </motion.nav>
+          <span style={{ fontSize: 15, fontWeight: 600, color: "#F5F5F7", letterSpacing: "-0.01em" }}>
+            Thomas Eduardo
+          </span>
+        </a>
 
-      {/* Mobile Menu Overlay - Full Screen Minimal */}
+        {/* Desktop Center Links */}
+        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleSmoothScroll(e, `#${link.id}`)}
+              style={{ fontSize: 13, color: "#F5F5F7" }}
+              className="px-3 py-1.5 opacity-80 hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+
+        {/* Right Controls */}
+        <div className="flex items-center gap-2 ml-auto">
+          {/* Lang toggle – small pill */}
+          <button
+            onClick={() => setLang(lang === "pt" ? "en" : "pt")}
+            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200"
+            style={{ color: "rgba(245,245,247,0.6)", background: "rgba(255,255,255,0.06)" }}
+          >
+            {lang === "pt" ? "EN" : "PT"}
+          </button>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200"
+            style={{ color: "rgba(245,245,247,0.6)", background: "rgba(255,255,255,0.06)" }}
+          >
+            {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          </button>
+
+          {/* CTA Button */}
+          <a
+            href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
+            className="hidden sm:flex items-center transition-all duration-200"
+            style={{
+              fontSize: 13,
+              color: "#F5F5F7",
+              background: "rgba(255,255,255,0.1)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: 980,
+              padding: "7px 16px",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+          >
+            {lang === "pt" ? "Vamos Conversar" : "Let's Talk"}
+          </a>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden flex flex-col items-center justify-center w-10 h-10 gap-[5px]"
+            aria-label="Menu"
+          >
+            <motion.span
+              animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 6 : 0 }}
+              transition={{ duration: 0.25 }}
+              className="w-5 h-[1.5px] rounded-full"
+              style={{ background: "#F5F5F7" }}
+            />
+            <motion.span
+              animate={{ opacity: mobileMenuOpen ? 0 : 1 }}
+              transition={{ duration: 0.15 }}
+              className="w-5 h-[1.5px] rounded-full"
+              style={{ background: "#F5F5F7" }}
+            />
+            <motion.span
+              animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -6 : 0 }}
+              transition={{ duration: 0.25 }}
+              className="w-5 h-[1.5px] rounded-full"
+              style={{ background: "#F5F5F7" }}
+            />
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Full-Screen Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] bg-black/95 backdrop-blur-2xl md:hidden flex flex-col p-12 pt-32"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[998] flex flex-col items-center justify-center md:hidden"
+            style={{ background: "#0A0A0A" }}
           >
-            <button 
-              onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-10 right-10 text-white/40 hover:text-white text-xs font-mono uppercase tracking-[0.3em]"
-            >
-              Close
-            </button>
-
-            <div className="flex flex-col gap-8">
+            <nav className="flex flex-col items-center gap-8">
               {navLinks.map((link, i) => (
                 <motion.a
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
                   key={link.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ delay: i * 0.06, duration: 0.3 }}
                   href={`#${link.id}`}
-                  onClick={(e) => {
-                    handleSmoothScroll(e, `#${link.id}`);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="text-5xl font-black text-white uppercase italic tracking-tighter hover:text-white/40 transition-colors"
+                  onClick={(e) => { handleSmoothScroll(e, `#${link.id}`); setMobileMenuOpen(false); }}
+                  style={{ fontSize: 32, fontWeight: 600, color: "#F5F5F7" }}
+                  className="hover:opacity-60 transition-opacity"
                 >
                   {link.label}
                 </motion.a>
               ))}
-              
-              <motion.div 
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.5 }}
-                className="w-full h-[1px] bg-white/10 origin-left mt-8" 
-              />
-              
-              <motion.a
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                href="/r"
-                className="inline-flex items-center gap-4 text-white hover:gap-6 transition-all"
-              >
-                <span className="text-2xl font-bold uppercase italic tracking-widest">{t.nav.cta}</span>
-                <ArrowRight className="w-6 h-6" />
-              </motion.a>
-            </div>
+            </nav>
 
-            <div className="mt-auto flex justify-between items-center text-white/20 font-mono text-[9px] uppercase tracking-[0.4em]">
-              <span>© 2026 THOMAS EDUARDO</span>
-              <div className="flex gap-4">
-                <button onClick={() => setLang(lang === "pt" ? "en" : "pt")}>{lang.toUpperCase()}</button>
-                <button onClick={toggleTheme}>{theme.toUpperCase()}</button>
+            {/* Mobile CTA + controls */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              className="flex flex-col items-center gap-6 mt-12"
+            >
+              <a
+                href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
+                style={{
+                  fontSize: 15,
+                  fontWeight: 600,
+                  color: "#F5F5F7",
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 980,
+                  padding: "10px 28px",
+                }}
+              >
+                {lang === "pt" ? "Vamos Conversar" : "Let's Talk"}
+              </a>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setLang(lang === "pt" ? "en" : "pt")}
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "rgba(245,245,247,0.4)" }}
+                >
+                  {lang === "pt" ? "English" : "Português"}
+                </button>
+                <span style={{ color: "rgba(255,255,255,0.1)" }}>|</span>
+                <button
+                  onClick={toggleTheme}
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: "rgba(245,245,247,0.4)" }}
+                >
+                  {theme === "dark" ? "Light" : "Dark"}
+                </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -556,22 +589,26 @@ const AboutSection = () => {
                   {
                     title: "AWS re/Start",
                     issuer: "Amazon Web Services",
-                    logo: "https://cdn.simpleicons.org/amazonaws/white",
+                    logo: "https://logo.clearbit.com/aws.amazon.com",
+                    initials: "AWS",
                   },
                   {
                     title: "Cybersecurity",
                     issuer: "Cisco Systems",
-                    logo: "https://cdn.simpleicons.org/cisco/white",
+                    logo: "https://logo.clearbit.com/cisco.com",
+                    initials: "CS",
                   },
                   {
                     title: "API REST Expert",
                     issuer: "Ada Tech",
-                    logo: "https://ada-site-frontend.s3.sa-east-1.amazonaws.com/home/logo-ada.svg",
+                    logo: "https://logo.clearbit.com/ada.com.br",
+                    initials: "AT",
                   },
                   {
                     title: "UX Essentials",
                     issuer: "FIAP",
-                    logo: "https://www.fiap.com.br/wp-content/themes/fiap2016/images/logo-fiap.png",
+                    logo: "https://logo.clearbit.com/fiap.com.br",
+                    initials: "FI",
                   }
                 ].map((cert, i) => (
                   <motion.div 
@@ -579,10 +616,22 @@ const AboutSection = () => {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-6 group"
+                    className="flex items-center gap-3 group"
                   >
-                    <div className="w-14 h-14 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center p-3 group-hover:bg-white/[0.08] transition-all">
-                      <img src={cert.logo} alt={cert.issuer} className="w-full h-full object-contain filter grayscale brightness-0 invert group-hover:grayscale-0 group-hover:brightness-100 group-hover:invert-0 transition-all duration-500" />
+                    <div className="w-8 h-8 rounded-lg bg-white/[0.06] border border-white/10 flex items-center justify-center p-1.5 shrink-0 group-hover:bg-white/[0.1] transition-all">
+                      <img
+                        src={cert.logo}
+                        alt={cert.issuer}
+                        className="w-full h-full object-contain transition-all duration-300"
+                        style={{ filter: "grayscale(100%) brightness(1.5)" }}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          const fallback = document.createElement("span");
+                          target.replaceWith(fallback);
+                          fallback.textContent = cert.initials;
+                          fallback.className = "text-[11px] font-bold text-white";
+                        }}
+                      />
                     </div>
                     <div>
                       <h4 className="text-white font-bold text-sm tracking-tight">{cert.title}</h4>
@@ -1237,12 +1286,14 @@ const ExpertiseSection = () => {
 
 const TrajectorySection = () => {
   const { t, lang } = useLang();
+  const [logoErrors, setLogoErrors] = useState<Record<number, boolean>>({});
   const trajectoryItems = [
     {
       year: lang === "pt" ? "2023 / Atualmente" : "2023 / Present",
       title: "Full Stack Engineer",
       company: "Thomas Eduardo (Freelance)",
-      icon: <IconCodePremium className="w-6 h-6 text-white/60" />,
+      companyLogo: "https://logo.clearbit.com/github.com",
+      initials: "TE",
       desc: lang === "pt" ? "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e geração de valor." : "Focus on SaaS and Fintech. Developed 'Barber Shop on Autopilot' and 'Paper Contracts', focusing on automation and value generation.",
       color: "hover:border-white/10",
       glow: "bg-white/[0.02]"
@@ -1251,7 +1302,8 @@ const TrajectorySection = () => {
       year: "2023 / 2024",
       title: lang === "pt" ? "Suporte & Gestão" : "Support & Management",
       company: "CCAA",
-      icon: <IconStrategy className="w-5 h-5 text-white/60" />,
+      companyLogo: "https://logo.clearbit.com/ccaa.com.br",
+      initials: "CC",
       desc: lang === "pt" ? "Gestão operacional de matrículas e fluxos administrativos. Onde refinei meu entendimento sobre processos de negócio e UX." : "Operational management of enrollments and administrative workflows. Where I refined my understanding of business processes and UX.",
       color: "hover:border-white/10",
       glow: "bg-white/[0.02]"
@@ -1260,8 +1312,9 @@ const TrajectorySection = () => {
       year: "2021 / 2023",
       title: lang === "pt" ? "Operação & Vendas" : "Operation & Sales",
       company: "Lojas Renner",
+      companyLogo: "https://logo.clearbit.com/lojasrenner.com.br",
+      initials: "LR",
       desc: lang === "pt" ? "Trabalho em escala. Gestão de estoque e atendimento sob alta demanda em um dos maiores varejistas do país." : "Work at scale. Inventory management and customer service under high demand in one of the country's largest retailers.",
-      icon: <IconStrategy className="w-5 h-5 text-white/60" />,
       color: "hover:border-white/10",
       glow: "bg-white/[0.02]"
     },
@@ -1269,8 +1322,9 @@ const TrajectorySection = () => {
       year: lang === "pt" ? "Anterior" : "Previous",
       title: lang === "pt" ? "Logística & Fiscal" : "Logistics & Tax",
       company: "MRB Express",
+      companyLogo: "https://logo.clearbit.com/mrbexpress.com.br",
+      initials: "MR",
       desc: lang === "pt" ? "Raízes na eficiência operacional. Controle de frotas e prazos críticos. A base da minha mentalidade de 'zero atraso'." : "Roots in operational efficiency. Fleet control and critical deadlines. The foundation of my 'zero delay' mentality.",
-      icon: <IconCodePremium className="w-5 h-5 text-white/60" />,
       color: "hover:border-white/10",
       glow: "bg-white/[0.02]"
     }
@@ -1299,8 +1353,22 @@ const TrajectorySection = () => {
             <div className="absolute inset-x-0 bottom-0 h-[1px] bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             
             <div className="flex items-center justify-between mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                {item.icon}
+              <div
+                className="w-12 h-12 rounded-2xl bg-white/[0.06] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 overflow-hidden p-1.5"
+              >
+                {logoErrors[i] ? (
+                  <span className="text-[11px] font-bold text-white select-none">{item.initials}</span>
+                ) : (
+                  <img
+                    src={item.companyLogo}
+                    alt={item.company}
+                    className="w-full h-full object-contain transition-all duration-300"
+                    style={{ filter: "grayscale(100%) brightness(1.5)" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.filter = "grayscale(0)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.filter = "grayscale(100%) brightness(1.5)"; }}
+                    onError={() => setLogoErrors(prev => ({ ...prev, [i]: true }))}
+                  />
+                )}
               </div>
               <span className="font-mono text-[10px] uppercase font-bold tracking-widest bg-white/[0.02] px-3 py-1 rounded-full border border-white/5" style={{ color: '#6E6E73' }}>
                 {item.year}
@@ -1380,7 +1448,7 @@ const TechStackGrid = () => {
   ];
 
   return (
-    <section className="py-16 px-6 bg-(--pg-bg) relative overflow-hidden">
+    <section id="arsenal" className="py-16 px-6 bg-(--pg-bg) relative overflow-hidden">
       {/* Background Ornaments */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/[0.015] rounded-full blur-[140px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-white/[0.01] rounded-full blur-[120px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
