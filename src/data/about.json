@@ -1,0 +1,34 @@
+{
+  "certifications": [
+    {
+      "title": "Fundamentos do Hardware do Computador",
+      "issuer": "Cisco Networking Academy",
+      "logo": "/certificados/cisco-logo.png",
+      "initials": "Cisco",
+      "date": "mai de 2026",
+      "credentialId": "d3e193cb-2a12-4468-8210-6168e0a6fb29"
+    },
+    {
+      "title": "AWS re/Start Graduate",
+      "issuer": "Amazon Web Services (AWS)",
+      "logo": "/certificados/aws-logo.png",
+      "initials": "AWS",
+      "date": "jan de 2024"
+    },
+    {
+      "title": "User Experience (UX) Essentials",
+      "issuer": "FIAP",
+      "logo": "/certificados/fiap-logo.png",
+      "initials": "FIAP",
+      "date": "ago de 2024",
+      "credentialId": "9f1272cacb82231c0efd10298a4295bb"
+    },
+    {
+      "title": "API REST – Certificação prática",
+      "issuer": "Ada",
+      "logo": "/certificados/ada-logo.png",
+      "initials": "Ada",
+      "date": "2024"
+    }
+  ]
+}

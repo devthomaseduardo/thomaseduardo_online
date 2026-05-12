@@ -1,0 +1,214 @@
+[
+  {
+    "id": "reis-do-manto",
+    "title": "REIS DO MANTO",
+    "description": {
+      "pt": "E-commerce de alta performance para vestuário esportivo premium.",
+      "en": "High-performance e-commerce for premium sportswear."
+    },
+    "technologies": ["Next.js", "Stripe", "TailwindCSS"],
+    "problem": {
+      "pt": "Necessidade de um checkout ultra-rápido e interface que transmitisse exclusividade.",
+      "en": "Need for ultra-fast checkout and an interface conveying exclusivity."
+    },
+    "solution": {
+      "pt": "Arquitetura baseada em Next.js com otimização extrema de imagens e gateway Stripe.",
+      "en": "Next.js architecture with extreme image optimization and Stripe gateway."
+    },
+    "result": {
+      "pt": "Aumento de 50% na taxa de conversão no primeiro mês.",
+      "en": "50% increase in conversion rate in the first month."
+    },
+    "image": "/projetos/Landing Page  Color Waves.png",
+    "clientLogo": "/clientes/reis-do-manto.png",
+    "link": "https://reisdomanto.com.br"
+  },
+  {
+    "id": "bras-service",
+    "title": "BRAS SERVICE",
+    "description": {
+      "pt": "Landing page de alta conversão para serviços de manutenção industrial.",
+      "en": "High-conversion landing page for industrial maintenance services."
+    },
+    "technologies": ["React", "TailwindCSS", "Framer Motion"],
+    "problem": {
+      "pt": "Baixa taxa de conversão em leads qualificados no site antigo.",
+      "en": "Low conversion rate of qualified leads on the old site."
+    },
+    "solution": {
+      "pt": "Copy focado em autoridade e design industrial agressivo.",
+      "en": "Copy focused on authority and aggressive industrial design."
+    },
+    "result": {
+      "pt": "Aumento de 200% na geração de leads orgânicos.",
+      "en": "200% increase in organic lead generation."
+    },
+    "image": "/projetos/Landing Page  Bras Service.png",
+    "clientLogo": "/clientes/brasservice.jpg",
+    "link": "https://brasservice.com.br"
+  },
+  {
+    "id": "barbearia-piloto",
+    "title": "BARBEARIA NO PILOTO AUTOMÁTICO",
+    "description": {
+      "pt": "SaaS completo para gestão e agendamento automático de barbearias.",
+      "en": "Complete SaaS for automatic management and scheduling for barber shops."
+    },
+    "technologies": ["Next.js", "Prisma", "PostgreSQL"],
+    "problem": {
+      "pt": "Dono da barbearia perdia 3h por dia gerenciando horários manualmente.",
+      "en": "Barber shop owner lost 3h a day managing schedules manually."
+    },
+    "solution": {
+      "pt": "Sistema de agendamento self-service com confirmação via WhatsApp.",
+      "en": "Self-service scheduling system with WhatsApp confirmation."
+    },
+    "result": {
+      "pt": "Economia de 20h semanais e zero furos na agenda.",
+      "en": "Saving 20h weekly and zero schedule gaps."
+    },
+    "image": "/projetos/core.png",
+    "link": "https://barbearia-no-piloto-automatico.vercel.app/"
+  },
+  {
+    "id": "hazap",
+    "title": "HAZAP",
+    "description": {
+      "pt": "Plataforma de gestão de contratos e workflow jurídico.",
+      "en": "Contract management and legal workflow platform."
+    },
+    "technologies": ["Next.js", "Node.js", "PostgreSQL"],
+    "problem": {
+      "pt": "Processos manuais lentos na gestão de contratos complexos.",
+      "en": "Slow manual processes in managing complex contracts."
+    },
+    "solution": {
+      "pt": "Digitalização total do workflow com assinatura eletrônica integrada.",
+      "en": "Total digitization of workflow with integrated electronic signature."
+    },
+    "result": {
+      "pt": "Redução de 70% no tempo de fechamento de contratos.",
+      "en": "70% reduction in contract closing time."
+    },
+    "image": "/projetos/Landing Page Hazap.png",
+    "clientLogo": "/clientes/hazzap.jpg",
+    "link": "https://hazap.com.br"
+  },
+  {
+    "id": "spinmove",
+    "title": "SPINMOVE",
+    "description": {
+      "pt": "E-commerce de moda urbana com experiência de compra fluida.",
+      "en": "Urban fashion e-commerce with a fluid shopping experience."
+    },
+    "technologies": ["Next.js", "Stripe", "TailwindCSS"],
+    "problem": {
+      "pt": "Checkout complexo causava desistência de compra.",
+      "en": "Complex checkout caused purchase abandonment."
+    },
+    "solution": {
+      "pt": "Simplificação radical do fluxo de compra (One-click checkout).",
+      "en": "Radical simplification of the shopping flow (One-click checkout)."
+    },
+    "result": {
+      "pt": "Redução de 35% no abandono de carrinho.",
+      "en": "35% reduction in cart abandonment."
+    },
+    "image": "/projetos/Landing Page Spinmove.png",
+    "clientLogo": "/clientes/spinmove.jpg",
+    "link": "https://spinmove.com.br"
+  },
+  {
+    "id": "casa-lellit",
+    "title": "CASA LELLIT",
+    "description": {
+      "pt": "E-commerce premium de decoração e mobiliário.",
+      "en": "Premium home decor and furniture e-commerce."
+    },
+    "technologies": ["Next.js", "Stripe", "TailwindCSS"],
+    "problem": {
+      "pt": "Necessidade de uma plataforma que suportasse alto volume de vendas com design de luxo.",
+      "en": "Need for a platform supporting high sales volume with luxury design."
+    },
+    "solution": {
+      "pt": "Interface minimalista e checkout otimizado.",
+      "en": "Minimalist interface and optimized checkout."
+    },
+    "result": {
+      "pt": "Aumento de 40% nas vendas recorrentes.",
+      "en": "40% increase in recurring sales."
+    },
+    "image": "/projetos/site casa lellit.png",
+    "clientLogo": "/clientes/casalellit.jpg",
+    "link": "https://casalellit.com.br"
+  },
+  {
+    "id": "yazigi",
+    "title": "YÁZIGI SWISS PARK",
+    "description": {
+      "pt": "Portal educacional para unidade franqueada de escola de idiomas.",
+      "en": "Educational portal for a language school franchise unit."
+    },
+    "technologies": ["React", "Node.js", "MongoDB"],
+    "problem": {
+      "pt": "Falta de centralização de informações para alunos e responsáveis.",
+      "en": "Lack of centralized information for students and guardians."
+    },
+    "solution": {
+      "pt": "Área logada para acompanhamento de progresso pedagógico.",
+      "en": "Logged-in area for monitoring pedagogical progress."
+    },
+    "result": {
+      "pt": "Melhoria de 60% na satisfação dos pais e alunos.",
+      "en": "60% improvement in parent and student satisfaction."
+    },
+    "image": "/projetos/Landing Page Yázigi Swiss Park.png",
+    "clientLogo": "/clientes/yazigi.png",
+    "link": "https://yazigiswisspark.com.br"
+  },
+  {
+    "id": "grund-zero",
+    "title": "GRUND ZERO",
+    "description": {
+      "pt": "Landing page tática para assessoria esportiva.",
+      "en": "Tactical landing page for sports consultancy."
+    },
+    "technologies": ["React", "Framer Motion", "TailwindCSS"],
+    "problem": {
+      "pt": "Necessidade de captar alunos de forma agressiva e direta.",
+      "en": "Need to capture students aggressively and directly."
+    },
+    "solution": {
+      "pt": "Design escuro com foco em CTAs de alta visibilidade.",
+      "en": "Dark design with a focus on high-visibility CTAs."
+    },
+    "result": {
+      "pt": "Taxa de conversão de leads superior a 15%.",
+      "en": "Lead conversion rate exceeding 15%."
+    },
+    "image": "/projetos/Landing Page Grund Zero.png",
+    "clientLogo": "/clientes/gz-team.png"
+  },
+  {
+    "id": "gravura-estudio",
+    "title": "GRAVURA ESTÚDIO",
+    "description": {
+      "pt": "Portfólio de alto nível para estúdio de design e branding.",
+      "en": "High-level portfolio for a design and branding studio."
+    },
+    "technologies": ["React", "Framer Motion", "TailwindCSS"],
+    "problem": {
+      "pt": "Interface genérica que não refletia a criatividade do estúdio.",
+      "en": "Generic interface that didn't reflect the studio's creativity."
+    },
+    "solution": {
+      "pt": "Uso intenso de micro-interações e tipografia arrojada.",
+      "en": "Intense use of micro-interactions and bold typography."
+    },
+    "result": {
+      "pt": "Aumento de 80% no tempo de permanência no site.",
+      "en": "80% increase in time spent on the site."
+    },
+    "image": "/projetos/GRAVURA Estúdio.png"
+  }
+]

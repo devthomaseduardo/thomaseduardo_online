@@ -1,0 +1,72 @@
+[
+  {
+    "year": {
+      "pt": "2023 / Atualmente",
+      "en": "2023 / Present"
+    },
+    "title": {
+      "pt": "Full Stack Engineer",
+      "en": "Full Stack Engineer"
+    },
+    "company": "Thomas Eduardo (Freelance)",
+    "companyLogo": "https://logo.clearbit.com/github.com",
+    "initials": "TE",
+    "desc": {
+      "pt": "Foco em SaaS e Fintech. Desenvolvi o 'Barbearia no Piloto Automático' e o 'Paper Contracts', focando em automação e geração de valor.",
+      "en": "Focus on SaaS and Fintech. Developed 'Barber Shop on Autopilot' and 'Paper Contracts', focusing on automation and value generation."
+    },
+    "color": "hover:border-white/10",
+    "glow": "bg-white/[0.02]"
+  },
+  {
+    "year": "2023 / 2024",
+    "title": {
+      "pt": "Suporte & Gestão",
+      "en": "Support & Management"
+    },
+    "company": "CCAA",
+    "companyLogo": "https://logo.clearbit.com/ccaa.com.br",
+    "initials": "CC",
+    "desc": {
+      "pt": "Gestão operacional de matrículas e fluxos administrativos. Onde refinei meu entendimento sobre processos de negócio e UX.",
+      "en": "Operational management of enrollments and administrative workflows. Where I refined my understanding of business processes and UX."
+    },
+    "color": "hover:border-white/10",
+    "glow": "bg-white/[0.02]"
+  },
+  {
+    "year": "2021 / 2023",
+    "title": {
+      "pt": "Operação & Vendas",
+      "en": "Operation & Sales"
+    },
+    "company": "Lojas Renner",
+    "companyLogo": "https://logo.clearbit.com/lojasrenner.com.br",
+    "initials": "LR",
+    "desc": {
+      "pt": "Trabalho em escala. Gestão de estoque e atendimento sob alta demanda em um dos maiores varejistas do país.",
+      "en": "Work at scale. Inventory management and customer service under high demand in one of the country's largest retailers."
+    },
+    "color": "hover:border-white/10",
+    "glow": "bg-white/[0.02]"
+  },
+  {
+    "year": {
+      "pt": "Anterior",
+      "en": "Previous"
+    },
+    "title": {
+      "pt": "Logística & Fiscal",
+      "en": "Logistics & Tax"
+    },
+    "company": "MRB Express",
+    "companyLogo": "https://logo.clearbit.com/mrbexpress.com.br",
+    "initials": "MR",
+    "desc": {
+      "pt": "Raízes na eficiência operacional. Controle de frotas e prazos críticos. A base da minha mentalidade de 'zero atraso'.",
+      "en": "Roots in operational efficiency. Fleet control and critical deadlines. The foundation of my 'zero delay' mentality."
+    },
+    "color": "hover:border-white/10",
+    "glow": "bg-white/[0.02]"
+  }
+]
