@@ -45,7 +45,7 @@ const translations = {
       certifications: "Certificações",
       os: "Sistemas Operacionais",
       statusLabel: "Status Atual",
-      statusValue: "Engenheiro Fullstack Senior & Product Leader",
+      statusValue: "Engenheiro Fullstack",
     },
     bento: {
       eyebrow: "Metodologia",
@@ -191,7 +191,7 @@ const translations = {
       certifications: "Certifications",
       os: "Operating Systems",
       statusLabel: "Current Status",
-      statusValue: "Senior Fullstack Engineer & Product Leader",
+      statusValue: "Fullstack Engineer",
     },
     bento: {
       eyebrow: "Methodology",
