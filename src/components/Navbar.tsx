@@ -6,14 +6,13 @@ import { handleSmoothScroll } from "../utils/scroll";
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { lang, setLang } = useLang();
+  const { lang, setLang, t } = useLang();
 
   const navLinks = [
-    { label: lang === "pt" ? "Trabalhos" : "Work", id: "cases" },
-    { label: lang === "pt" ? "Serviços" : "Services", id: "expertise" },
-    { label: lang === "pt" ? "Processo" : "Process", id: "metodologia" },
-    { label: lang === "pt" ? "Arsenal" : "Arsenal", id: "arsenal" },
-    { label: lang === "pt" ? "Jornada" : "Journey", id: "trajetoria" },
+    { label: t.nav.about, id: "sobre" },
+    { label: t.nav.methodology, id: "metodologia" },
+    { label: t.nav.cases, id: "cases" },
+    { label: t.nav.lab, id: "lab" },
   ];
 
   useEffect(() => {
@@ -89,7 +88,7 @@ const Navbar = () => {
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
           >
-            {lang === "pt" ? "Vamos Conversar" : "Let's Talk"}
+            {t.nav.cta}
           </a>
 
           <button
@@ -165,7 +164,7 @@ const Navbar = () => {
                   padding: "10px 28px",
                 }}
               >
-                {lang === "pt" ? "Vamos Conversar" : "Let's Talk"}
+                {t.nav.cta}
               </a>
               <div className="flex items-center gap-4">
                 <button

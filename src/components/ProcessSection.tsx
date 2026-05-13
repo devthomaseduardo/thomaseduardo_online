@@ -7,16 +7,17 @@ import TextReveal from './TextReveal';
 export const ProcessSection = () => {
   const { t } = useLang();
   return (
-    <section id="metodologia" className="py-16 overflow-hidden">
-      <div className="max-w-full mx-auto px-6 md:px-12">
-        <motion.div {...FADE_UP} className="mb-10 text-center">
-          <span className="text-white/40 font-mono text-[10px] uppercase font-medium tracking-[0.4em] mb-4 block">{t.process.eyebrow}</span>
-          <h2 className="text-4xl md:text-6xl font-bold tracking-tighter leading-[1.1] py-2 text-white">
-            <TextReveal>{t.process.h2a}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{t.process.h2b}</TextReveal></span>
+    <section id="processo" className="section-padding bg-pg-bg overflow-hidden border-t border-white/5">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div {...FADE_UP} className="mb-16">
+          <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">{t.process.eyebrow}</span>
+          <h2 className="text-[clamp(32px,5vw,80px)] font-medium tracking-tighter leading-[1.1] text-white">
+            <TextReveal>{t.process.h2a}</TextReveal> <br className="hidden sm:block" />
+            <span className="text-white/40"><TextReveal delay={0.2}>{t.process.h2b}</TextReveal></span>
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="flex flex-col space-y-0">
           {t.process.steps.map((item, i) => (
             <motion.div 
               key={item.step}
@@ -25,11 +26,13 @@ export const ProcessSection = () => {
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ ...SMOOTH_TRANSITION, delay: i * 0.1 }}
-              className="p-6 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all relative group"
+              className="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-6 md:gap-16 border-t border-white/5 pt-12 pb-12 md:pt-16 md:pb-16 group"
             >
-              <span className="text-3xl font-display font-black text-white/5 block mb-4 group-hover:text-white/20 transition-colors">{item.step}</span>
-              <h3 className="text-xl font-semibold mb-4 text-white tracking-tight">{item.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+              <span className="text-sm font-mono text-white/30 uppercase tracking-widest block">{item.step}</span>
+              <div>
+                <h3 className="text-3xl md:text-5xl font-medium mb-6 text-white tracking-tight">{item.title}</h3>
+                <p className="text-xl md:text-2xl text-white/60 font-light leading-relaxed max-w-2xl">{item.desc}</p>
+              </div>
             </motion.div>
           ))}
         </div>

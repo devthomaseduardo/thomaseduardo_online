@@ -19,6 +19,7 @@ import { ProcessSection } from "./components/ProcessSection";
 import { DifferentiatorsSection } from "./components/DifferentiatorsSection";
 import { FAQSection } from "./components/FAQSection";
 import { ContactSection } from "./components/ContactSection";
+import { EngineeringLab } from "./components/EngineeringLab";
 import { Footer } from "./components/Footer";
 
 // Pages
@@ -33,16 +34,11 @@ const Home = () => {
       <main>
         <Hero />
         <AboutSection />
-        <GlobalStats />
         <SocialProof />
         <BentoGrid />
         <ProjectSection />
-        <ExpertiseSection />
-        <TechStackGrid />
-        <TrajectorySection />
+        <EngineeringLab />
         <ProcessSection />
-        <DifferentiatorsSection />
-        <FAQSection />
         <ContactSection />
       </main>
       <Footer />

@@ -9,104 +9,91 @@ const AboutSection = () => {
   const { t } = useLang();
 
   return (
-    <section id="sobre" className="relative py-16 px-6 flex items-center justify-center overflow-hidden">
-      <div className="max-w-full mx-auto relative z-10 w-full px-6 md:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+    <section id="sobre" className="relative section-padding px-6 flex items-center justify-center overflow-hidden bg-pg-bg border-t border-white/5">
+      <div className="max-w-7xl mx-auto relative z-10 w-full px-6">
+        <div className="grid lg:grid-cols-2 gap-24 items-start">
           {/* Text Column */}
           <motion.div {...FADE_UP} className="max-w-2xl">
-            <span className="text-white/30 font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-6 block">
+            <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">
               {t.about.eyebrow}
             </span>
-            <h2 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tighter leading-[1.1] text-white">
-              <TextReveal>{t.about.h2a}</TextReveal> <br />
-              <TextReveal delay={0.2}>{t.about.h2b}</TextReveal>
+            <h2 className="text-[clamp(32px,4vw,64px)] font-medium mb-10 tracking-tighter leading-[1.1] text-white">
+              <TextReveal>{t.about.h2a}</TextReveal> <br className="hidden sm:block" />
+              <span className="text-white/40"><TextReveal delay={0.2}>{t.about.h2b}</TextReveal></span>
             </h2>
             
-            <div className="space-y-6 text-gray-400 text-lg md:text-xl leading-tight font-medium">
-              <p>{t.about.p1}</p>
-              <p>
-                {t.about.p2a}{" "}
-                <span className="text-white font-bold italic underline decoration-white/20 underline-offset-8">
-                  {t.about.p2bold1}
-                </span>{" "}
-                {t.about.p2mid}{" "}
-                <span className="text-white font-bold italic underline decoration-white/20 underline-offset-8">
-                  {t.about.p2bold2}
-                </span>{" "}
-                {t.about.p2end}
-              </p>
-              <p>{t.about.p3}</p>
-            </div>
+            <p className="text-xl md:text-2xl text-white/70 leading-relaxed font-light mb-12">
+              {t.about.p1}
+            </p>
 
-            <div className="mt-10 flex items-center gap-4">
-              <div className="w-12 h-[1px] bg-white/20" />
-              <span className="text-[11px] font-bold text-white/40 uppercase tracking-[0.3em]">
-                Thomas Eduardo · {t.about.statusValue}
-              </span>
+            <div className="flex flex-wrap gap-4">
+              {t.about.tags.map((tag, idx) => (
+                <motion.span
+                  key={tag}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="px-6 py-3 rounded-none border border-white/10 bg-white/[0.02] text-xs font-mono text-white/60 uppercase tracking-widest backdrop-blur-md"
+                >
+                  {tag}
+                </motion.span>
+              ))}
             </div>
           </motion.div>
 
-          {/* Certifications Column - NO BOXES */}
+          {/* Certifications & Infra Column */}
           <div className="lg:pt-12 space-y-16">
             <div>
-              <span className="text-white/20 font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-10 block">
+              <span className="text-white/30 font-mono text-xs uppercase font-medium tracking-widest mb-10 block">
                 {t.about.certifications}
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-14">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12">
                 {aboutData.certifications.map((cert, idx) => (
                   <motion.div
                     key={cert.title}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.8 }}
-                    className="group"
+                    className="group flex items-start gap-5"
                   >
-                    <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center group-hover:border-white/20 transition-colors duration-500 overflow-hidden relative">
-                        {cert.logo ? (
-                          <img 
-                            src={cert.logo} 
-                            alt={cert.issuer} 
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                          />
-                        ) : (
-                          <span className="text-xs font-bold text-white/20">{cert.initials}</span>
-                        )}
-                        {/* Subtle inner glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white/90 tracking-tight group-hover:text-white transition-colors">
-                          {cert.title}
-                        </h4>
-                        <div className="flex flex-col gap-0.5">
-                          <p className="text-[10px] font-medium text-white/30 uppercase tracking-wider">
-                            {cert.issuer}
-                          </p>
-                          {cert.date && (
-                            <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest">
-                              {cert.date}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                    <div className="w-12 h-12 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-center overflow-hidden shrink-0">
+                      {cert.logo ? (
+                        <img 
+                          src={cert.logo} 
+                          alt={cert.issuer} 
+                          className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                        />
+                      ) : (
+                        <span className="text-xs font-bold text-white/20">{cert.initials}</span>
+                      )}
+                    </div>
+                    <div className="space-y-1.5 pt-0.5">
+                      <h4 className="text-sm font-medium text-white/80 tracking-tight group-hover:text-white transition-colors">
+                        {cert.title}
+                      </h4>
+                      <p className="text-[11px] font-mono text-white/40 uppercase tracking-wider">
+                        {cert.issuer}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </div>
 
-            {/* Operating Systems */}
-            <div className="pt-8 border-t border-white/5">
-              <span className="text-white/20 font-mono text-[10px] uppercase font-bold tracking-[0.5em] mb-8 block">
-                {t.about.os}
+            {/* Operating Systems & Cloud -> Infraestrutura Base */}
+            <div className="pt-10 border-t border-white/5">
+              <span className="text-white/30 font-mono text-xs uppercase font-medium tracking-widest mb-8 block">
+                Infraestrutura & Cloud
               </span>
               <div className="flex flex-wrap gap-4">
                 {[
                   { name: "Linux", logo: "https://cdn.simpleicons.org/linux/white" },
-                  { name: "Ubuntu", logo: "https://cdn.simpleicons.org/ubuntu/white" },
-                  { name: "Windows", logo: "https://cdn.simpleicons.org/windows/white" }
+                  { name: "Docker", logo: "https://cdn.simpleicons.org/docker/white" },
+                  { name: "AWS", logo: "https://cdn.simpleicons.org/amazonaws/white" },
+                  { name: "CI/CD", logo: "https://cdn.simpleicons.org/githubactions/white" },
+                  { name: "Ubuntu", logo: "https://cdn.simpleicons.org/ubuntu/white" }
                 ].map((os, idx) => (
                   <motion.div
                     key={os.name}
@@ -114,14 +101,14 @@ const AboutSection = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.8 }}
-                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] hover:border-white/10 transition-colors group"
+                    className="flex items-center gap-3 px-5 py-2.5 rounded-none bg-white/[0.02] border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
                   >
                     <img 
                       src={os.logo} 
                       alt={os.name} 
-                      className="w-5 h-5 object-contain opacity-50 group-hover:opacity-100 transition-opacity" 
+                      className="w-4 h-4 object-contain opacity-50" 
                     />
-                    <span className="text-xs font-medium text-white/50 group-hover:text-white/90 tracking-wide uppercase">
+                    <span className="text-[11px] font-mono font-medium text-white/60 tracking-widest uppercase">
                       {os.name}
                     </span>
                   </motion.div>

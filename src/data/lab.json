@@ -1,0 +1,30 @@
+[
+  {
+    "id": "saas-multi-tenant",
+    "title": "SaaS Multi-tenant Architecture",
+    "desc_pt": "Arquitetura completa com organizações, permissões granulares (RBAC) e faturamento integrado via Stripe.",
+    "desc_en": "Complete architecture with organizations, granular permissions (RBAC), and integrated billing via Stripe.",
+    "tags": ["RBAC", "Stripe", "PostgreSQL", "Next.js"]
+  },
+  {
+    "id": "realtime-engine",
+    "title": "Realtime Dashboard Engine",
+    "desc_pt": "Motor de eventos em tempo real usando WebSockets e filas de processamento para baixa latência.",
+    "desc_en": "Real-time event engine using WebSockets and processing queues for low latency.",
+    "tags": ["Socket.io", "Redis", "Queues", "Node.js"]
+  },
+  {
+    "id": "microservices-auth",
+    "title": "Distributed Auth Service",
+    "desc_pt": "Serviço de autenticação desacoplado rodando em contêineres Docker com comunicação via gRPC/Message Broker.",
+    "desc_en": "Decoupled authentication service running in Docker containers with communication via gRPC/Message Broker.",
+    "tags": ["Docker", "Microservices", "gRPC", "Auth"]
+  },
+  {
+    "id": "automation-bot",
+    "title": "Telegram Operational Bot",
+    "desc_pt": "Automação de workflows operacionais via bot, integrando logs de sistema e alertas de infraestrutura.",
+    "desc_en": "Operational workflow automation via bot, integrating system logs and infrastructure alerts.",
+    "tags": ["Automation", "Bots", "Logs", "Alerting"]
+  }
+]
