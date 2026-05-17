@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
-import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
+import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 
 const Hero = () => {
   const { t } = useLang();
@@ -11,7 +11,7 @@ const Hero = () => {
     <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-pg-bg">
       <div className="container-apple relative z-10 flex flex-col items-start justify-center max-w-5xl">
         <motion.div
-          {...FADE_UP}
+          {...HERO_FADE_UP}
           className="mb-8"
         >
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase">
@@ -20,7 +20,7 @@ const Hero = () => {
         </motion.div>
 
         <motion.h1 
-          {...FADE_UP}
+          {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
           className="text-[clamp(40px,7vw,110px)] font-medium tracking-tighter leading-[1.05] text-white pb-6"
         >
@@ -29,7 +29,7 @@ const Hero = () => {
         </motion.h1>
 
         <motion.p
-          {...FADE_UP}
+          {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.2 }}
           className="text-white/60 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mt-4"
         >
@@ -37,7 +37,7 @@ const Hero = () => {
         </motion.p>
 
         <motion.div
-          {...FADE_UP}
+          {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center gap-6 mt-16"
         >

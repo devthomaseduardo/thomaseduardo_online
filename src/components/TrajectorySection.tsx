@@ -52,7 +52,7 @@ export const TrajectorySection = () => {
   ];
 
   return (
-    <section id="trajetoria" className="relative py-16 px-6 md:px-12 max-w-full mx-auto overflow-hidden bg-(--pg-bg)">
+    <section id="trajetoria" className="relative py-10 px-6 md:px-12 max-w-full mx-auto overflow-hidden bg-(--pg-bg)">
       <motion.div {...FADE_UP} className="mb-10 relative z-10">
         <span className="label-caps mb-4 block">{t.trajectory.eyebrow}</span>
         <h2 className="text-3xl md:text-[5rem] font-bold mb-4 tracking-tighter leading-[1.1] py-2 text-white">

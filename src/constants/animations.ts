@@ -1,37 +1,43 @@
-export const CUBIC_BEZIER = [0.25, 1, 0.5, 1]; // Fast ease out
+export const CUBIC_BEZIER = [0.16, 1, 0.3, 1]; // Premium snappy Apple cubic bezier
 
 export const SMOOTH_TRANSITION = {
-  duration: 0.4,
+  duration: 0.25,
   ease: CUBIC_BEZIER,
 };
 
 export const FADE_UP_VARIANT = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 6 },
   visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.4, ease: CUBIC_BEZIER }
+    transition: { duration: 0.25, ease: CUBIC_BEZIER }
   },
 };
 
 export const SCALE_IN = {
-  hidden: { opacity: 0, scale: 0.96 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: CUBIC_BEZIER } },
+  hidden: { opacity: 0, scale: 0.98 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.25, ease: CUBIC_BEZIER } },
 };
 
 export const SLIDE_LEFT = {
-  hidden: { opacity: 0, x: -15 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: CUBIC_BEZIER } },
+  hidden: { opacity: 0, x: -6 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: CUBIC_BEZIER } },
 };
 
 export const STAGGER = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.03, delayChildren: 0.05 } },
 };
 
 export const FADE_UP = {
   initial: "hidden",
   whileInView: "visible",
-  viewport: { once: true, margin: "-40px" },
+  viewport: { once: true, margin: "0px" },
+  variants: FADE_UP_VARIANT,
+};
+
+export const HERO_FADE_UP = {
+  initial: "hidden",
+  animate: "visible",
   variants: FADE_UP_VARIANT,
 };

@@ -30,7 +30,7 @@ const ExpertiseSection = () => {
   ];
 
   return (
-    <section id="expertise" className="py-16 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
+    <section id="expertise" className="relative py-10 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
       <motion.div {...FADE_UP} className="mb-10">
         <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tighter leading-tight py-2 text-white">
           <TextReveal>{t.expertise.h2a}</TextReveal>{" "}

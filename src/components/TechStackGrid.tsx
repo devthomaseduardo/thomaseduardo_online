@@ -64,7 +64,7 @@ const TechStackGrid = () => {
   ];
 
   return (
-    <section id="arsenal" className="py-20 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg) relative overflow-hidden">
+    <section id="arsenal" className="py-10 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg) relative overflow-hidden">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.015] rounded-full blur-[140px] pointer-events-none" />
 
       <motion.div {...FADE_UP} className="mb-14 relative z-10">

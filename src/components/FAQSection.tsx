@@ -22,7 +22,7 @@ export const FAQSection = () => {
   ];
 
   return (
-    <section className="py-16 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
+    <section className="relative py-10 px-6 md:px-12 max-w-full mx-auto bg-(--pg-bg)">
       <motion.div {...FADE_UP} className="mb-10 text-center">
         <h2 className="text-3xl md:text-5xl font-bold tracking-tighter leading-[1.1] py-2 text-white">
           <TextReveal>{t.faq.h2a}</TextReveal> <span className="text-white/50"><TextReveal delay={0.2}>{t.faq.h2b}</TextReveal></span>

@@ -9,7 +9,7 @@ export const DifferentiatorsSection = () => {
   const icons = [<IconSaaS className="w-8 h-8" />, <IconPerformance className="w-8 h-8" />, <IconProduct className="w-8 h-8" />];
   
   return (
-    <section className="py-16 px-6">
+    <section className="py-10 px-6">
       <div className="max-w-full mx-auto px-6 md:px-12 grid lg:grid-cols-3 gap-8">
         {t.differentiators.items.map((item, i) => (
           <motion.div 

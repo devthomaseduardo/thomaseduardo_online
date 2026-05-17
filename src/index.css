@@ -41,10 +41,10 @@
   --pg-scrollthumb: rgba(255,255,255,0.10);
 
   /* Section Spacing Variables */
-  --section-spacing: 6rem;
-  --section-spacing-lg: 8rem;
-  --content-spacing: 1.5rem;
-  --grid-gap: 1.5rem;
+  --section-spacing: 3.5rem;
+  --section-spacing-lg: 4.5rem;
+  --content-spacing: 1.25rem;
+  --grid-gap: 1.25rem;
 }
 
 /* ─── BASE ──────────────────────────────────────────────── */
