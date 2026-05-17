@@ -11,7 +11,7 @@ const AboutSection = () => {
   return (
     <section id="sobre" className="relative section-padding px-6 flex items-center justify-center overflow-hidden bg-pg-bg border-t border-white/5">
       <div className="max-w-7xl mx-auto relative z-10 w-full px-6">
-        <div className="grid lg:grid-cols-2 gap-24 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           {/* Text Column */}
           <motion.div {...FADE_UP} className="max-w-2xl">
             <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">

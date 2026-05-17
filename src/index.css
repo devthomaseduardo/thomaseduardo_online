@@ -8,6 +8,22 @@
 
   --color-brand-blue: #2563EB;
   --color-brand-cyan: #06B6D4;
+
+  /* Tailwind v4 CSS Theme Color Maps */
+  --color-pg-bg: var(--pg-bg);
+  --color-pg-bg-alt: var(--pg-bg-alt);
+  --color-pg-surface: var(--pg-surface);
+  --color-pg-surface-md: var(--pg-surface-md);
+  --color-pg-border: var(--pg-border);
+  --color-pg-border-md: var(--pg-border-md);
+  --color-pg-separator: var(--pg-separator);
+  --color-pg-text: var(--pg-text);
+  --color-pg-text-sec: var(--pg-text-sec);
+  --color-pg-muted: var(--pg-muted);
+  --color-pg-subtle: var(--pg-subtle);
+  --color-pg-faint: var(--pg-faint);
+  --color-pg-card-bg: var(--pg-card-bg);
+  --color-pg-card-border: var(--pg-card-border);
 }
 
 /* ─── THEME VARIABLES (Strict Dark Only) ─────────────────── */

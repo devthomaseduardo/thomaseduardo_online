@@ -111,7 +111,7 @@ const Shop = () => {
 
               <div className="flex flex-col lg:grid lg:grid-cols-12 max-h-[90vh] overflow-y-auto lg:overflow-hidden">
                 {/* Image Gallery Side */}
-                <div className="lg:col-span-7 bg-black/40 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/5">
+                <div className="lg:col-span-7 bg-black/40 pt-20 pb-8 px-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/5">
                   <div className="aspect-[4/5] overflow-hidden border border-white/5 bg-black relative mb-8 rounded-xl">
                     <AnimatePresence mode="wait">
                       <motion.img 

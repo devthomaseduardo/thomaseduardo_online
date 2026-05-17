@@ -39,7 +39,7 @@ const Hero = () => {
         <motion.div
           {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center gap-6 mt-16"
+          className="flex flex-col sm:flex-row items-center gap-6 mt-16 w-full sm:w-auto"
         >
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de conversar sobre a minha operação.")}`}

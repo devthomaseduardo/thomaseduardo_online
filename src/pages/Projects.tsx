@@ -66,11 +66,11 @@ const ProjectsPage = () => {
         {/* Filter Tabs */}
         <motion.div 
           {...FADE_UP} 
-          className="flex flex-wrap gap-2 mb-20 p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl w-max max-w-full backdrop-blur-md"
+          className="flex overflow-x-auto no-scrollbar flex-nowrap md:flex-wrap gap-2 mb-20 p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl w-max max-w-full backdrop-blur-md"
         >
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer shrink-0 ${
               activeTab === "all"
                 ? "bg-white text-black font-bold shadow-lg"
                 : "text-white/55 hover:text-white hover:bg-white/[0.03]"
@@ -82,7 +82,7 @@ const ProjectsPage = () => {
           
           <button
             onClick={() => setActiveTab("operational")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer shrink-0 ${
               activeTab === "operational"
                 ? "bg-white text-black font-bold shadow-lg"
                 : "text-white/55 hover:text-white hover:bg-white/[0.03]"
@@ -94,7 +94,7 @@ const ProjectsPage = () => {
           
           <button
             onClick={() => setActiveTab("infra")}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer shrink-0 ${
               activeTab === "infra"
                 ? "bg-white text-black font-bold shadow-lg"
                 : "text-white/55 hover:text-white hover:bg-white/[0.03]"

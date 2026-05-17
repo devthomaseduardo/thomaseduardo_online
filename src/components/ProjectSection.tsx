@@ -167,7 +167,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
           {/* 1. NOTEBOOK (MacBook-style CSS Mockup) - occupies progressive safe widths */}
           <div className="w-[82%] sm:w-[84%] lg:w-[86%] relative transition-all duration-500 group-hover:translate-x-[-1%] group-hover:scale-[1.01]">
             {/* MacBook Top Bezel */}
-            <div className="w-full aspect-[16/10] bg-neutral-900 border-[8px] md:border-[12px] border-neutral-950 rounded-t-2xl shadow-2xl relative overflow-hidden flex flex-col justify-start">
+            <div className="w-full bg-neutral-900 border-[8px] md:border-[12px] border-neutral-950 rounded-t-2xl shadow-2xl relative overflow-hidden flex flex-col justify-start">
               {/* Web Camera dot */}
               <div className="absolute top-1 md:top-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-neutral-800 rounded-full z-30" />
               
@@ -189,7 +189,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               </div>
 
               {/* Screen Viewport */}
-              <div ref={containerRef} className="w-full flex-1 bg-neutral-950 overflow-hidden relative">
+              <div ref={containerRef} className="w-full aspect-[16/10] bg-neutral-950 overflow-hidden relative">
                 {isLiveLink ? (
                   <iframe 
                     src={project.link} 
