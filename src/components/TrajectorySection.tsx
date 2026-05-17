@@ -84,9 +84,6 @@ export const TrajectorySection = () => {
                     src={item.companyLogo}
                     alt={item.company}
                     className="w-full h-full object-contain transition-all duration-300"
-                    style={{ filter: "grayscale(100%) brightness(1.5)" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.filter = "grayscale(0)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.filter = "grayscale(100%) brightness(1.5)"; }}
                     onError={() => setLogoErrors(prev => ({ ...prev, [i]: true }))}
                   />
                 )}

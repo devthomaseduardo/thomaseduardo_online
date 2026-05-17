@@ -26,6 +26,7 @@ import { Footer } from "./components/Footer";
 import LinkBio from "./pages/LinkBio";
 import Redirect from "./pages/RedirectPage";
 import Shop from "./pages/Shop";
+import Projects from "./pages/Projects";
 
 const Home = () => {
   return (
@@ -55,6 +56,8 @@ function App() {
           <Route path="/links" element={<LinkBio />} />
           <Route path="/r" element={<Redirect />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/cases" element={<Projects />} />
+          <Route path="/projetos" element={<Projects />} />
         </Routes>
       </Router>
     </LangProvider>

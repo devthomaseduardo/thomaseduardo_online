@@ -24,7 +24,7 @@ const SocialProof = () => {
           {t.socialProof.eyebrow}
         </motion.span>
         
-        <div className="relative w-full flex overflow-hidden mask-edges grayscale opacity-60 hover:opacity-100 transition-opacity duration-700">
+        <div className="relative w-full flex overflow-hidden mask-edges opacity-90 transition-opacity duration-700">
           <div className="flex w-max animate-marquee gap-12 md:gap-24">
             {logos.concat(logos).concat(logos).map((logo, i) => (
               <div 

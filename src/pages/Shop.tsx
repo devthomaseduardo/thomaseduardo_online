@@ -44,7 +44,7 @@ const Shop = () => {
         </motion.div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-white/5 border border-white/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
           {STORE_PRODUCTS.map((product, i) => (
             <motion.div
               key={product.id}
@@ -57,11 +57,11 @@ const Shop = () => {
               }}
               className="group cursor-pointer bg-pg-bg p-8 relative overflow-hidden transition-all duration-500 hover:bg-white/[0.02]"
             >
-              <div className="aspect-[4/5] w-full mb-8 overflow-hidden bg-black relative border border-white/5">
+              <div className="aspect-[4/5] w-full mb-8 overflow-hidden bg-black relative border border-white/5 rounded-xl">
                 <img 
                   src={product.image} 
                   alt={product.title} 
-                  className="w-full h-full object-cover grayscale opacity-70 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
                   onError={(e) => { e.currentTarget.src = `https://placehold.co/400x500/0A0A0A/FFFFFF?text=${product.title}`; }}
                 />
               </div>
@@ -99,12 +99,12 @@ const Shop = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="relative w-full max-w-6xl bg-pg-bg border border-white/10 overflow-hidden shadow-2xl"
+              className="relative w-full max-w-6xl bg-pg-bg border border-white/10 overflow-hidden shadow-2xl rounded-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button 
                 onClick={() => setSelectedProduct(null)}
-                className="absolute top-6 right-6 z-20 h-10 w-10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all"
+                className="absolute top-6 right-6 z-20 h-10 w-10 flex items-center justify-center border border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -112,7 +112,7 @@ const Shop = () => {
               <div className="flex flex-col lg:grid lg:grid-cols-12 max-h-[90vh] overflow-y-auto lg:overflow-hidden">
                 {/* Image Gallery Side */}
                 <div className="lg:col-span-7 bg-black/40 p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/5">
-                  <div className="aspect-[4/5] overflow-hidden border border-white/5 bg-black relative mb-8">
+                  <div className="aspect-[4/5] overflow-hidden border border-white/5 bg-black relative mb-8 rounded-xl">
                     <AnimatePresence mode="wait">
                       <motion.img 
                         key={activeImageIndex}
@@ -120,7 +120,7 @@ const Shop = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="w-full h-full object-cover grayscale" 
+                        className="w-full h-full object-cover" 
                         alt={selectedProduct.title}
                       />
                     </AnimatePresence>
@@ -128,13 +128,13 @@ const Shop = () => {
                     <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 flex justify-between">
                       <button 
                         onClick={() => setActiveImageIndex(prev => prev > 0 ? prev - 1 : selectedProduct.images.length - 1)}
-                        className="h-10 w-10 bg-black/60 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                        className="h-10 w-10 bg-black/60 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all rounded-lg"
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
                       <button 
                         onClick={() => setActiveImageIndex(prev => prev < selectedProduct.images.length - 1 ? prev + 1 : 0)}
-                        className="h-10 w-10 bg-black/60 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                        className="h-10 w-10 bg-black/60 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all rounded-lg"
                       >
                         <ChevronRight className="w-5 h-5" />
                       </button>
@@ -146,9 +146,9 @@ const Shop = () => {
                       <button 
                         key={idx} 
                         onClick={() => setActiveImageIndex(idx)}
-                        className={`w-20 h-24 flex-shrink-0 border transition-all ${activeImageIndex === idx ? 'border-white opacity-100' : 'border-white/5 opacity-40 hover:opacity-100'}`}
+                        className={`w-20 h-24 flex-shrink-0 border transition-all rounded-lg overflow-hidden ${activeImageIndex === idx ? 'border-white opacity-100' : 'border-white/5 opacity-40 hover:opacity-100'}`}
                       >
-                        <img src={img} className="w-full h-full object-cover grayscale" />
+                        <img src={img} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -170,7 +170,7 @@ const Shop = () => {
                           <button
                             key={size}
                             onClick={() => setSelectedSize(size)}
-                            className={`px-6 py-3 text-[10px] font-mono uppercase tracking-widest transition-all border ${selectedSize === size ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white/40 hover:border-white/30'}`}
+                            className={`px-6 py-3 text-[10px] font-mono uppercase tracking-widest transition-all border rounded-lg ${selectedSize === size ? 'bg-white text-black border-white' : 'bg-transparent border-white/10 text-white/40 hover:border-white/30'}`}
                           >
                             {size}
                           </button>
@@ -195,7 +195,7 @@ const Shop = () => {
                   <a 
                     href={`https://wa.me/5511977070209?text=Olá Thomas! Tenho interesse no ${selectedProduct.title} (${selectedSize}) do Shop Seleção.`}
                     target="_blank"
-                    className="flex items-center justify-center gap-3 w-full py-5 bg-white text-black text-xs font-mono uppercase tracking-[0.2em] hover:bg-white/90 transition-all"
+                    className="flex items-center justify-center gap-3 w-full py-5 bg-white text-black text-xs font-mono uppercase tracking-[0.2em] hover:bg-white/90 transition-all rounded-lg"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     Finalizar no WhatsApp

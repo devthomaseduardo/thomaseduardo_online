@@ -68,12 +68,12 @@ const LinkBio = () => {
           {...FADE_UP}
           className="flex flex-col items-start mb-16"
         >
-          <div className="w-20 h-20 rounded-none border border-white/10 p-1 mb-8 relative group">
+          <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 p-1 mb-8 relative group">
             <div className="absolute inset-0 bg-white/5 blur-2xl opacity-30" />
             <img 
               src="/avatar-linkbio.png" 
               alt="Thomas Eduardo" 
-              className="w-full h-full object-cover relative z-10 grayscale" 
+              className="w-full h-full object-cover relative z-10 grayscale rounded-lg" 
             />
           </div>
           
@@ -98,7 +98,7 @@ const LinkBio = () => {
               href={link.href}
               target={link.href.startsWith('http') ? "_blank" : undefined}
               className={`
-                group flex items-center justify-between p-6 border transition-all duration-300
+                group flex items-center justify-between p-6 border transition-all duration-300 rounded-xl
                 ${link.primary 
                   ? 'bg-white text-black border-white hover:bg-white/90' 
                   : 'bg-white/[0.02] border-white/5 hover:border-white/20 hover:bg-white/[0.04]'}
@@ -106,7 +106,7 @@ const LinkBio = () => {
             >
               <div className="flex items-center gap-5">
                 <div className={`
-                  flex h-10 w-10 items-center justify-center border transition-colors
+                  flex h-10 w-10 items-center justify-center border transition-colors rounded-lg
                   ${link.primary ? 'border-black/10 text-black' : 'border-white/5 text-white/30 group-hover:text-white group-hover:border-white/10'}
                 `}>
                   {link.icon}
@@ -131,11 +131,11 @@ const LinkBio = () => {
           >
             <Link 
               to="/shop" 
-              className="group block p-6 bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-300"
+              className="group block p-6 bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-300 rounded-xl"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-5">
-                  <div className="h-10 w-10 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/10 transition-all">
+                  <div className="h-10 w-10 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/10 transition-all rounded-lg">
                     <ShoppingBag className="w-5 h-5" />
                   </div>
                   <div>
@@ -155,11 +155,11 @@ const LinkBio = () => {
             <a 
               href="https://www.tiktok.com/@devthomaseduardo" 
               target="_blank"
-              className="group block p-6 bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-300"
+              className="group block p-6 bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-300 rounded-xl"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-5">
-                  <div className="h-10 w-10 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/10 transition-all">
+                  <div className="h-10 w-10 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/10 transition-all rounded-lg">
                     <TikTokIcon className="w-5 h-5" />
                   </div>
                   <div>

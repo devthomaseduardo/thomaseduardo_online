@@ -40,7 +40,7 @@ const ServicesSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className="group relative p-7 lg:p-9 bg-white/[0.01] hover:bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden flex flex-col justify-between min-h-[280px]"
+              className="group relative p-7 lg:p-9 bg-white/[0.01] hover:bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-500 overflow-hidden flex flex-col justify-between min-h-[280px] rounded-2xl"
             >
               <div className="absolute -top-32 -right-32 w-[300px] h-[300px] bg-white/[0.02] rounded-full blur-[100px] pointer-events-none group-hover:bg-white/[0.04] transition-colors duration-700" />
               

@@ -27,14 +27,14 @@ export const ContactSection = () => {
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de conversar sobre um projeto.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center bg-white text-black px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-white/90 transition-colors"
+            className="flex items-center justify-center bg-white text-black px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-white/90 transition-colors rounded-lg"
           >
             {t.contact.btnWhatsapp}
           </a>
           
           <a 
             href="mailto:devthomaseduardo@gmail.com" 
-            className="flex items-center justify-center border border-white/20 text-white px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-white/5 transition-colors"
+            className="flex items-center justify-center border border-white/20 text-white px-8 py-4 font-mono text-sm uppercase tracking-widest hover:bg-white/5 transition-colors rounded-lg"
           >
             {t.contact.btnEmail}
           </a>

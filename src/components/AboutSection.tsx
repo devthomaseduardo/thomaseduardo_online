@@ -34,7 +34,7 @@ const AboutSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="px-6 py-3 rounded-none border border-white/10 bg-white/[0.02] text-xs font-mono text-white/60 uppercase tracking-widest backdrop-blur-md"
+                  className="px-6 py-3 rounded-lg border border-white/10 bg-white/[0.02] text-xs font-mono text-white/60 uppercase tracking-widest backdrop-blur-md"
                 >
                   {tag}
                 </motion.span>
@@ -63,7 +63,7 @@ const AboutSection = () => {
                         <img 
                           src={cert.logo} 
                           alt={cert.issuer} 
-                          className="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                          className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500" 
                         />
                       ) : (
                         <span className="text-xs font-bold text-white/20">{cert.initials}</span>
@@ -101,7 +101,7 @@ const AboutSection = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.8 }}
-                    className="flex items-center gap-3 px-5 py-2.5 rounded-none bg-white/[0.02] border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
+                    className="flex items-center gap-3 px-5 py-2.5 rounded-lg bg-white/[0.02] border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
                   >
                     <img 
                       src={os.logo} 

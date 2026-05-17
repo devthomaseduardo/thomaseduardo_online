@@ -33,7 +33,7 @@ export const EngineeringLab = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className="p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors group"
+              className="p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors group rounded-xl"
             >
               <div className="flex flex-col h-full">
                 <h3 className="text-xl font-medium text-white mb-4 tracking-tight group-hover:text-white transition-colors">
@@ -44,7 +44,7 @@ export const EngineeringLab = () => {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {item.tags.map(tag => (
-                    <span key={tag} className="text-[9px] font-mono text-white/30 uppercase tracking-widest px-2 py-1 bg-white/5">
+                    <span key={tag} className="text-[9px] font-mono text-white/30 uppercase tracking-widest px-2 py-1 bg-white/5 rounded-md">
                       {tag}
                     </span>
                   ))}

@@ -70,8 +70,8 @@ const translations = {
       problem: "Gargalo",
       solution: "Resolução",
       result: "Métrica",
-      catOperational: "Sistemas Operacionais",
-      catInfra: "Infraestrutura Comercial",
+      catOperational: "Sistemas e Ferramentas",
+      catInfra: "Sites e Landing Pages",
       labTitle: "Engineering Lab",
       labDesc: "Repositório de arquiteturas, bots, experimentos técnicos e estudos de infraestrutura."
     },
@@ -159,8 +159,8 @@ const translations = {
       problem: "Bottleneck",
       solution: "Resolution",
       result: "Metric",
-      catOperational: "Operational Systems",
-      catInfra: "Commercial Infrastructure",
+      catOperational: "Systems and Tools",
+      catInfra: "Websites and Landing Pages",
       labTitle: "Engineering Lab",
       labDesc: "Repository of architectures, bots, technical experiments, and infrastructure studies."
     },
