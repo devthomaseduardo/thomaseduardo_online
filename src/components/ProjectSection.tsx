@@ -44,13 +44,15 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
       {/* The Metric & Content (Left/Top) */}
       <div className="lg:col-span-4 flex flex-col items-start order-2 lg:order-1">
         <div className="mb-8">
-          <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-4 block">
-            {project.title}
+          <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] mb-3 block font-semibold">
+            {project.category === 'operational' 
+              ? (lang === "pt" ? "SISTEMA OPERACIONAL" : "OPERATIONAL SYSTEM")
+              : (lang === "pt" ? "SITES & LANDING PAGES" : "SITES & LANDING PAGES")}
           </span>
-          <h3 className="text-[clamp(60px,8vw,120px)] font-bold tracking-tighter leading-[0.9] text-white">
-            {project.metric}
+          <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 uppercase leading-tight">
+            {project.title}
           </h3>
-          <p className="text-xl md:text-2xl font-light text-white/50 mt-4 tracking-tight">
+          <p className="text-lg text-white/50 font-light leading-relaxed tracking-tight">
             {project.metric_sub}
           </p>
         </div>
