@@ -5,12 +5,10 @@ import {
   Github, 
   Mail, 
   ArrowUpRight,
-  ShoppingBag,
   Instagram,
   FileText
 } from "lucide-react";
 import React from "react";
-import { Link } from "react-router-dom";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
@@ -125,6 +123,7 @@ const LinkBio = () => {
           ))}
 
           {/* Special Cards */}
+<<<<<<< HEAD
           <motion.div
             {...FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.45 }}
@@ -147,6 +146,9 @@ const LinkBio = () => {
               </div>
             </Link>
           </motion.div>
+=======
+
+>>>>>>> caf0d3f (refactor: remove shop link from LinkBio page and update static assets)
 
           <motion.div
             {...FADE_UP}
