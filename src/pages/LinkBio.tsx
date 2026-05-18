@@ -123,32 +123,8 @@ const LinkBio = () => {
           ))}
 
           {/* Special Cards */}
-<<<<<<< HEAD
-          <motion.div
-            {...FADE_UP}
-            transition={{ ...SMOOTH_TRANSITION, delay: 0.45 }}
-          >
-            <Link 
-              to="/shop" 
-              className="group block p-6 bg-white/[0.02] border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all duration-300 rounded-xl"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-5">
-                  <div className="h-10 w-10 border border-white/5 flex items-center justify-center text-white/30 group-hover:text-white group-hover:border-white/10 transition-all rounded-lg">
-                    <ShoppingBag className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="block font-medium text-base tracking-tight text-white">Shop Seleção</span>
-                    <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest">Equipamentos High Performance</span>
-                  </div>
-                </div>
-                <ArrowUpRight className="w-4 h-4 text-white/20" />
-              </div>
-            </Link>
-          </motion.div>
-=======
 
->>>>>>> caf0d3f (refactor: remove shop link from LinkBio page and update static assets)
+
 
           <motion.div
             {...FADE_UP}
