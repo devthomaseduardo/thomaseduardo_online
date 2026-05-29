@@ -174,82 +174,63 @@ const AdminDashboard = () => {
     }
 
     if (activeMenu === "Projetos") {
-      const uniqueClients = pipeline.reduce((acc: any, curr: any) => {
-        if (!acc.find((c: any) => c.client === curr.client)) {
-          acc.push(curr);
-        }
-        return acc;
-      }, []);
-
-      const filteredPipeline = projectClientTab === "Todos" 
-        ? pipeline 
-        : pipeline.filter((p: any) => p.client === projectClientTab);
-
       return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-[1200px] mx-auto py-12 px-8">
-          <div className="mb-12 flex justify-between items-end">
+          <div className="mb-12 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Projetos</h1>
               <p className="text-white/50">Acompanhamento e gestão de projetos em andamento.</p>
             </div>
-            <button className="bg-white text-black px-6 py-3 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/90 transition-colors cursor-pointer">
+            <button className="bg-white text-black px-6 py-3 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-white/90 transition-colors cursor-pointer w-fit">
               <Plus className="w-4 h-4" /> Novo Projeto
             </button>
           </div>
 
-          <div className="flex p-1.5 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 w-fit overflow-x-auto">
-            <button 
-              onClick={() => setProjectClientTab("Todos")}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                projectClientTab === "Todos" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"
-              }`}
-            >
-              Todos
-            </button>
-            {uniqueClients.map((c: any) => (
-              <button 
-                key={c.client}
-                onClick={() => setProjectClientTab(c.client)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  projectClientTab === c.client ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"
-                }`}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pipeline.map((p: any, i: number) => (
+              <div 
+                key={i} 
+                onClick={() => setSelectedClient(p)}
+                className="bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 rounded-3xl p-6 transition-all cursor-pointer group flex flex-col h-full relative overflow-hidden"
               >
-                {c.client}
-              </button>
-            ))}
-          </div>
+                <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors"></div>
+                <div className="flex justify-between items-start mb-6 relative z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-sm text-white/50 border border-white/10 font-bold">
+                      {p.client.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-white/90 group-hover:text-white transition-colors">{p.client}</h3>
+                      <p className="text-[11px] font-mono text-white/40 uppercase tracking-wider mt-0.5">Website Institucional</p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="bg-white/[0.02] border border-white/10 rounded-3xl overflow-hidden backdrop-blur-sm">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="border-b border-white/5 bg-white/[0.01]">
-                <tr>
-                  <th className="px-6 py-5 font-mono text-white/40 text-[11px] uppercase tracking-wider">Projeto / Cliente</th>
-                  <th className="px-6 py-5 font-mono text-white/40 text-[11px] uppercase tracking-wider">Fase</th>
-                  <th className="px-6 py-5 font-mono text-white/40 text-[11px] uppercase tracking-wider">Financeiro</th>
-                  <th className="px-6 py-5 font-mono text-white/40 text-[11px] uppercase tracking-wider">Progresso</th>
-                  <th className="px-6 py-5 font-mono text-white/40 text-[11px] uppercase tracking-wider">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {filteredPipeline.map((p: any, i: number) => (
-                  <tr key={i} className="hover:bg-white/[0.02] transition-colors group cursor-pointer" onClick={() => setSelectedClient(p)}>
-                    <td className="px-6 py-5 font-medium text-white/90 group-hover:text-white transition-colors">{p.client}</td>
-                    <td className="px-6 py-5">
-                      <span className={`inline-flex items-center px-2.5 py-1 text-[10px] uppercase tracking-wider font-mono rounded-lg ${getStatusColor(p.status)}`}>{p.status}</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className={`inline-flex items-center px-2.5 py-1 text-[10px] uppercase tracking-wider font-mono rounded-lg ${getStatusColor(p.payment)}`}>{p.payment}</span>
-                    </td>
-                    <td className="px-6 py-5 font-mono text-white/50">{p.progress}</td>
-                    <td className="px-6 py-5">
-                      <button className="text-white/40 hover:text-white transition-colors text-sm flex items-center gap-2 cursor-pointer">
-                        Abrir Workspace <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                <div className="space-y-4 mb-8 relative z-10 flex-grow">
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[11px] font-mono text-white/50 uppercase tracking-wider">Fase Atual</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 text-[9px] uppercase tracking-wider font-mono rounded-md ${getStatusColor(p.status)}`}>{p.status}</span>
+                    </div>
+                    <div className="w-full bg-white/5 rounded-full h-1.5">
+                      <div className="bg-white/40 h-1.5 rounded-full" style={{ width: p.progress }}></div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-t border-white/5">
+                    <span className="text-[11px] font-mono text-white/50 uppercase tracking-wider">Financeiro</span>
+                    <span className={`inline-flex items-center px-2 py-0.5 text-[9px] uppercase tracking-wider font-mono rounded-md ${getStatusColor(p.payment)}`}>{p.payment}</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 mt-auto relative z-10 flex justify-between items-center">
+                  <span className="text-[11px] font-mono text-white/30 group-hover:text-white/50 transition-colors">Progresso: {p.progress}</span>
+                  <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/40 group-hover:text-black group-hover:bg-white transition-all">
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </motion.div>
       );
