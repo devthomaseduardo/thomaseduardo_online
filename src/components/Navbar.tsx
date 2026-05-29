@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useLocation } from "react-router-dom";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 
@@ -7,6 +8,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { lang, setLang, t } = useLang();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   const navLinks = [
     { label: t.nav.about, id: "sobre" },
@@ -38,8 +41,13 @@ const Navbar = () => {
         }}
       >
         <a
-          href="#"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          href="/"
+          onClick={(e) => { 
+            if (isHome) {
+              e.preventDefault(); 
+              window.scrollTo({ top: 0, behavior: "smooth" }); 
+            }
+          }}
           className="flex items-center gap-2.5 shrink-0 select-none"
         >
           <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
@@ -51,7 +59,7 @@ const Navbar = () => {
         </a>
 
         <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-          {navLinks.map((link) => (
+          {isHome && navLinks.map((link) => (
             <a
               key={link.id}
               href={`#${link.id}`}
@@ -65,7 +73,9 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
-          <button
+          {isHome && (
+            <>
+              <button
             onClick={() => setLang(lang === "pt" ? "en" : "pt")}
             className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200"
             style={{ color: "rgba(245,245,247,0.6)", background: "rgba(255,255,255,0.06)" }}
@@ -90,7 +100,10 @@ const Navbar = () => {
           >
             {t.nav.cta}
           </a>
+          </>
+          )}
 
+          {isHome && (
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden flex flex-col items-center justify-center w-10 h-10 gap-[5px]"
@@ -115,6 +128,7 @@ const Navbar = () => {
               style={{ background: "#F5F5F7" }}
             />
           </button>
+          )}
         </div>
       </nav>
 

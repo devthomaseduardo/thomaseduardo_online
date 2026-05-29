@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, Image as ImageIcon, FileText, Palette, Key, CheckCircle2, HelpCircle, ChevronDown, Info } from "lucide-react";
 import { useLang } from "../contexts/LangContext";
-import Navbar from "../components/Navbar";
-import { Footer } from "../components/Footer";
 import { FADE_UP } from "../constants/animations";
 
 const MaterialPage = () => {
@@ -59,20 +57,8 @@ const MaterialPage = () => {
 
   return (
     <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
-      <Navbar />
       
       <main className="section-padding px-6 max-w-4xl mx-auto pt-32 pb-24">
-        {/* Back Link */}
-        <motion.div {...FADE_UP} className="mb-10">
-          <a 
-            href="/" 
-            className="inline-flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white uppercase tracking-widest transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {lang === "pt" ? "Voltar ao Início" : "Back to Home"}
-          </a>
-        </motion.div>
-
         {/* Page Header */}
         <motion.div {...FADE_UP} className="mb-16">
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-6">
@@ -210,8 +196,6 @@ const MaterialPage = () => {
         </motion.div>
 
       </main>
-
-      <Footer />
     </div>
   );
 };

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  cnpj       String?
+  clientType String   // "new" or "old"
+  password   String   // Senha segura para o cliente acessar o portal
+  projects   Project[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Project {
+  id                 String   @id // Usado para PROJ-XXXX
+  name               String
+  phase              String
+  financial          String
+  value              Float
+  domainHostingValue Float    @default(0)
+  
+  // Features do portal
+  seo                Boolean  @default(false)
+  analytics          Boolean  @default(false)
+  support            Boolean  @default(false)
+  ads                Boolean  @default(false)
+  
+  internalNotes      String?
+  
+  clientId           String
+  client             Client   @relation(fields: [clientId], references: [id])
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  invoices           Invoice[]
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  description String
+  amount      Float
+  status      String   @default("pending") // pending, paid, canceled
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  title       String
+  type        String
+  clientName  String
+  date        String
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
