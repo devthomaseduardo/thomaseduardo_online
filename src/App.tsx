@@ -1,32 +1,31 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { LangProvider } from "./contexts/LangContext";
 
-// Components (Default Exports)
+// ─── Above-the-fold: loaded eagerly for instant FCP ─────────────────────────
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import AboutSection from "./components/AboutSection";
-import GlobalStats from "./components/GlobalStats";
-import SocialProof from "./components/SocialProof";
-import BentoGrid from "./components/BentoGrid";
-import ExpertiseSection from "./components/ExpertiseSection";
-import TechStackGrid from "./components/TechStackGrid";
 
-// Components (Named Exports)
-import { ProjectSection } from "./components/ProjectSection";
-import { TrajectorySection } from "./components/TrajectorySection";
-import { ProcessSection } from "./components/ProcessSection";
-import { DifferentiatorsSection } from "./components/DifferentiatorsSection";
-import { FAQSection } from "./components/FAQSection";
-import { ContactSection } from "./components/ContactSection";
-import { EngineeringLab } from "./components/EngineeringLab";
-import { Footer } from "./components/Footer";
+// ─── Below-the-fold: lazy-loaded as user scrolls ────────────────────────────
+const AboutSection       = lazy(() => import("./components/AboutSection"));
+const SocialProof        = lazy(() => import("./components/SocialProof"));
+const BentoGrid          = lazy(() => import("./components/BentoGrid"));
+const ProjectSection     = lazy(() => import("./components/ProjectSection").then(m => ({ default: m.ProjectSection })));
+const ProcessSection     = lazy(() => import("./components/ProcessSection").then(m => ({ default: m.ProcessSection })));
+const ContactSection     = lazy(() => import("./components/ContactSection").then(m => ({ default: m.ContactSection })));
+const Footer             = lazy(() => import("./components/Footer").then(m => ({ default: m.Footer })));
 
-// Pages
-import LinkBio from "./pages/LinkBio";
-import Redirect from "./pages/RedirectPage";
-import Shop from "./pages/Shop";
-import Projects from "./pages/Projects";
+// ─── Pages: only downloaded when routes are visited ─────────────────────────
+const LinkBio  = lazy(() => import("./pages/LinkBio"));
+const Redirect = lazy(() => import("./pages/RedirectPage"));
+const Shop     = lazy(() => import("./pages/Shop"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Material = lazy(() => import("./pages/Material"));
+
+// Minimal suspense fallback — invisible div to avoid layout shift
+const PageFallback = () => (
+  <div style={{ minHeight: "100vh", background: "#050505" }} aria-hidden="true" />
+);
 
 const Home = () => {
   return (
@@ -34,15 +33,18 @@ const Home = () => {
       <Navbar />
       <main>
         <Hero />
-        <AboutSection />
-        <SocialProof />
-        <BentoGrid />
-        <ProjectSection />
-        <EngineeringLab />
-        <ProcessSection />
-        <ContactSection />
+        <Suspense fallback={null}>
+          <AboutSection />
+          <SocialProof />
+          <BentoGrid />
+          <ProjectSection />
+          <ProcessSection />
+          <ContactSection />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 };
@@ -51,14 +53,17 @@ function App() {
   return (
     <LangProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/links" element={<LinkBio />} />
-          <Route path="/r" element={<Redirect />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/cases" element={<Projects />} />
-          <Route path="/projetos" element={<Projects />} />
-        </Routes>
+        <Suspense fallback={<PageFallback />}>
+          <Routes>
+            <Route path="/"         element={<Home />} />
+            <Route path="/links"    element={<LinkBio />} />
+            <Route path="/r"        element={<Redirect />} />
+            <Route path="/shop"     element={<Shop />} />
+            <Route path="/material" element={<Material />} />
+            <Route path="/cases"    element={<Projects />} />
+            <Route path="/projetos" element={<Projects />} />
+          </Routes>
+        </Suspense>
       </Router>
     </LangProvider>
   );

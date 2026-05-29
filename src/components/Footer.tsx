@@ -2,7 +2,7 @@ import React from 'react';
 import { useLang } from '../contexts/LangContext';
 
 export const Footer = () => {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   return (
     <footer className="pt-32 pb-16 bg-pg-bg overflow-hidden border-t border-white/5">
       <div className="max-w-5xl mx-auto px-6">
@@ -19,6 +19,7 @@ export const Footer = () => {
               <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" rel="noopener noreferrer" className="text-lg font-light text-white/70 hover:text-white transition-colors">LinkedIn</a>
               <a href="https://github.com/devthomaseduardo" target="_blank" rel="noopener noreferrer" className="text-lg font-light text-white/70 hover:text-white transition-colors">GitHub</a>
               <a href="mailto:devthomaseduardo@gmail.com" className="text-lg font-light text-white/70 hover:text-white transition-colors">Email</a>
+              <a href="/material" className="text-lg font-light text-white/70 hover:text-white transition-colors">{lang === "pt" ? "Material p/ Projetos" : "Project Materials"}</a>
             </div>
           </div>
           

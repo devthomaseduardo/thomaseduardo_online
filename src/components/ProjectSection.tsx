@@ -44,10 +44,16 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
       {/* The Metric & Content (Left/Top) */}
       <div className="lg:col-span-4 flex flex-col items-start order-2 lg:order-1">
         <div className="mb-8">
-          <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] mb-3 block font-semibold">
+          <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-3 font-semibold">
             {project.category === 'operational' 
               ? (lang === "pt" ? "SISTEMA OPERACIONAL" : "OPERATIONAL SYSTEM")
               : (lang === "pt" ? "SITES & LANDING PAGES" : "SITES & LANDING PAGES")}
+            
+            {project.publishedAt && new Date(project.publishedAt).getTime() > new Date().getTime() - 30 * 24 * 60 * 60 * 1000 && (
+              <span className="bg-blue-500/10 text-blue-400 text-[9px] font-mono px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-widest">
+                {lang === "pt" ? "Novo" : "New"}
+              </span>
+            )}
           </span>
           <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3 uppercase leading-tight">
             {project.title}
@@ -268,20 +274,27 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
 
 export const ProjectSection = () => {
   const { t, lang } = useLang();
-  
-  const HOMEPAGE_PROJECTS = ['nexio-os', 'core-events', 'guardia', 'painel-beneficios'];
-  
+
+  // Client projects that exist in projects.json — same links as /cases page
+  const HOMEPAGE_PROJECTS = ['sleep-house', 'lp-yazigi', 'bras-service-ass', 'hazap-vendas'];
+
   const projects = projectsData.map(p => ({
     ...p,
-    metric_sub: lang === "pt" ? (p as any).metric_sub_pt : (p as any).metric_sub_en,
-    description: lang === "pt" ? p.description_pt : p.description_en,
+    metric_sub: lang === 'pt' ? (p as any).metric_sub_pt : (p as any).metric_sub_en,
+    description: lang === 'pt' ? p.description_pt : p.description_en,
   }));
 
-  const featuredProjects = projects.filter(p => HOMEPAGE_PROJECTS.includes(p.id));
+  const featuredProjects = projects
+    .filter(p => HOMEPAGE_PROJECTS.includes(p.id))
+    .sort((a, b) => {
+      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return dateB - dateA;
+    });
 
   return (
-    <section id="cases" className="section-padding px-6 max-w-6xl mx-auto overflow-hidden bg-pg-bg">
-      <motion.div 
+    <section id="casos" className="section-padding px-6 max-w-6xl mx-auto overflow-hidden bg-pg-bg">
+      <motion.div
         {...FADE_UP}
         className="mb-16"
       >
@@ -294,10 +307,10 @@ export const ProjectSection = () => {
         </h2>
       </motion.div>
 
-      {/* Featured Systems Grid */}
+      {/* Client Projects */}
       <div className="mb-20">
         <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-16 block border-b border-white/5 pb-4">
-          {t.projects.catOperational}
+          {lang === 'pt' ? 'Projetos de Clientes' : 'Client Projects'}
         </span>
         <div className="flex flex-col space-y-24 md:space-y-32">
           {featuredProjects.map((project) => (
@@ -306,21 +319,21 @@ export const ProjectSection = () => {
         </div>
       </div>
 
-      {/* Immersive CTA to Explore All Cases */}
-      <motion.div 
+      {/* CTA */}
+      <motion.div
         {...FADE_UP}
         className="flex flex-col items-center justify-center pt-12 pb-8 border-t border-white/5 text-center"
       >
         <h3 className="text-xl md:text-2xl font-light text-white/80 max-w-lg mb-6 tracking-tight">
-          {lang === "pt" 
-            ? "Quer ver todo o ecossistema de sistemas e landing pages?" 
-            : "Want to see the entire ecosystem of business apps & sites?"}
+          {lang === 'pt'
+            ? 'Quer ver todo o ecossistema de sistemas e landing pages?'
+            : 'Want to see the entire ecosystem of business apps & sites?'}
         </h3>
         <a
           href="/cases"
           className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.08] hover:border-white/20 hover:scale-105 active:scale-95 text-xs font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-[0_0_30px_rgba(16,185,129,0.05)] group"
         >
-          <span>{lang === "pt" ? "Explorar Todos os Cases" : "Explore All Cases"}</span>
+          <span>{lang === 'pt' ? 'Explorar Todos os Cases' : 'Explore All Cases'}</span>
           <ArrowRight className="w-4 h-4 text-emerald-400 transition-transform duration-300 group-hover:translate-x-1" />
         </a>
       </motion.div>

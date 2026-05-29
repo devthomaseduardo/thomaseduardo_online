@@ -12,7 +12,8 @@ const ProjectsPage = () => {
   const { lang, t } = useLang();
   const [activeTab, setActiveTab] = useState<"all" | "operational" | "infra">("all");
 
-  const HOMEPAGE_PROJECTS = ['nexio-os', 'core-events', 'guardia', 'painel-beneficios'];
+  // Same IDs featured on the home page — exclude here to avoid duplication
+  const HOMEPAGE_PROJECTS = ['sleep-house', 'lp-yazigi', 'bras-service-ass', 'hazap-vendas'];
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,11 +26,13 @@ const ProjectsPage = () => {
   }));
 
   const filteredProjects = projects.filter(p => {
-    // Avoid repeating projects already highlighted on the homepage
     if (HOMEPAGE_PROJECTS.includes(p.id)) return false;
-    
     if (activeTab === "all") return true;
     return p.category === activeTab;
+  }).sort((a, b) => {
+    const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+    const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+    return dateB - dateA;
   });
 
   return (

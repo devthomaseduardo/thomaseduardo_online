@@ -1,5 +1,29 @@
 [
   {
+    "id": "sleep-house",
+    "title": "SLEEP HOUSE",
+    "description": {
+      "pt": "Digital showroom editorial de alto padrão para rede de colchões premium.",
+      "en": "High-end editorial digital showroom for a premium mattress retail chain."
+    },
+    "technologies": ["React", "TailwindCSS", "Framer Motion", "TanStack Router"],
+    "problem": {
+      "pt": "A rede precisava de uma presença digital que traduzisse o nível de sofisticação dos produtos vendidos.",
+      "en": "The retail chain needed a digital presence that matched the sophistication of its premium products."
+    },
+    "solution": {
+      "pt": "Showroom digital imersivo com curadoria editorial de produtos e SEO local para múltiplas filiais.",
+      "en": "Immersive digital showroom with editorial product curation and local SEO for multiple branches."
+    },
+    "result": {
+      "pt": "Posicionamento da marca no segmento de luxo com experiência de compra premium online.",
+      "en": "Brand positioned in the luxury segment with a premium online shopping experience."
+    },
+    "image": "https://sleephouse.vteximg.com.br/arquivos/ids/169484/Studio_Firm2_ambientada_W.jpg",
+    "clientLogo": "/clientes/sleephouse.png",
+    "link": "https://sleep-house.vercel.app"
+  },
+  {
     "id": "reis-do-manto",
     "title": "REIS DO MANTO",
     "description": {
@@ -46,29 +70,6 @@
     "image": "/projetos/Landing Page  Bras Service.png",
     "clientLogo": "/clientes/brasservice.jpg",
     "link": "https://brasservice.com.br"
-  },
-  {
-    "id": "barbearia-piloto",
-    "title": "BARBEARIA NO PILOTO AUTOMÁTICO",
-    "description": {
-      "pt": "SaaS completo para gestão e agendamento automático de barbearias.",
-      "en": "Complete SaaS for automatic management and scheduling for barber shops."
-    },
-    "technologies": ["Next.js", "Prisma", "PostgreSQL"],
-    "problem": {
-      "pt": "Dono da barbearia perdia 3h por dia gerenciando horários manualmente.",
-      "en": "Barber shop owner lost 3h a day managing schedules manually."
-    },
-    "solution": {
-      "pt": "Sistema de agendamento self-service com confirmação via WhatsApp.",
-      "en": "Self-service scheduling system with WhatsApp confirmation."
-    },
-    "result": {
-      "pt": "Economia de 20h semanais e zero furos na agenda.",
-      "en": "Saving 20h weekly and zero schedule gaps."
-    },
-    "image": "/projetos/core.png",
-    "link": "https://barbearia-no-piloto-automatico.vercel.app/"
   },
   {
     "id": "hazap",
@@ -167,27 +168,27 @@
     "link": "https://yazigiswisspark.com.br"
   },
   {
-    "id": "grund-zero",
-    "title": "GRUND ZERO",
+    "id": "barbearia-piloto",
+    "title": "BARBEARIA NO PILOTO AUTOMÁTICO",
     "description": {
-      "pt": "Landing page tática para assessoria esportiva.",
-      "en": "Tactical landing page for sports consultancy."
+      "pt": "SaaS completo para gestão e agendamento automático de barbearias.",
+      "en": "Complete SaaS for automatic management and scheduling for barber shops."
     },
-    "technologies": ["React", "Framer Motion", "TailwindCSS"],
+    "technologies": ["Next.js", "Prisma", "PostgreSQL"],
     "problem": {
-      "pt": "Necessidade de captar alunos de forma agressiva e direta.",
-      "en": "Need to capture students aggressively and directly."
+      "pt": "Dono da barbearia perdia 3h por dia gerenciando horários manualmente.",
+      "en": "Barber shop owner lost 3h a day managing schedules manually."
     },
     "solution": {
-      "pt": "Design escuro com foco em CTAs de alta visibilidade.",
-      "en": "Dark design with a focus on high-visibility CTAs."
+      "pt": "Sistema de agendamento self-service com confirmação via WhatsApp.",
+      "en": "Self-service scheduling system with WhatsApp confirmation."
     },
     "result": {
-      "pt": "Taxa de conversão de leads superior a 15%.",
-      "en": "Lead conversion rate exceeding 15%."
+      "pt": "Economia de 20h semanais e zero furos na agenda.",
+      "en": "Saving 20h weekly and zero schedule gaps."
     },
-    "image": "/projetos/Landing Page Grund Zero.png",
-    "clientLogo": "/clientes/gz-team.png"
+    "image": "/projetos/core.png",
+    "link": "https://barbearia-no-piloto-automatico.vercel.app/"
   },
   {
     "id": "gravura-estudio",

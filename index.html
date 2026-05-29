@@ -58,7 +58,9 @@
   <!-- Optimized Fonts & Critical Assets -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <!-- Inter (400/700/900 only), JetBrains Mono (500) — display=swap prevents render blocking -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,900&display=swap" rel="stylesheet" />
   
   <meta name="theme-color" content="#0A0A0A" />
@@ -131,10 +133,10 @@
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   <div id="splash" role="status" aria-live="polite" aria-label="Carregando o site">
-    <video class="splash-video is-desktop" autoplay muted playsinline loop preload="auto">
+    <video class="splash-video is-desktop" autoplay muted playsinline loop preload="none">
       <source src="/videohome.mp4" type="video/mp4" />
     </video>
-    <video class="splash-video is-mobile" autoplay muted playsinline loop preload="auto">
+    <video class="splash-video is-mobile" autoplay muted playsinline loop preload="none">
       <source src="/video-mobile.mp4" type="video/mp4" />
     </video>
   </div>
@@ -147,8 +149,8 @@
       if (!splash) return;
 
       var isAdmin = /^\/admin(\/|$)/i.test(window.location.pathname || '');
-      var MIN_MS = isAdmin ? 200 : 3500;
-      var MAX_MS = isAdmin ? 4000 : 8000;
+      var MIN_MS = isAdmin ? 200 : 800;
+      var MAX_MS = isAdmin ? 3000 : 4000;
       var startedAt = Date.now();
       var removed = false;
 

@@ -10,7 +10,7 @@ const SocialProof = () => {
     { name: "Casa Lellit", url: "/clientes/casalellit.jpg" },
     { name: "Yázigi", url: "/clientes/yazigi.png" },
     { name: "Bras Service", url: "/clientes/brasservice.jpg" },
-    { name: "GZ Team", url: "/clientes/gz-team.png" },
+    { name: "Sleep House", url: "/clientes/sleephouse.png" },
     { name: "Hazzap", url: "/clientes/hazzap.jpg" },
   ];
   

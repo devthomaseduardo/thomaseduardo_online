@@ -20,7 +20,7 @@ const ServicesSection = () => {
           <h2 className="text-[clamp(32px,5vw,80px)] font-medium mb-8 tracking-tighter leading-[1.1] text-white">
             <TextReveal>{t.bento.h2a}</TextReveal> <br className="hidden sm:block" />
             <span className="text-white/40"><TextReveal delay={0.2}>{t.bento.h2b}</TextReveal></span> <br className="hidden sm:block" />
-            <span className="text-white/20"><TextReveal delay={0.4}>{t.bento.h2c}</TextReveal></span>
+            <span className="text-white/30"><TextReveal delay={0.4}>{t.bento.h2c}</TextReveal></span>
           </h2>
           <p className="text-xl md:text-3xl text-white/70 leading-relaxed font-light max-w-2xl">
             {t.bento.desc}
@@ -45,7 +45,7 @@ const ServicesSection = () => {
               <div className="absolute -top-32 -right-32 w-[300px] h-[300px] bg-white/[0.02] rounded-full blur-[100px] pointer-events-none group-hover:bg-white/[0.04] transition-colors duration-700" />
               
               <div className="relative z-10">
-                <span className="text-white/20 font-mono text-xs uppercase font-medium tracking-[0.2em] mb-6 block">
+                <span className="text-white/40 font-mono text-xs uppercase font-medium tracking-[0.2em] mb-6 block">
                   0{i + 1}
                 </span>
                 <h3 className="text-2xl lg:text-3xl font-medium tracking-tight text-white mb-6">
