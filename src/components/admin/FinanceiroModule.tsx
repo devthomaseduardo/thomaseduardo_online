@@ -4,7 +4,7 @@ import { DollarSign, ArrowUpRight, ArrowDownRight, FileText, Download, Plus, Che
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 
-const API = "http://localhost:3001/api/v2";
+const API = "/api/v2";
 const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
 
 export function FinanceiroModule() {

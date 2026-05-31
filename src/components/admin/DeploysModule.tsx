@@ -4,7 +4,7 @@ import { useAdminData } from "./useAdminData";
 import { DeployTerminalLoader, TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 
-const API = "http://localhost:3001/api/v2";
+const API = "/api/v2";
 const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
 
 export function DeploysModule() {

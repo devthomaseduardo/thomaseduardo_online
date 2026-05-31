@@ -21,7 +21,7 @@ export default function ClientDashboard() {
         return;
       }
       try {
-        const res = await fetch("http://localhost:3001/api/clients/me", {
+        const res = await fetch("/api/clients/me", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (!res.ok) throw new Error("Não autorizado");

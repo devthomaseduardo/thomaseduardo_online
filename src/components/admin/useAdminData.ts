@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 
-const API = "http://localhost:3001/api/v2";
-const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+const API = "/api/v2";
+// Read JWT from localStorage \u2014 key is adminToken (never stores the password)
+const hdrs = () => {
+  const token = localStorage.getItem("adminToken") ?? "";
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+  };
+};
 
 let cacheProjects: any[] | null = null;
 let cacheClients: any[] | null = null;

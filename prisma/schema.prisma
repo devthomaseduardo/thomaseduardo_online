@@ -269,3 +269,20 @@ model Document {
 
   @@map("Document")
 }
+
+// ==========================================
+// SECURITY / AUDIT
+// ==========================================
+
+model SecurityLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorType String   @default("system")
+  actorId   String?
+  ip        String?
+  userAgent String?
+  metadata  String?  // JSON - never stores passwords or tokens
+  createdAt DateTime @default(now())
+
+  @@map("SecurityLog")
+}

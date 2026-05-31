@@ -8,14 +8,22 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 
+// ─── Security bootstrap (must be first) ─────────────────────────────────────
+import './lib/env.js';  // validates and crashes if env is missing
+import { env } from './lib/env.js';
+import { signAdminToken, extractBearer, verifyAdminToken } from './lib/jwt.js';
+import { audit, getClientIp } from './lib/audit.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 const app = express();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-development';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin2024';
+const JWT_SECRET = env.JWT_SECRET;
+// ADMIN_PASSWORD kept for legacy seed compatibility only — remove in v2
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
+
 
 // ─── Uploads directory ───────────────────────────────────────────────────────
 const UPLOADS_DIR = path.join(__dirname, '../uploads');
@@ -61,10 +69,65 @@ const upload = multer({
   }
 });
 
+// ─── Rate Limiters ────────────────────────────────────────────────────────────
+import rateLimit from 'express-rate-limit';
+
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: async (req, res) => {
+    await audit({ action: 'rate.limit.exceeded', actorType: 'anonymous', ip: getClientIp(req as any), userAgent: req.headers['user-agent'], metadata: { route: '/api/admin/login' } });
+    res.status(429).json({ error: 'Muitas tentativas. Tente novamente em 15 minutos.' });
+  },
+});
+
+const clientLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: async (req, res) => {
+    res.status(429).json({ error: 'Muitas tentativas. Tente novamente em 15 minutos.' });
+  },
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(cors());
-app.use(express.json());
+import helmet from 'helmet';
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: false, // handled by vite in dev; configure per-deploy in prod
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow CDN fonts/images
+}));
+
+// CORS — whitelist only
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow non-browser (curl, server-to-server) and whitelisted origins
+    if (!origin || env.ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key'],
+  credentials: false,
+}));
+
+app.use(generalLimiter);
+app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(UPLOADS_DIR));
+
 
 // ─── Auth middlewares ─────────────────────────────────────────────────────────
 
@@ -79,28 +142,58 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
+// Admin auth: accept both new JWT Bearer and legacy x-admin-key (transition period)
 const authenticateAdmin = (req: any, res: any, next: any) => {
-  const adminKey = req.headers['x-admin-key'] || req.query.adminKey;
-  if (adminKey !== ADMIN_PASSWORD) {
-    return res.status(403).json({ error: 'Acesso administrativo negado' });
+  // Try Bearer JWT first (new secure method)
+  const bearerToken = extractBearer(req.headers['authorization']);
+  if (bearerToken) {
+    const payload = verifyAdminToken(bearerToken);
+    if (payload?.role === 'admin') return next();
   }
-  next();
+  // Fall back to legacy x-admin-key
+  const key = req.headers['x-admin-key'];
+  if (key && key === ADMIN_PASSWORD && ADMIN_PASSWORD) return next();
+  return res.status(401).json({ error: 'Não autorizado.' });
 };
 
-// ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
+// ─── ADMIN AUTH (secure JWT) ──────────────────────────────────────────────────
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', adminLoginLimiter, async (req: any, res: any) => {
   const { password } = req.body;
-  if (password === ADMIN_PASSWORD) {
-    res.json({ success: true, token: ADMIN_PASSWORD });
-  } else {
-    res.status(401).json({ error: 'Senha incorreta' });
+  const ip = getClientIp(req);
+
+  if (!password || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Credenciais inválidas.' });
+  }
+
+  try {
+    // Compare against bcrypt hash (secure)
+    const hash = env.ADMIN_PASSWORD_HASH;
+    const isValidHash = hash && !hash.includes('placeholder')
+      ? await bcrypt.compare(password, hash)
+      : password === ADMIN_PASSWORD; // fallback to plaintext during transition
+
+    if (!isValidHash) {
+      await audit({ action: 'admin.login.failed', actorType: 'anonymous', ip, userAgent: req.headers['user-agent'] });
+      // Generic error — never reveal why it failed
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+
+    const token = signAdminToken();
+    await audit({ action: 'admin.login.success', actorType: 'admin', ip, userAgent: req.headers['user-agent'] });
+
+    // Return ONLY the JWT — never the password or hash
+    return res.json({ token });
+  } catch (err) {
+    console.error('[admin/login]', err);
+    return res.status(500).json({ error: 'Erro interno.' });
   }
 });
 
+
 // ─── CLIENT AUTH ──────────────────────────────────────────────────────────────
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', clientLoginLimiter, async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
@@ -150,14 +243,18 @@ app.get('/api/clients/me', authenticateToken, async (req: any, res: any) => {
       }
     });
     if (!client) return res.status(404).json({ error: 'Cliente não encontrado' });
-    res.json(client);
+    // Never expose the password hash
+    const { password: _pw, ...safeClient } = client as any;
+    res.json(safeClient);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch client data' });
   }
 });
-// ─── TEMPORARY SEED ROUTE ────────────────────────────────────────────────────────
-app.get('/api/seed-clients', async (req, res) => {
+// ─── SEED ROUTE (development only) ───────────────────────────────────────────
+if (env.NODE_ENV !== 'production') {
+  app.get('/api/seed-clients', async (req, res) => {
+
   try {
     const clients = [
       {
@@ -241,9 +338,11 @@ app.get('/api/seed-clients', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Failed to seed clients' });
   }
-});
+  });
+} // end if (dev only)
 
 // ─── PROJECT FILE UPLOAD (Client) ─────────────────────────────────────────────
+
 
 
 app.post(

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BarChart3, PieChart, TrendingUp, Users, Eye } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 
-const API = "http://localhost:3001/api/v2";
+const API = "/api/v2";
 const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
 
 export function AnalyticsModule() {

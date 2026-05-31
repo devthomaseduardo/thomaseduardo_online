@@ -16,10 +16,16 @@ import { ConfiguracoesModule } from "../components/admin/ConfiguracoesModule";
 import { PageLoader } from "../components/admin/Loaders";
 import { LogoTE } from "../components/Icons";
 
-const API = "http://localhost:3001";
-const hdrs = (t?: string) => ({ "Content-Type": "application/json", "x-admin-key": t ?? "" });
+const API = "";
+// Admin token key — stores JWT, NEVER the password
+const TOKEN_KEY = "adminToken";
 
-// ─── Gate ────────────────────────────────────────────────────────────────────
+const hdrs = (t?: string) => ({
+  "Content-Type": "application/json",
+  ...(t ? { "Authorization": `Bearer ${t}` } : {}),
+});
+
+// ─── Gate ───────────────────────────────────────────────────────────────────
 function AdminGate({ onAuth }: { onAuth: (t: string) => void }) {
   const [pass, setPass] = useState("");
   const [show, setShow] = useState(false);
@@ -33,9 +39,13 @@ function AdminGate({ onAuth }: { onAuth: (t: string) => void }) {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: pass })
       });
-      if (!r.ok) throw new Error("Credencial incorreta.");
-      localStorage.setItem("adminAuth", pass);
-      onAuth(pass);
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Credencial incorreta.");
+      // Store ONLY the JWT token, NEVER the password
+      const jwt = data.token;
+      localStorage.setItem(TOKEN_KEY, jwt);
+      setPass(""); // clear password from memory immediately
+      onAuth(jwt);
     } catch (e: any) { setErr(e.message); }
     finally { setLoading(false); }
   };
@@ -305,12 +315,25 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    const t = localStorage.getItem("adminAuth");
-    if (t) { setToken(t); setAuthed(true); }
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (t) {
+      // Basic JWT expiry check (decode without verifying signature — server still validates)
+      try {
+        const payload = JSON.parse(atob(t.split('.')[1]));
+        if (payload.exp && payload.exp * 1000 > Date.now()) {
+          setToken(t); setAuthed(true);
+        } else {
+          localStorage.removeItem(TOKEN_KEY); // expired
+        }
+      } catch {
+        localStorage.removeItem(TOKEN_KEY); // malformed
+      }
+    }
   }, []);
 
   const handleAuth = (t: string) => { setToken(t); setAuthed(true); };
-  const logout = () => { localStorage.removeItem("adminAuth"); setAuthed(false); setToken(""); };
+  const logout = () => { localStorage.removeItem(TOKEN_KEY); setAuthed(false); setToken(""); };
+
 
   if (!authed) return <AdminGate onAuth={handleAuth} />;
 
