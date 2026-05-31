@@ -65,7 +65,7 @@ const ClientDashboard = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#000000] text-white flex items-center justify-center">Carregando...</div>;
+    return <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">Carregando...</div>;
   }
 
   if (!clientData) return null;
@@ -353,13 +353,78 @@ const ClientDashboard = () => {
 
             <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
               <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                <LinkIcon className="w-4 h-4" /> Ativos do Projeto
+                <LinkIcon className="w-4 h-4" /> Ativos e Repositórios
               </h3>
               <div className="space-y-4">
-                  <button onClick={() => navigate("/portal/material")} className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group">
-                    <span className="font-medium">Gerenciar Materiais</span>
+                  <button onClick={() => navigate("/portal/material")} className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group border-b border-[#222222] pb-4">
+                    <span className="font-medium">Materiais do Projeto</span>
                     <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
+                  {p.repoUrl ? (
+                    <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group border-b border-[#222222] pb-4">
+                      <span className="font-medium">GitHub Repository</span>
+                      <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ) : (
+                    <div className="w-full flex items-center justify-between text-[14px] text-[#444444] border-b border-[#222222] pb-4">
+                      <span className="font-medium">GitHub Repository</span>
+                      <span className="text-[11px] font-mono text-[#333333] uppercase tracking-wider">Em breve</span>
+                    </div>
+                  )}
+                  <label className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group cursor-pointer">
+                    <span className="font-medium">Upload de Arquivos</span>
+                    <Download className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity rotate-180" />
+                    <input
+                      type="file"
+                      multiple
+                      className="hidden"
+                      onChange={async (e) => {
+                        const files = e.target.files;
+                        if (!files || files.length === 0) return;
+                        const token = localStorage.getItem("clientToken");
+                        const formData = new FormData();
+                        Array.from(files as FileList).forEach((f: File) => formData.append("files", f));
+                        formData.append("category", "other");
+                        try {
+                          const res = await fetch(`http://localhost:3001/api/projects/${p.id}/files`, {
+                            method: "POST",
+                            headers: { "Authorization": `Bearer ${token}` },
+                            body: formData
+                          });
+                          const data = await res.json();
+                          if (data.success) alert(`✅ ${data.files.length} arquivo(s) enviado(s) com sucesso!`);
+                          else alert("Erro ao enviar arquivos.");
+                        } catch {
+                          alert("Erro de conexão ao enviar arquivos.");
+                        }
+                      }}
+                    />
+                  </label>
+              </div>
+            </div>
+
+
+            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
+              <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
+                <Activity className="w-4 h-4" /> Tracking & Ads
+              </h3>
+              <div className="space-y-3">
+                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
+                    <span className="text-[#A1A1AA] font-medium">Google Analytics</span>
+                    <span className="text-green-500 font-medium">Ativo</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
+                    <span className="text-[#A1A1AA] font-medium">Google Tag Manager</span>
+                    <span className="text-green-500 font-medium">Ativo</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
+                    <span className="text-[#A1A1AA] font-medium">Meta Pixel</span>
+                    <span className="text-green-500 font-medium">Ativo</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[13px]">
+                    <span className="text-[#A1A1AA] font-medium">Search Console</span>
+                    <span className="text-green-500 font-medium">Indexado</span>
+                  </div>
               </div>
             </div>
 
@@ -369,7 +434,11 @@ const ClientDashboard = () => {
               </h3>
               <div className="space-y-3">
                   <button className="w-full flex items-center justify-between text-[13px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors bg-[#000000] border border-[#222222] hover:border-[#444444] px-4 py-3 rounded-xl group">
-                    <span className="truncate font-medium">Contrato</span>
+                    <span className="truncate font-medium">Contrato_Prestacao_Servico.pdf</span>
+                    <Download className="w-4 h-4 text-[#666666] group-hover:text-[#EDEDED] transition-colors shrink-0" />
+                  </button>
+                  <button className="w-full flex items-center justify-between text-[13px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors bg-[#000000] border border-[#222222] hover:border-[#444444] px-4 py-3 rounded-xl group">
+                    <span className="truncate font-medium">Nota_Fiscal.pdf</span>
                     <Download className="w-4 h-4 text-[#666666] group-hover:text-[#EDEDED] transition-colors shrink-0" />
                   </button>
               </div>
@@ -487,9 +556,9 @@ const ClientDashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#000000] text-[#EDEDED] font-sans selection:bg-[#EDEDED]/30">
+    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans selection:bg-[#EDEDED]/30">
       {/* Top Nav */}
-      <nav className="border-b border-[#222222] bg-[#000000] sticky top-0 z-50">
+      <nav className="border-b border-[#222222] bg-[#050505] sticky top-0 z-50">
         <div className="px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">

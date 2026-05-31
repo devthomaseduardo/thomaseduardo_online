@@ -25,6 +25,7 @@ const Payment  = lazy(() => import("./pages/Payment"));
 const ClientPortalLogin = lazy(() => import("./pages/ClientPortalLogin"));
 const ClientDashboard = lazy(() => import("./pages/ClientDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const Proposta = lazy(() => import("./pages/Proposta"));
 
 // Minimal suspense fallback — invisible div to avoid layout shift
 const PageFallback = () => (
@@ -72,6 +73,7 @@ function App() {
             <Route path="/portal/dashboard" element={<ClientDashboard />} />
             <Route path="/portal/material" element={<Material />} />
             <Route path="/portal/pagamento" element={<Payment />} />
+            <Route path="/proposta" element={<Proposta />} />
             <Route path="/admin"    element={<AdminDashboard />} />
           </Routes>
         </Suspense>

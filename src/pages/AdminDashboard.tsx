@@ -6,13 +6,95 @@ import {
   Trash2, Edit2, X, Bell, User, ChevronRight, Folder, 
   CreditCard, Settings, Layers, UploadCloud, Info,
   Download, ExternalLink, GitBranch, Github, BarChart3,
-  Globe, Shield, File
+  Globe, Shield, File, Lock, Eye, EyeOff
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 
+// ─── Admin Gate ──────────────────────────────────────────────────────────────
+const AdminGate = ({ onAuth }: { onAuth: () => void }) => {
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:3001/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pass })
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem("adminKey", data.token);
+        onAuth();
+      } else {
+        setError("Senha incorreta");
+      }
+    } catch {
+      setError("Servidor indisponível");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-sm"
+      >
+        <div className="text-center mb-10">
+          <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-6 h-6 text-white/60" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Área Administrativa</h1>
+          <p className="text-white/40 text-sm">Acesso restrito. Insira a senha de administrador.</p>
+        </div>
+        <form onSubmit={handleSubmit} className="bg-white/[0.02] border border-white/10 rounded-2xl p-8 space-y-5">
+          <div>
+            <label className="block text-[11px] font-mono text-white/40 mb-3 uppercase tracking-wider">Senha Admin</label>
+            <div className="relative">
+              <input
+                type={show ? "text" : "password"}
+                value={pass}
+                onChange={e => { setPass(e.target.value); setError(""); }}
+                placeholder="••••••••"
+                required
+                autoFocus
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/20 outline-none focus:border-white/40 transition-colors font-mono"
+              />
+              <button type="button" onClick={() => setShow(!show)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors">
+                {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+          {error && (
+            <div className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-xl py-3">{error}</div>
+          )}
+          <button
+            type="submit" disabled={loading}
+            className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loading ? "Verificando..." : "Entrar"} <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+        <p className="text-center mt-6">
+          <a href="/" className="text-white/30 text-xs hover:text-white/60 transition-colors">← Voltar ao portfólio</a>
+        </p>
+      </motion.div>
+    </div>
+  );
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!sessionStorage.getItem("adminKey"));
   const [activeMenu, setActiveMenu] = useState("Overview");
   const [clientTab, setClientTab] = useState("Overview");
   const [projectClientTab, setProjectClientTab] = useState("Todos");
@@ -131,7 +213,7 @@ const AdminDashboard = () => {
       }, []);
 
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-[1200px] mx-auto py-12 px-8">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full mx-auto py-12 px-10 xl:px-16">
           <div className="mb-12 flex justify-between items-end">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Clientes</h1>
@@ -192,7 +274,7 @@ const AdminDashboard = () => {
       }, []).filter((p: any) => projectClientTab === "Todos" || p.client === projectClientTab);
 
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-[1200px] mx-auto py-12 px-8">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full mx-auto py-12 px-10 xl:px-16">
           <div className="mb-12 flex flex-col md:flex-row md:justify-between md:items-end gap-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Projetos</h1>
@@ -302,7 +384,7 @@ const AdminDashboard = () => {
       const totalAtrasado = calculateTotal('Atrasado');
 
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-[1200px] mx-auto py-12 px-8">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full mx-auto py-12 px-10 xl:px-16">
            <div className="mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Financeiro</h1>
             <p className="text-white/50">Fluxo de caixa e faturamento da operação.</p>
@@ -423,14 +505,14 @@ const AdminDashboard = () => {
       };
 
       return (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-[1200px] mx-auto py-12 px-8">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full mx-auto py-12 px-10 xl:px-16">
            <div className="mb-12">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Configurações</h1>
             <p className="text-white/50">Ajustes globais do sistema e integrações.</p>
           </div>
           <div className="max-w-3xl space-y-8">
             <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 backdrop-blur-sm">
-              <h3 className="text-[13px] font-mono text-white/60 mb-6 uppercase tracking-wider">Perfil da Agência</h3>
+              <h3 className="text-[13px] font-mono text-white/60 mb-6 uppercase tracking-wider">Perfil do Desenvolvedor</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-[11px] font-mono text-white/40 mb-2 uppercase tracking-wider">Nome Comercial</label>
@@ -473,7 +555,7 @@ const AdminDashboard = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="max-w-[1200px] mx-auto py-12 px-8"
+        className="w-full mx-auto py-12 px-10 xl:px-16"
       >
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-3">Operação</h1>
@@ -582,7 +664,7 @@ const AdminDashboard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-[1200px] mx-auto py-12 px-8"
+      className="w-full mx-auto py-12 px-10 xl:px-16"
     >
       <button 
         onClick={() => setSelectedClient(null)}
@@ -603,11 +685,11 @@ const AdminDashboard = () => {
 
       {/* Tabs */}
       <div className="flex p-1.5 bg-white/[0.03] border border-white/10 rounded-2xl mb-10 w-fit overflow-x-auto">
-        {["Overview", "Materiais", "Financeiro"].map(tab => (
+        {["Overview", "Contratos", "Pagamentos", "Saldo", "Uploads", "Arquivos", "Repositórios", "Deploys", "Meta Ads", "Google Ads", "Analytics", "GTM", "Search Console", "Notas Fiscais", "Cronograma", "Timeline Operacional"].map(tab => (
           <button 
             key={tab}
             onClick={() => setClientTab(tab)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               clientTab === tab ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"
             }`}
           >
@@ -745,7 +827,7 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {clientTab === "Materiais" && (
+          {clientTab === "Uploads" && (
              <motion.div
               key="materials"
               initial={{ opacity: 0, y: 10 }}
@@ -759,6 +841,14 @@ const AdminDashboard = () => {
                  <button className="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-white/90 transition-colors">
                    <Plus className="w-3.5 h-3.5" /> Solicitar Novo Material
                  </button>
+               </div>
+               
+               <div className="bg-white/[0.02] border border-white/10 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center mb-8 group hover:bg-white/[0.04] hover:border-[#009EE3]/50 transition-all cursor-pointer">
+                 <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4 border border-white/10 group-hover:scale-110 transition-transform">
+                   <UploadCloud className="w-8 h-8 text-white/40 group-hover:text-[#009EE3] transition-colors" />
+                 </div>
+                 <h4 className="text-white font-medium text-lg mb-2">Arraste seus arquivos para cá</h4>
+                 <p className="text-white/40 text-sm max-w-sm">Ou clique para fazer o upload de pastas, ZIPs, PDFs e imagens em alta resolução.</p>
                </div>
 
                <div className="space-y-6">
@@ -824,7 +914,7 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
-          {clientTab === "Contrato" && (
+          {clientTab === "Contratos" && (
             <motion.div
               key="contract"
               initial={{ opacity: 0, y: 10 }}
@@ -1020,8 +1110,44 @@ const AdminDashboard = () => {
              );
           })()}
 
+          {clientTab === "Timeline Operacional" && (
+             <motion.div
+               key="timeline_operacional"
+               initial={{ opacity: 0, y: 10 }}
+               animate={{ opacity: 1, y: 0 }}
+               exit={{ opacity: 0, y: -10 }}
+               transition={{ duration: 0.2 }}
+               className="max-w-4xl mx-auto"
+             >
+                <div className="bg-[#0a0a0a] border border-white/5 rounded-3xl p-10">
+                  <h3 className="text-[11px] font-mono text-white/40 mb-8 uppercase tracking-wider">Cronograma & Timeline</h3>
+                  <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2.5 before:translate-x-0 before:h-full before:w-px before:bg-white/10">
+                    {[
+                      { time: "Hoje", action: "briefing recebido", status: "done" },
+                      { time: "12 Mai 2026", action: "pagamento confirmado", status: "done" },
+                      { time: "Em andamento", action: "design aprovado", status: "done" },
+                      { time: "Previsto: 18 Mai", action: "desenvolvimento frontend", status: "progress" },
+                      { time: "Previsto: 24 Mai", action: "deploy produção", status: "pending" }
+                    ].map((event, i) => (
+                      <div key={i} className="relative flex items-center group">
+                        <div className={`flex items-center justify-center w-5 h-5 rounded-full border shrink-0 z-10 shadow-lg bg-[#050505] ${event.status === 'done' ? 'border-emerald-500/50 text-emerald-500' : event.status === 'progress' ? 'border-[#009EE3]/50 text-[#009EE3]' : 'border-white/20 text-white/20'}`}>
+                          {event.status === 'done' ? <CheckCircle2 className="w-3.5 h-3.5" /> : event.status === 'progress' ? <Clock className="w-3.5 h-3.5" /> : <Clock className="w-3.5 h-3.5" />}
+                        </div>
+                        <div className="ml-6 w-full">
+                          <div className={`flex flex-col gap-1 p-4 rounded-2xl border transition-colors ${event.status === 'done' ? 'bg-emerald-500/5 border-emerald-500/10' : event.status === 'progress' ? 'bg-[#009EE3]/5 border-[#009EE3]/10' : 'bg-white/[0.02] border-white/5'}`}>
+                            <span className="text-[10px] font-mono text-white/40">{event.time}</span>
+                            <p className={`text-[13px] font-medium ${event.status === 'pending' ? 'text-white/40' : 'text-white/80'}`}>{event.action}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+             </motion.div>
+          )}
+
           {/* Fallback tab catch-all */}
-          {!["Overview", "Financeiro", "Materiais", "Contrato", "Deploy", "Analytics", "Arquivos"].includes(clientTab) && (
+          {!["Overview", "Financeiro", "Uploads", "Contratos", "Deploy", "Analytics", "Arquivos", "Timeline Operacional"].includes(clientTab) && (
              <motion.div
                key="placeholder"
                initial={{ opacity: 0, scale: 0.95 }}
@@ -1044,6 +1170,10 @@ const AdminDashboard = () => {
     { name: "Clientes", icon: UsersIcon },
     { name: "Projetos", icon: Briefcase },
     { name: "Financeiro", icon: DollarSign },
+    { name: "Contratos", icon: FileText },
+    { name: "Uploads", icon: UploadCloud },
+    { name: "Deploys", icon: GitBranch },
+    { name: "Analytics", icon: BarChart3 },
     { name: "Configurações", icon: Settings }
   ];
 
@@ -1128,9 +1258,14 @@ const AdminDashboard = () => {
     </AnimatePresence>
   );
 
+  if (!isAuthenticated) {
+    return <AdminGate onAuth={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans flex overflow-hidden selection:bg-[#009EE3]/30">
       {renderModals()}
+
       {/* Sidebar Lateral Fixa */}
       <aside className="w-64 bg-[#0a0a0a] border-r border-white/5 flex-shrink-0 flex flex-col relative z-20">
         <div className="h-16 flex items-center px-8 border-b border-white/5">
@@ -1138,7 +1273,7 @@ const AdminDashboard = () => {
              <div className="w-5 h-5 rounded-md bg-white flex items-center justify-center">
                <div className="w-2 h-2 rounded-sm bg-black" />
              </div>
-             <span className="font-bold tracking-tight text-white text-sm">AGÊNCIA</span>
+             <span className="font-bold tracking-tight text-white text-sm">THOMAS EDUARDO</span>
           </div>
         </div>
         

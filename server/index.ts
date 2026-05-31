@@ -1,21 +1,77 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 const app = express();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-development';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin2024';
 
-// Middleware to authenticate JWT
+// ─── Uploads directory ───────────────────────────────────────────────────────
+const UPLOADS_DIR = path.join(__dirname, '../uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+// ─── Multer storage ──────────────────────────────────────────────────────────
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const projectId = (req.params.projectId || req.body.projectId || 'misc').replace(/[^a-zA-Z0-9-_]/g, '');
+    const dir = path.join(UPLOADS_DIR, projectId);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+    const ext = path.extname(file.originalname);
+    cb(null, `${unique}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200 MB
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+      'application/pdf',
+      'application/zip', 'application/x-zip-compressed',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'video/mp4', 'video/quicktime',
+      'application/octet-stream', // .ai, .eps, etc
+      'application/postscript',
+      'font/ttf', 'font/otf', 'application/font-woff',
+    ];
+    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(ai|eps|fig|sketch|zip|rar|7z)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Tipo de arquivo não permitido: ${file.mimetype}`));
+    }
+  }
+});
+
+// ─── Middleware ───────────────────────────────────────────────────────────────
+app.use(cors());
+app.use(express.json());
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+// ─── Auth middlewares ─────────────────────────────────────────────────────────
+
 const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  
   if (!token) return res.status(401).json({ error: 'Acesso negado' });
-  
   jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
     if (err) return res.status(403).json({ error: 'Token inválido' });
     req.user = user;
@@ -23,48 +79,239 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
-app.use(cors());
-app.use(express.json());
+const authenticateAdmin = (req: any, res: any, next: any) => {
+  const adminKey = req.headers['x-admin-key'] || req.query.adminKey;
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(403).json({ error: 'Acesso administrativo negado' });
+  }
+  next();
+};
 
-// Get all projects
+// ─── ADMIN AUTH ───────────────────────────────────────────────────────────────
+
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === ADMIN_PASSWORD) {
+    res.json({ success: true, token: ADMIN_PASSWORD });
+  } else {
+    res.status(401).json({ error: 'Senha incorreta' });
+  }
+});
+
+// ─── CLIENT AUTH ──────────────────────────────────────────────────────────────
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { identifier, password } = req.body;
+
+    const client = await prisma.client.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { cnpj: identifier }
+        ]
+      }
+    });
+
+    if (!client) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const isMatch = await bcrypt.compare(password, client.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const token = jwt.sign({ id: client.id, email: client.email }, JWT_SECRET, { expiresIn: '7d' });
+    res.json({
+      message: 'Login bem-sucedido',
+      token,
+      client: { id: client.id, name: client.name, email: client.email }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to authenticate' });
+  }
+});
+
+// ─── CLIENT DATA ──────────────────────────────────────────────────────────────
+
+app.get('/api/clients/me', authenticateToken, async (req: any, res: any) => {
+  try {
+    const client = await prisma.client.findUnique({
+      where: { id: req.user.id },
+      include: {
+        projects: {
+          include: {
+            invoices: { orderBy: { createdAt: 'desc' } },
+            files: { orderBy: { createdAt: 'desc' } }
+          }
+        }
+      }
+    });
+    if (!client) return res.status(404).json({ error: 'Cliente não encontrado' });
+    res.json(client);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch client data' });
+  }
+});
+
+// ─── PROJECT FILE UPLOAD (Client) ─────────────────────────────────────────────
+
+app.post(
+  '/api/projects/:projectId/files',
+  authenticateToken,
+  upload.array('files', 20),
+  async (req: any, res: any) => {
+    try {
+      const { projectId } = req.params;
+      const category = req.body.category || 'other';
+      const uploadedFiles = req.files as Express.Multer.File[];
+
+      if (!uploadedFiles || uploadedFiles.length === 0) {
+        return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+      }
+
+      // Verify project belongs to authenticated client
+      const project = await prisma.project.findFirst({
+        where: { id: projectId, clientId: req.user.id }
+      });
+
+      if (!project) {
+        return res.status(403).json({ error: 'Projeto não encontrado ou sem permissão' });
+      }
+
+      const records = await Promise.all(
+        uploadedFiles.map(f =>
+          prisma.projectFile.create({
+            data: {
+              originalName: f.originalname,
+              fileName: f.filename,
+              mimeType: f.mimetype,
+              size: f.size,
+              path: `/uploads/${projectId}/${f.filename}`,
+              category,
+              uploadedBy: 'client',
+              projectId
+            }
+          })
+        )
+      );
+
+      res.json({ success: true, files: records });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Falha no upload dos arquivos' });
+    }
+  }
+);
+
+// ─── PROJECT FILE UPLOAD (Admin) ──────────────────────────────────────────────
+
+app.post(
+  '/api/admin/projects/:projectId/files',
+  authenticateAdmin,
+  upload.array('files', 20),
+  async (req: any, res: any) => {
+    try {
+      const { projectId } = req.params;
+      const category = req.body.category || 'other';
+      const uploadedFiles = req.files as Express.Multer.File[];
+
+      if (!uploadedFiles || uploadedFiles.length === 0) {
+        return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+      }
+
+      const records = await Promise.all(
+        uploadedFiles.map(f =>
+          prisma.projectFile.create({
+            data: {
+              originalName: f.originalname,
+              fileName: f.filename,
+              mimeType: f.mimetype,
+              size: f.size,
+              path: `/uploads/${projectId}/${f.filename}`,
+              category,
+              uploadedBy: 'admin',
+              projectId
+            }
+          })
+        )
+      );
+
+      res.json({ success: true, files: records });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Falha no upload dos arquivos' });
+    }
+  }
+);
+
+// ─── GET FILES FOR A PROJECT ──────────────────────────────────────────────────
+
+app.get('/api/projects/:projectId/files', authenticateToken, async (req: any, res: any) => {
+  try {
+    const { projectId } = req.params;
+
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, clientId: req.user.id }
+    });
+    if (!project) return res.status(403).json({ error: 'Sem permissão' });
+
+    const files = await prisma.projectFile.findMany({
+      where: { projectId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch files' });
+  }
+});
+
+// ─── DELETE A FILE (Admin) ────────────────────────────────────────────────────
+
+app.delete('/api/admin/files/:fileId', authenticateAdmin, async (req: any, res: any) => {
+  try {
+    const { fileId } = req.params;
+    const file = await prisma.projectFile.findUnique({ where: { id: fileId } });
+    if (!file) return res.status(404).json({ error: 'Arquivo não encontrado' });
+
+    // Remove from disk
+    const fullPath = path.join(__dirname, '..', file.path);
+    if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+
+    await prisma.projectFile.delete({ where: { id: fileId } });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete file' });
+  }
+});
+
+// ─── PROJECTS (CRUD) ──────────────────────────────────────────────────────────
+
 app.get('/api/projects', async (req, res) => {
   try {
-    const projects = await prisma.project.findMany({
-      include: { client: true }
-    });
+    const projects = await prisma.project.findMany({ include: { client: true } });
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch projects' });
   }
 });
 
-// Create a new client and project
 app.post('/api/projects', async (req, res) => {
   try {
-    const { 
-      clientName, 
-      clientEmail, 
-      clientCnpj, 
-      clientType, 
-      projectName, 
-      projectValue,
-      hasDomainHosting,
-      domainHostingValue,
-      status,
-      password // Should be provided by admin, or generated
+    const {
+      clientName, clientEmail, clientCnpj, clientType,
+      projectName, projectValue, hasDomainHosting, domainHostingValue,
+      status, password, repoUrl, productionUrl
     } = req.body;
 
-    // Check if client exists or create
-    let client = await prisma.client.findUnique({
-      where: { email: clientEmail }
-    });
+    let client = await prisma.client.findUnique({ where: { email: clientEmail } });
 
     if (!client) {
-      // Default password to '123456' if none provided (for demo purposes)
-      // They should be required to change it
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password || '123456', salt);
-
       client = await prisma.client.create({
         data: {
           name: clientName,
@@ -84,6 +331,8 @@ app.post('/api/projects', async (req, res) => {
         phase: status || 'Aguardando Sinal',
         financial: 'Pendente (Sinal)',
         domainHostingValue: domainHostingValue ? parseFloat(domainHostingValue) : 0,
+        repoUrl: repoUrl || null,
+        productionUrl: productionUrl || null,
         clientId: client.id
       }
     });
@@ -95,12 +344,11 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-// Update a project
 app.put('/api/projects/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
-    
+
     const updatedProject = await prisma.project.update({
       where: { id },
       data: {
@@ -109,20 +357,20 @@ app.put('/api/projects/:id', async (req, res) => {
         financial: data.financial,
         value: parseFloat(data.value),
         domainHostingValue: data.domainHostingValue ? parseFloat(data.domainHostingValue) : 0,
-        seo: data.features?.seo || data.seo || false,
-        analytics: data.features?.analytics || data.analytics || false,
-        support: data.features?.support || data.support || false,
-        ads: data.features?.ads || data.ads || false,
+        seo: data.features?.seo ?? data.seo ?? false,
+        analytics: data.features?.analytics ?? data.analytics ?? false,
+        support: data.features?.support ?? data.support ?? false,
+        ads: data.features?.ads ?? data.ads ?? false,
+        repoUrl: data.repoUrl || undefined,
+        productionUrl: data.productionUrl || undefined,
+        internalNotes: data.internalNotes || undefined,
       }
     });
-    
+
     if (data.cnpj || data.clientType) {
       await prisma.client.update({
         where: { id: updatedProject.clientId },
-        data: {
-          cnpj: data.cnpj,
-          clientType: data.clientType
-        }
+        data: { cnpj: data.cnpj, clientType: data.clientType }
       });
     }
 
@@ -133,83 +381,21 @@ app.put('/api/projects/:id', async (req, res) => {
   }
 });
 
-// Client Login
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { identifier, password } = req.body;
+// ─── INVOICES (CRUD) ──────────────────────────────────────────────────────────
 
-    const client = await prisma.client.findFirst({
-      where: {
-        OR: [
-          { email: identifier },
-          { cnpj: identifier }
-        ]
-      }
-    });
-
-    if (!client) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-
-    const isMatch = await bcrypt.compare(password, client.password);
-    
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-
-    const token = jwt.sign({ id: client.id, email: client.email }, JWT_SECRET, { expiresIn: '7d' });
-    
-    res.json({ 
-      message: 'Login bem-sucedido', 
-      token,
-      client: { id: client.id, name: client.name, email: client.email } 
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to authenticate' });
-  }
-});
-
-// Get current client data
-app.get('/api/clients/me', authenticateToken, async (req: any, res: any) => {
-  try {
-    const client = await prisma.client.findUnique({
-      where: { id: req.user.id },
-      include: { 
-        projects: {
-          include: { invoices: true }
-        } 
-      }
-    });
-    
-    if (!client) {
-      return res.status(404).json({ error: 'Cliente não encontrado' });
-    }
-    
-    res.json(client);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch client data' });
-  }
-});
-
-// Create payment intent
 app.post('/api/payments/intent', async (req, res) => {
   try {
-    const { projectId, amount } = req.body;
-    
-    // Create an invoice
+    const { projectId, amount, description, type, dueDate } = req.body;
     const invoice = await prisma.invoice.create({
       data: {
-        description: 'Pagamento de Serviço / Sinal',
+        description: description || 'Pagamento de Serviço / Sinal',
         amount: parseFloat(amount),
         status: 'pending',
+        type: type || 'service',
+        dueDate: dueDate ? new Date(dueDate) : undefined,
         projectId
       }
     });
-
-    // Here we'd integrate with Mercado Pago
-    // For now returning the invoice ID to track
     res.json({ invoiceId: invoice.id, amount });
   } catch (error) {
     console.error(error);
@@ -217,49 +403,52 @@ app.post('/api/payments/intent', async (req, res) => {
   }
 });
 
-// --- Document Routes ---
+// Mark invoice as paid (admin)
+app.patch('/api/admin/invoices/:id/paid', authenticateAdmin, async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+    const invoice = await prisma.invoice.update({
+      where: { id },
+      data: { status: 'paid', paidAt: new Date() }
+    });
+    res.json(invoice);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to mark invoice as paid' });
+  }
+});
 
-// Get all documents
+// ─── DOCUMENTS ────────────────────────────────────────────────────────────────
+
 app.get('/api/documents', async (req, res) => {
   try {
-    const documents = await prisma.document.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    const documents = await prisma.document.findMany({ orderBy: { createdAt: 'desc' } });
     res.json(documents);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch documents' });
   }
 });
 
-// Create document
 app.post('/api/documents', async (req, res) => {
   try {
     const { title, type, clientName, date, url } = req.body;
-    const document = await prisma.document.create({
-      data: { title, type, clientName, date, url }
-    });
+    const document = await prisma.document.create({ data: { title, type, clientName, date, url } });
     res.json(document);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create document' });
   }
 });
 
-// Update document
 app.put('/api/documents/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { title, type, clientName, date, url } = req.body;
-    const document = await prisma.document.update({
-      where: { id },
-      data: { title, type, clientName, date, url }
-    });
+    const document = await prisma.document.update({ where: { id }, data: { title, type, clientName, date, url } });
     res.json(document);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update document' });
   }
 });
 
-// Delete document
 app.delete('/api/documents/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -270,13 +459,11 @@ app.delete('/api/documents/:id', async (req, res) => {
   }
 });
 
-// Admin Dashboard data
+// ─── ADMIN DASHBOARD ─────────────────────────────────────────────────────────
+
 app.get('/api/admin/dashboard', async (req, res) => {
   try {
-    const projects = await prisma.project.findMany({
-      include: { client: true }
-    });
-    
+    const projects = await prisma.project.findMany({ include: { client: true } });
     const invoices = await prisma.invoice.findMany({
       include: { project: { include: { client: true } } },
       orderBy: { createdAt: 'desc' }
@@ -286,36 +473,44 @@ app.get('/api/admin/dashboard', async (req, res) => {
     const pendingPayments = invoices
       .filter(i => i.status === 'pending')
       .reduce((sum, i) => sum + i.amount, 0);
-    const onboardings = projects.filter(p => p.phase === 'Aguardando Sinal' || p.phase === 'Onboarding').length;
+    const onboardings = projects.filter(p =>
+      p.phase === 'Aguardando Sinal' || p.phase === 'Onboarding'
+    ).length;
 
     const pipeline = projects.map(p => ({
       id: p.id,
       client: p.client.name,
       status: p.phase,
       payment: p.financial,
-      progress: p.phase === 'Concluído' ? '100%' : '50%', // Simplification
+      progress: p.phase === 'Concluído' ? '100%' : '50%',
       email: p.client.email,
       phone: p.client.cnpj || 'Não informado',
       seo: p.seo,
       analytics: p.analytics,
       support: p.support,
-      ads: p.ads
+      ads: p.ads,
+      repoUrl: p.repoUrl,
+      productionUrl: p.productionUrl,
     }));
 
     const paymentsData = invoices.map(i => ({
+      id: i.id,
       date: i.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
       client: i.project.client.name,
       desc: i.description,
       value: `R$ ${i.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      status: i.status === 'paid' ? 'Pago' : i.status === 'pending' ? 'Pendente' : 'Atrasado'
+      status: i.status === 'paid' ? 'Pago' : i.status === 'pending' ? 'Pendente' : 'Atrasado',
+      type: i.type,
+      dueDate: i.dueDate?.toLocaleDateString('pt-BR') || null,
+      paidAt: i.paidAt?.toLocaleDateString('pt-BR') || null,
     }));
 
     res.json({
       kpis: [
-        { label: "Projetos ativos", value: activeProjects.toString() },
-        { label: "Pag. Pendentes", value: `R$ ${pendingPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
-        { label: "Onboardings", value: onboardings.toString(), sub: "incompletos" },
-        { label: "Entregas Semana", value: "0" }
+        { label: 'Projetos ativos', value: activeProjects.toString() },
+        { label: 'A Receber', value: `R$ ${pendingPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
+        { label: 'Onboardings', value: onboardings.toString(), sub: 'incompletos' },
+        { label: 'Clientes', value: (await prisma.client.count()).toString() },
       ],
       pipeline,
       paymentsData
@@ -326,7 +521,10 @@ app.get('/api/admin/dashboard', async (req, res) => {
   }
 });
 
+// ─── START ────────────────────────────────────────────────────────────────────
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`📁 Uploads dir: ${UPLOADS_DIR}`);
 });

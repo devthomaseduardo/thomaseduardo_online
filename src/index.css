@@ -29,16 +29,16 @@
 /* ─── THEME VARIABLES (Strict Dark Only) ─────────────────── */
 :root {
   /* Backgrounds */
-  --pg-bg:          #0A0A0A;
-  --pg-bg-alt:      #111111;
-  --pg-bg-gradient: linear-gradient(180deg, #0A0A0A 0%, #161616 100%);
-  --pg-surface:     rgba(255,255,255,0.04);
-  --pg-surface-md:  rgba(255,255,255,0.07);
+  --pg-bg:          #050505;
+  --pg-bg-alt:      #0A0A0A;
+  --pg-bg-gradient: linear-gradient(180deg, #050505 0%, #0A0A0A 100%);
+  --pg-surface:     rgba(255,255,255,0.03);
+  --pg-surface-md:  rgba(255,255,255,0.05);
 
   /* Borders */
-  --pg-border:      rgba(255,255,255,0.08);
-  --pg-border-md:   rgba(255,255,255,0.12);
-  --pg-separator:   rgba(255,255,255,0.08);
+  --pg-border:      rgba(255,255,255,0.05);
+  --pg-border-md:   rgba(255,255,255,0.08);
+  --pg-separator:   rgba(255,255,255,0.05);
 
   /* Text */
   --pg-text:        #FFFFFF;
@@ -48,12 +48,12 @@
   --pg-faint:       #3a3a3c;
 
   /* Cards */
-  --pg-card-bg:     #1A1A1A;
-  --pg-card-border: rgba(255,255,255,0.06);
+  --pg-card-bg:     #080808;
+  --pg-card-border: rgba(255,255,255,0.04);
   --pg-card-radius: 16px;
 
   /* Scrollbar */
-  --pg-scrolltrack: #0A0A0A;
+  --pg-scrolltrack: #050505;
   --pg-scrollthumb: rgba(255,255,255,0.10);
 
   /* Section Spacing Variables */

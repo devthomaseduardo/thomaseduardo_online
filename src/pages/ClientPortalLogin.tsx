@@ -6,18 +6,18 @@ import { useNavigate } from "react-router-dom";
 const features = [
   {
     icon: <UploadCloud className="w-6 h-6 text-[#009EE3]" />,
-    title: "Gestão de Materiais",
-    description: "Envie e gerencie todos os ativos do projeto em um só lugar. Textos, imagens e referências organizados e sem confusão de e-mails."
+    title: "Materiais do Projeto",
+    description: "Envie logos, imagens, textos, vídeos, referências e arquivos necessários para o desenvolvimento."
   },
   {
     icon: <CreditCard className="w-6 h-6 text-[#009EE3]" />,
     title: "Financeiro Transparente",
-    description: "Acesse faturas, opções de pagamento (Pix, Cartão, Boleto) e histórico financeiro com total segurança e clareza."
+    description: "Acesse pagamentos, saldo, serviços adicionais, invoices e notas fiscais quando solicitado."
   },
   {
     icon: <FileText className="w-6 h-6 text-[#009EE3]" />,
-    title: "Contratos e Infraestrutura",
-    description: "Tenha sempre à mão as vias originais dos seus contratos, escopo de projeto e credenciais de infraestrutura."
+    title: "Infraestrutura Técnica",
+    description: "Visualize repositórios, deploys, domínios, integrações, Meta Ads, Google Ads, GTM, analytics e dados técnicos do projeto."
   }
 ];
 
@@ -47,7 +47,7 @@ const ClientPortalLogin = () => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email: identifier,
+          identifier: identifier,
           password: code
         })
       });
@@ -82,17 +82,17 @@ const ClientPortalLogin = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="text-[#009EE3] font-mono text-sm tracking-widest uppercase mb-4 block">
-              Para Novo Cliente
+            <span className="text-[#009EE3] font-mono text-[11px] tracking-widest uppercase mb-4 block">
+              PORTAL DO CLIENTE
             </span>
             <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Seu ambiente de <br />
+              Seu ambiente privado <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">
-                gestão exclusiva.
+                de projeto.
               </span>
             </h2>
             <p className="text-white/50 text-lg mb-12">
-              Acompanhe o progresso, envie materiais e gerencie todo o escopo do seu projeto em uma plataforma premium e unificada.
+              Acompanhe materiais, pagamentos, contratos, entregas e informações técnicas do seu projeto em um único ambiente organizado.
             </p>
           </motion.div>
 
@@ -148,17 +148,17 @@ const ClientPortalLogin = () => {
         >
           <div className="text-center mb-10 lg:text-left">
             <h1 className="text-3xl font-bold tracking-tight text-white mb-3">
-              Para você que já é cliente
+              Para clientes ativos
             </h1>
             <p className="text-white/50 text-sm">
-              Insira suas credenciais para acessar o painel do seu projeto.
+              Insira suas credenciais para acessar a área privada do seu projeto.
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 backdrop-blur-xl">
             <div className="space-y-6">
               <div>
-                <label className="block text-[11px] font-mono text-white/40 mb-3 uppercase tracking-wider">CNPJ / CPF ou E-mail</label>
+                <label className="block text-[11px] font-mono text-white/40 mb-3 uppercase tracking-wider">CNPJ, CPF ou e-mail</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/40">
                     <User className="w-5 h-5" />
@@ -167,15 +167,15 @@ const ClientPortalLogin = () => {
                     type="text" 
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="Ex: 00.000.000/0001-00 ou email@empresa.com"
+                    placeholder="Seu identificador"
                     required
-                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/20 outline-none focus:border-[#009EE3] transition-colors focus:ring-1 focus:ring-[#009EE3]"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white placeholder-white/20 outline-none focus:border-white/40 transition-colors focus:ring-1 focus:ring-white/40"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-white/40 mb-3 uppercase tracking-wider">Código de Acesso do Projeto</label>
+                <label className="block text-[11px] font-mono text-white/40 mb-3 uppercase tracking-wider">Chave de acesso do projeto</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/40">
                     <Lock className="w-5 h-5" />
@@ -207,7 +207,7 @@ const ClientPortalLogin = () => {
               >
                 <div className="absolute inset-0 bg-[#009EE3] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
                 <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
-                  Acessar Painel
+                  Acessar Projeto
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </button>
@@ -217,7 +217,7 @@ const ClientPortalLogin = () => {
           <div className="mt-8 text-center lg:text-left flex items-center justify-center lg:justify-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-[#009EE3]" />
             <a href="/" className="text-white/40 text-sm hover:text-white transition-colors">
-              Voltar para o site principal
+              Voltar para thomaseduardo.online
             </a>
           </div>
         </motion.div>

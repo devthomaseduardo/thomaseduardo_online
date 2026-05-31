@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Client {
@@ -34,6 +35,8 @@ model Project {
   ads                Boolean  @default(false)
   
   internalNotes      String?
+  repoUrl            String?  // URL do repositório GitHub
+  productionUrl      String?  // URL do site em produção
   
   clientId           String
   client             Client   @relation(fields: [clientId], references: [id])
@@ -41,15 +44,19 @@ model Project {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   invoices           Invoice[]
+  files              ProjectFile[]
 }
 
 model Invoice {
   id          String   @id @default(uuid())
   description String
   amount      Float
-  status      String   @default("pending") // pending, paid, canceled
+  status      String   @default("pending") // pending, paid, canceled, overdue
+  type        String   @default("service")  // service, nf, contract
   projectId   String
   project     Project  @relation(fields: [projectId], references: [id])
+  dueDate     DateTime?
+  paidAt      DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -64,3 +71,18 @@ model Document {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model ProjectFile {
+  id           String   @id @default(uuid())
+  originalName String
+  fileName     String   // stored filename on disk
+  mimeType     String
+  size         Int      // in bytes
+  path         String   // relative path to the upload
+  category     String   @default("other") // brand, copy, media, access, contract, nf, delivery, other
+  uploadedBy   String   @default("client") // client | admin
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id])
+  createdAt    DateTime @default(now())
+}
+

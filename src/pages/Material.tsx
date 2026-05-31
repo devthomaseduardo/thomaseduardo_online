@@ -14,63 +14,73 @@ const MaterialPage = () => {
 
   const materials = [
     {
-      id: "brand",
+      id: "materiais",
       icon: <Palette className="w-6 h-6 text-white/70" />,
-      title_pt: "Identidade Visual & Marca",
-      title_en: "Visual Identity & Branding",
-      desc_pt: "Logotipo em alta resolução (Vetor, SVG ou PNG transparente), paleta de cores oficial e tipografias (fontes) da sua marca.",
-      desc_en: "High resolution logo (Vector, SVG or transparent PNG), official color palette and typography (fonts) of your brand.",
-      solution_pt: "Não tem uma marca? Nós desenvolvemos uma identidade visual premium do zero ou modernizamos a sua atual para o projeto.",
-      solution_en: "Don't have a brand? We can develop a premium visual identity from scratch or modernize your current one for the project."
+      title_pt: "Materiais necessários",
+      title_en: "Required materials",
+      desc_pt: "Para iniciar, precisaremos da sua logo, manual de identidade visual, textos institucionais, imagens em alta resolução, vídeos, referências visuais e acessos importantes (como painel de domínio).",
+      desc_en: "To start, we'll need your logo, brand guidelines, institutional texts, high-resolution images, videos, visual references, and important access (such as domain panel).",
+      solution_pt: "Se não tiver marca ou textos prontos, nós guiamos a produção, utilizamos bancos de imagens licenciados ou criamos uma identidade visual do zero.",
+      solution_en: "If you don't have a brand or texts ready, we guide the production, use licensed stock images, or create a visual identity from scratch."
     },
     {
-      id: "copy",
+      id: "etapas",
+      icon: <CheckCircle2 className="w-6 h-6 text-white/70" />,
+      title_pt: "Etapas do projeto",
+      title_en: "Project stages",
+      desc_pt: "O processo segue um fluxo linear: briefing inicial, organização dos materiais, aprovação da proposta, pagamento inicial, design (UI/UX), desenvolvimento frontend/backend, rodada de revisão, publicação (deploy) e entrega final.",
+      desc_en: "The process follows a linear flow: initial briefing, organization of materials, proposal approval, initial payment, design (UI/UX), frontend/backend development, review round, publication (deploy), and final delivery.",
+      solution_pt: "Você será notificado a cada avanço através da sua Área Privada e não precisa se preocupar com cronograma, nós gerenciamos tudo.",
+      solution_en: "You will be notified at every step through your Private Area and don't need to worry about the schedule, we manage everything."
+    },
+    {
+      id: "pagamentos",
       icon: <FileText className="w-6 h-6 text-white/70" />,
-      title_pt: "Textos & Copywriting",
-      title_en: "Texts & Copywriting",
-      desc_pt: "Textos institucionais (quem somos), descrições de serviços/produtos, diferenciais, depoimentos de clientes e informações de contato.",
-      desc_en: "Institutional texts (about us), service/product descriptions, differentials, client testimonials, and contact information.",
-      solution_pt: "Se não tiver textos prontos, não se preocupe. Contamos com um processo guiado para extrair essas informações e redatores para criar uma comunicação focada em conversão.",
-      solution_en: "If you don't have texts ready, don't worry. We have a guided process to extract this information and copywriters to create conversion-focused communication."
+      title_pt: "Pagamentos",
+      title_en: "Payments",
+      desc_pt: "Aceitamos pagamentos via PIX, checkout seguro via Mercado Pago (cartão de crédito em até 12x) e faturamento direto. Todo o saldo, invoices e contratação de serviços adicionais são gerenciados na sua Área do Cliente.",
+      desc_en: "We accept payments via PIX, secure checkout via Mercado Pago (credit card up to 12x), and direct billing. All balance, invoices, and additional services are managed in your Client Area.",
+      solution_pt: "Emitimos Notas Fiscais para todas as transações, disponíveis para download imediatamente após a confirmação.",
+      solution_en: "We issue Invoices for all transactions, available for download immediately after confirmation."
     },
     {
-      id: "media",
-      icon: <ImageIcon className="w-6 h-6 text-white/70" />,
-      title_pt: "Imagens, Mídia & Referências",
-      title_en: "Images, Media & References",
-      desc_pt: "Fotos do seu espaço, equipe, produtos ou serviços realizados. Vídeos institucionais ou materiais gráficos. Para melhor qualidade, envie imagens em alta resolução (mínimo de 1920x1080px para banners horizontais e 1080x1080px para formatos quadrados). Por favor, forneça também links de referência (sites, perfis ou moodboards) que inspirem o estilo visual que você deseja.",
-      desc_en: "Photos of your space, team, products or services provided. Institutional videos or graphic materials. For best quality, please send high-resolution images (minimum 1920x1080px for horizontal banners and 1080x1080px for square formats). Please also provide reference links (websites, profiles, or moodboards) that inspire the visual style you desire.",
-      solution_pt: "Caso não possua fotos profissionais, podemos utilizar bancos de imagens premium (licenciados) de alta qualidade ou orientar sua equipe na produção das fotos ideais.",
-      solution_en: "If you don't have professional photos, we can use premium high-quality stock images (licensed) or guide your team in producing the ideal photos."
+      id: "entregas",
+      icon: <ChevronDown className="w-6 h-6 text-white/70" />,
+      title_pt: "Entregas",
+      title_en: "Deliverables",
+      desc_pt: "No fim do projeto, você recebe: o projeto publicado em alta performance, arquivos fonte em formato ZIP, acesso aos repositórios no GitHub, documentação técnica da arquitetura e todos os acessos administrativos configurados.",
+      desc_en: "At the end of the project, you receive: the high-performance published project, source files in ZIP format, access to GitHub repositories, technical architecture documentation, and all administrative accesses configured.",
+      solution_pt: "Você é 100% dono de todo o código fonte e da propriedade intelectual gerada.",
+      solution_en: "You own 100% of the source code and intellectual property generated."
     },
     {
-      id: "access",
-      icon: <Key className="w-6 h-6 text-white/70" />,
-      title_pt: "Acessos & Credenciais",
-      title_en: "Access & Credentials",
-      desc_pt: "Acesso ao provedor de domínio (Registro.br, GoDaddy, HostGator), acessos a redes sociais (para links) e contas de ferramentas como Google Analytics ou Pixel da Meta.",
-      desc_en: "Access to the domain provider (GoDaddy, Namecheap, etc), social media access (for links) and accounts for tools like Google Analytics or Meta Pixel.",
-      solution_pt: "Se for o seu primeiro site, nós criamos e configuramos absolutamente tudo: desde o registro do domínio até a hospedagem em nossos servidores de alta performance.",
-      solution_en: "If it's your first site, we create and configure absolutely everything: from domain registration to hosting on our high-performance servers."
+      id: "suporte",
+      icon: <Info className="w-6 h-6 text-white/70" />,
+      title_pt: "Suporte e próximos passos",
+      title_en: "Support and next steps",
+      desc_pt: "Após a entrega, você terá um período de ajustes finos. Oferecemos também planos de manutenção contínua, infraestrutura, melhorias futuras e prioridade na contratação de novos serviços.",
+      desc_en: "After delivery, you'll have a fine-tuning period. We also offer ongoing maintenance plans, infrastructure, future improvements, and priority in hiring new services.",
+      solution_pt: "Nossa parceria não acaba no deploy. Mantemos uma infraestrutura ativa para escalar sua operação.",
+      solution_en: "Our partnership doesn't end at deploy. We maintain an active infrastructure to scale your operation."
     }
   ];
 
   return (
     <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
       
-      <main className="section-padding px-6 max-w-4xl mx-auto pt-32 pb-24">
+      <main className="section-padding px-6 max-w-5xl mx-auto pt-32 pb-32">
         {/* Page Header */}
         <motion.div {...FADE_UP} className="mb-16">
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-6">
-            {lang === "pt" ? "Onboarding do Cliente" : "Client Onboarding"}
+            {lang === "pt" ? "Portal de Novos Clientes" : "New Clients Portal"}
           </span>
           <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tighter leading-[1.1] text-white mb-6 uppercase">
-            {lang === "pt" ? "Materiais para iniciar o projeto" : "Materials to start the project"}
+            {lang === "pt" ? "Processo de Desenvolvimento" : "Development Process"}
           </h1>
           <p className="text-lg md:text-xl text-white/50 font-light max-w-2xl leading-relaxed">
             {lang === "pt" 
-              ? "Para garantir a excelência e rapidez na entrega, precisamos de alguns insumos essenciais. Veja abaixo o que é necessário e o que fazemos caso você não os tenha."
-              : "To ensure excellence and speed in delivery, we need some essential inputs. See below what is required and what we do if you don't have them."}
+              ? "Para garantir a excelência e rapidez na entrega, aqui está um guia completo de como o seu projeto será conduzido, desde o briefing até a publicação final."
+              : "To ensure excellence and speed in delivery, here is a complete guide on how your project will be conducted, from briefing to final publication."}
           </p>
         </motion.div>
 
@@ -90,7 +100,7 @@ const MaterialPage = () => {
               >
                 <button 
                   onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                  className="w-full text-left p-6 sm:p-8 flex items-center justify-between gap-4 outline-none cursor-pointer"
+                  className="w-full text-left p-8 sm:p-10 flex items-center justify-between gap-6 outline-none cursor-pointer"
                 >
                   <div className="flex items-center gap-6">
                     <div className="flex-shrink-0">
@@ -98,7 +108,7 @@ const MaterialPage = () => {
                         {item.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl md:text-2xl font-medium text-white">
+                    <h3 className="text-2xl md:text-3xl font-medium text-white">
                       {lang === "pt" ? item.title_pt : item.title_en}
                     </h3>
                   </div>

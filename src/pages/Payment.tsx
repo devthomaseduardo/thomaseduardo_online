@@ -45,11 +45,25 @@ const PaymentPage = () => {
           >
             <div className="text-center mb-10">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
-                {lang === "pt" ? "Forma de Pagamento" : "Payment Method"}
+                {lang === "pt" ? "Fatura #004" : "Invoice #004"}
               </h1>
               <p className="text-white/50">
                 Selecione a forma de pagamento desejada para prosseguir.
               </p>
+            </div>
+            
+            {/* Invoice Summary */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 mb-10 mx-auto max-w-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-white/40 block mb-2">Detalhes da Fatura</span>
+                <span className="text-xl font-medium text-white block">{project?.name || "Premium Digital Operation"}</span>
+                <span className="text-sm text-white/50 mt-1 block">Referente a: Setup Inicial e Integrações</span>
+              </div>
+              <div className="text-left md:text-right">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-semibold text-white/40 block mb-2">Valor Total</span>
+                <span className="text-3xl font-light text-white block">R$ {amountToPay.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <span className="inline-block mt-2 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-orange-500/10 border border-orange-500/20 text-orange-500">Aguardando Pagamento</span>
+              </div>
             </div>
             {/* Tabs */}
             <div className="flex p-1.5 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 w-fit mx-auto">
@@ -286,7 +300,7 @@ const PaymentPage = () => {
                           <span className="block text-lg font-medium">Nubank (260)</span>
                         </div>
                         <div>
-                          <span className="block text-sm text-white/40 mb-1">Agência</span>
+                          <span className="block text-sm text-white/40 mb-1">Desenvolvedor</span>
                           <span className="block text-lg font-medium">0001</span>
                         </div>
                         <div>
