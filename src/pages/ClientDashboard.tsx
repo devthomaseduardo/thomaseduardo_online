@@ -1,27 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { 
-  CheckCircle2, 
-  Circle, 
-  Globe, 
-  Server, 
-  Link as LinkIcon, 
-  FileText, 
-  LogOut, 
-  ArrowLeft,
-  MessageSquarePlus,
-  CreditCard,
-  ExternalLink,
-  ChevronRight,
-  Activity,
-  Download,
-  ArrowRight
+  CheckCircle2, Circle, Globe, Link as LinkIcon, FileText, LogOut, ArrowLeft,
+  CreditCard, Activity, Download, UploadCloud, MonitorSmartphone, Server,
+  GitBranch, Check, Hourglass, Zap, Shield, ChevronRight, PieChart, Code2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ClientDashboard = () => {
+export default function ClientDashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview"); // overview, chamados, financeiro
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [clientData, setClientData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -33,18 +20,11 @@ const ClientDashboard = () => {
         navigate("/portal");
         return;
       }
-
       try {
         const res = await fetch("http://localhost:3001/api/clients/me", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
+          headers: { "Authorization": `Bearer ${token}` }
         });
-
-        if (!res.ok) {
-          throw new Error("Não autorizado");
-        }
-
+        if (!res.ok) throw new Error("Não autorizado");
         const data = await res.json();
         setClientData(data);
       } catch (err) {
@@ -54,7 +34,6 @@ const ClientDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchClientData();
   }, [navigate]);
 
@@ -65,548 +44,263 @@ const ClientDashboard = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">Carregando...</div>;
+    return <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center font-mono text-sm tracking-widest uppercase">Carregando Infraestrutura...</div>;
   }
 
   if (!clientData) return null;
-
-  const getOverview = () => {
-    const projetos = clientData.projects?.length || 0;
-    const entregues = clientData.projects?.filter((p: any) => p.phase === "Entregue").length || 0;
-    const dominios = projetos; // simplifying for now
-    return { projetos, entregues, pagamentoStatus: "Regular", dominios };
-  };
-
-  const handlePayment = async (projectId: string, amount: number) => {
-    try {
-      const res = await fetch("http://localhost:3001/api/payments/intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, amount })
-      });
-      const data = await res.json();
-      if (data.invoiceId) {
-        alert("Fatura criada com sucesso! ID: " + data.invoiceId + " - Redirecionando para pagamento...");
-        // Here we would redirect to Mercado Pago or show payment modal
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao gerar pagamento.");
-    }
-  };
-
-  const getFinanceiro = () => {
-    const receitaTotal = clientData.projects?.reduce((acc: number, p: any) => acc + (p.value || 0), 0) || 0;
-    const recebido = 0; // Backend doesn't track paid amount easily without invoices yet
-    const pendente = receitaTotal - recebido;
-    const tabela = clientData.projects?.map((p: any) => ({
-      projeto: p.name,
-      valor: `R$ ${p.value}`,
-      pago: "R$ 0",
-      restante: `R$ ${p.value}`
-    })) || [];
-    return { receitaTotal, recebido, pendente, tabela };
-  };
-
-  const overview = getOverview();
-  const financeiro = getFinanceiro();
   const projects = clientData.projects || [];
 
   const renderProjectOverview = () => (
-    <div className="space-y-16 animate-in fade-in duration-700">
-      <div className="max-w-3xl">
-        <h1 className="text-[40px] md:text-[48px] leading-[1.1] font-semibold tracking-[-0.04em] mb-4 text-[#EDEDED]">
+    <div className="space-y-12 animate-in fade-in duration-700 w-full">
+      <div>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white">
           Sua infraestrutura digital.
         </h1>
-        <p className="text-[#A1A1AA] text-[16px] leading-relaxed max-w-xl">
+        <p className="text-white/50 text-lg font-light">
           Acompanhe o progresso, saúde financeira e o status operacional dos seus ecossistemas.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#222222] border border-[#222222] rounded-2xl overflow-hidden">
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Projetos</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-[#EDEDED]">{overview.projetos}</span>
-        </div>
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Entregues</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-[#EDEDED]">{overview.entregues}</span>
-        </div>
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Pagamentos</span>
-          <span className="text-xl md:text-2xl font-medium tracking-tight text-[#EDEDED] mt-3 block">{overview.pagamentoStatus}</span>
-        </div>
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Domínios</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-[#EDEDED]">{overview.dominios}</span>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-[#666666] font-semibold mb-8">Operações Ativas</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map(p => (
-            <div 
-              key={p.id} 
-              onClick={() => setSelectedProject(p)}
-              className="bg-[#0A0A0A] border border-[#222222] hover:border-[#444444] rounded-2xl p-8 cursor-pointer transition-all duration-300 group"
-            >
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {projects.map(p => (
+          <div 
+            key={p.id} 
+            onClick={() => setSelectedProject(p)}
+            className="bg-[#0A0A0A] border border-white/5 hover:border-white/15 rounded-3xl p-8 cursor-pointer transition-all duration-300 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#009EE3]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10">
               <div className="flex justify-between items-start mb-12">
-                <h3 className="text-2xl font-medium tracking-tight text-[#EDEDED] group-hover:text-white transition-colors">{p.name}</h3>
-                <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-[#111111] border border-[#222222] text-[#A1A1AA]">
+                <h3 className="text-2xl font-bold tracking-tight text-white">{p.name}</h3>
+                <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-white/5 border border-white/10 text-white/50 group-hover:text-white/80 transition-colors">
                   {p.phase}
                 </span>
               </div>
-              <p className="text-[13px] text-[#666666] mb-8 font-medium">Serviço: <span className="text-[#A1A1AA]">Landing Page / Website</span></p>
               
-              <div className="flex justify-between items-center border-t border-[#222222] pt-6">
-                <span className="text-[#666666] text-[12px] font-medium tracking-wide">Atualizado</span>
-                <button className="text-[12px] font-medium text-[#A1A1AA] flex items-center gap-2 group-hover:text-white transition-colors">
-                  Acessar Operação <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <div className="flex justify-between items-end border-t border-white/5 pt-6 mt-8">
+                <div>
+                  <span className="block text-[10px] uppercase tracking-widest text-white/30 mb-1">Status</span>
+                  <span className="text-sm font-medium text-emerald-500 flex items-center gap-2">
+                    <Circle className="w-2 h-2 fill-current" /> Operação Ativa
+                  </span>
+                </div>
+                <button className="text-xs font-mono uppercase tracking-widest text-white/40 group-hover:text-white flex items-center gap-2 transition-colors">
+                  Acessar Painel <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+        {projects.length === 0 && (
+          <div className="col-span-full py-20 text-center border border-white/5 border-dashed rounded-3xl">
+            <p className="text-white/40">Nenhum projeto ativo encontrado.</p>
+          </div>
+        )}
       </div>
     </div>
   );
 
   const renderProjectDetail = () => {
     const p = selectedProject;
+    
+    // Fake timeline mapping to narrative
+    const progressPercent = 72; // Hardcoded feel for the post-proposal experience
+    const currentStepText = "Desenvolvimento Frontend";
+    
     return (
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
         <button 
           onClick={() => setSelectedProject(null)}
-          className="flex items-center gap-2 text-[#666666] hover:text-[#EDEDED] text-[12px] uppercase tracking-wider font-semibold transition-colors mb-8"
+          className="flex items-center gap-2 text-white/40 hover:text-white text-[11px] uppercase tracking-widest font-mono transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Voltar para operações
+          <ArrowLeft className="w-4 h-4" /> Voltar para projetos
         </button>
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h1 className="text-[40px] md:text-[48px] leading-[1.1] font-semibold tracking-[-0.04em] mb-4 text-[#EDEDED]">{p.name}</h1>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-orange-500/10 border border-orange-500/20 text-orange-500 flex items-center gap-2">
-                <Circle className="w-1.5 h-1.5 fill-current" />
-                {p.phase}
-              </span>
-              <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-[#111111] border border-[#222222] text-[#A1A1AA]">
-                {p.financial}
-              </span>
-              {p.hasDomainHosting && (
-                <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-[#111111] border border-[#222222] text-[#A1A1AA]">
-                  Domínio + Infra
-                </span>
-              )}
-            </div>
-          </div>
-          <div className="flex gap-3 w-full md:w-auto">
-            <button className="flex-1 md:flex-none bg-[#0A0A0A] border border-[#222222] text-[#EDEDED] px-6 py-3 rounded-xl text-[13px] font-medium hover:bg-[#111111] transition-all flex items-center justify-center gap-2">
-              <ExternalLink className="w-4 h-4" /> Produção
-            </button>
-            <button className="flex-1 md:flex-none bg-[#EDEDED] text-black px-6 py-3 rounded-xl text-[13px] font-semibold hover:bg-white transition-colors flex items-center justify-center gap-2">
-              <MessageSquarePlus className="w-4 h-4" /> Chamado
-            </button>
-          </div>
+        {/* ── HERO ── */}
+        <div>
+          <h1 className="text-[clamp(36px,5vw,56px)] font-bold tracking-tight mb-4 leading-[1.1]">
+            Seu projeto está em andamento.
+          </h1>
+          <p className="text-white/50 text-lg font-light max-w-2xl">
+            Acompanhe o progresso de <strong className="text-white font-medium">{p.name}</strong>, pagamentos, arquivos e infraestrutura técnica em tempo real.
+          </p>
         </div>
 
-        {/* Bento Grid - Quick Answers */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-[#222222] border border-[#222222] rounded-2xl overflow-hidden mt-8">
-          {/* Serviço Contratado */}
-          <div className="bg-[#0A0A0A] p-6 md:p-8 flex flex-col justify-between">
-            <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">Serviço</span>
-            <span className="text-[#EDEDED] font-light text-2xl tracking-tight leading-tight">Web Dev</span>
-          </div>
-
-          {/* Financeiro */}
-          <div className="bg-[#0A0A0A] p-6 md:p-8 flex flex-col justify-between">
-            <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">Financeiro</span>
-            <div className="flex items-center gap-2">
-              <span className="text-[#EDEDED] font-light text-2xl tracking-tight leading-tight">{p.financial}</span>
-            </div>
-          </div>
-
-          {/* Status Online */}
-          <div className="bg-[#0A0A0A] p-6 md:p-8 flex flex-col justify-between">
-            <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">Produção</span>
-            <div className="flex flex-col">
-              <span className="text-green-500 font-light text-2xl tracking-tight flex items-center gap-2">
-                <Circle className="w-2 h-2 fill-current" /> {p.phase === "Entregue" || p.phase === "Finalizado" ? "Online" : "Pendente"}
-              </span>
-              <span className="text-[#A1A1AA] text-[12px] truncate mt-2 font-medium">site.com.br</span>
-            </div>
-          </div>
-
-          {/* Ação Pendente */}
-          <div 
-            className="bg-orange-500/5 p-6 md:p-8 flex flex-col justify-between relative overflow-hidden group cursor-pointer hover:bg-orange-500/10 transition-colors"
-            onClick={() => navigate("/portal/pagamento")}
-          >
-            <span className="text-orange-500/80 text-[10px] uppercase tracking-[0.2em] font-semibold mb-4">Ação Pendente</span>
-            <span className="text-orange-500 font-medium text-xl pr-6 leading-tight">
-              Acessar Pagamentos
-            </span>
-            <ArrowRight className="w-4 h-4 text-orange-500 absolute bottom-8 right-6 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-4">
-          {/* Timeline / Info */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-              <div className="flex justify-between items-center mb-8">
-                <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold flex items-center gap-2 text-[#666666]">
-                  <Activity className="w-4 h-4" /> Timeline Operacional
-                </h3>
-                <span className="text-[12px] font-medium text-[#A1A1AA]">Status: {p.phase}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+          
+          {/* ── COLUNA ESQUERDA: TIMELINE VIVA (STICKY) ── */}
+          <div className="lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24 space-y-6">
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#009EE3]/10 blur-[50px] rounded-full pointer-events-none" />
+              
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 block mb-2">Passo atual:</span>
+              <h3 className="text-2xl font-bold tracking-tight text-[#009EE3] mb-6">{currentStepText}</h3>
+              
+              {/* Progress Bar */}
+              <div className="w-full bg-white/5 rounded-full h-2 mb-2 overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1, ease: "easeOut" }}
+                  className="h-full bg-gradient-to-r from-[#009EE3]/50 to-[#009EE3]"
+                />
               </div>
-              <div className="relative pl-2">
-                <div className="absolute left-[19px] top-3 bottom-3 w-px bg-[#222222]"></div>
-                <div className="space-y-8">
-                  {[
-                    { label: "Aguardando Sinal", done: p.phase !== "Aguardando Sinal" && p.phase !== "Projeto Congelado" },
-                    { label: "Aprovação", done: p.phase !== "Aguardando Sinal" && p.phase !== "Aprovação" && p.phase !== "Projeto Congelado" },
-                    { label: "Em Desenvolvimento", done: p.phase === "Entregue" || p.phase === "Finalizado" },
-                    { label: "Deploy", done: p.phase === "Entregue" || p.phase === "Finalizado" }
-                  ].map((item: any, i: number, arr: any[]) => {
-                    const isNextAction = !item.done && arr[i - 1]?.done !== false;
-                    return (
-                      <div key={i} className="flex items-start gap-6 relative z-10">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border mt-0.5
-                          ${item.done ? 'bg-green-500/10 border-green-500/20 text-green-500' : 
-                            isNextAction ? 'bg-orange-500/10 border-orange-500/20 text-orange-500' : 
-                            'bg-[#000000] border-[#222222] text-[#666666]'}`}>
-                          {item.done ? <CheckCircle2 className="w-4 h-4" /> : <Circle className="w-2 h-2 fill-current" />}
-                        </div>
-                        <div>
-                          <span className={`text-[15px] font-medium tracking-wide block ${item.done ? 'text-[#EDEDED]' : isNextAction ? 'text-orange-500' : 'text-[#666666]'}`}>
-                            {item.label}
-                          </span>
-                          {isNextAction && (
-                            <span className="text-[13px] text-[#A1A1AA] mt-1.5 block">Nossa equipe está focada nesta etapa no momento.</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+              <div className="text-right text-[10px] font-mono text-white/30 mb-8">{progressPercent}%</div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Domínios */}
-              <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-                <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                  <Globe className="w-4 h-4" /> Domínios Registrados
-                </h3>
-                <div className="space-y-4">
-                  {p.hasDomainHosting ? (
-                    <div className="flex justify-between items-center text-[14px]">
-                      <span className="text-[#EDEDED] font-medium">site.com.br</span>
-                      <span className="text-green-500 text-[12px] font-semibold uppercase tracking-wider">Conectado</span>
-                    </div>
-                  ) : (
-                    <div className="text-[13px] text-[#666666]">Sem domínio sob gestão.</div>
-                  )}
-                </div>
-              </div>
-
-              {/* Hospedagem */}
-              <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-                <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                  <Server className="w-4 h-4" /> Infraestrutura
-                </h3>
-                <div className="space-y-4">
-                  {p.hasDomainHosting ? (
-                    <div className="flex justify-between items-center text-[14px]">
-                      <span className="text-[#EDEDED] font-medium">Vercel</span>
-                      <span className="text-green-500 text-[12px] font-semibold uppercase tracking-wider">Ativa</span>
-                    </div>
-                  ) : (
-                    <div className="text-[13px] text-[#666666]">Sem hospedagem sob gestão.</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar Info */}
-          <div className="space-y-6">
-            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 text-[#666666]">Ficha Técnica</h3>
-              <div className="space-y-5 text-[14px]">
-                <div className="flex justify-between border-b border-[#222222] pb-3">
-                  <span className="text-[#666666] font-medium">Investimento</span>
-                  <span className="text-[#EDEDED] font-mono">R$ {p.value.toLocaleString('pt-BR')}</span>
-                </div>
-                <div className="flex justify-between border-b border-[#222222] pb-3">
-                  <span className="text-[#666666] font-medium">Liquidação</span>
-                  <span className="text-[#EDEDED]">{p.financial}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#666666] font-medium">Adicionais</span>
-                  <span className="text-[#EDEDED] font-mono">R$ {p.domainHostingValue.toLocaleString('pt-BR')}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                <LinkIcon className="w-4 h-4" /> Ativos e Repositórios
-              </h3>
+              {/* Checklist Narrativa */}
               <div className="space-y-4">
-                  <button onClick={() => navigate("/portal/material")} className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group border-b border-[#222222] pb-4">
-                    <span className="font-medium">Materiais do Projeto</span>
-                    <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  {p.repoUrl ? (
-                    <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group border-b border-[#222222] pb-4">
-                      <span className="font-medium">GitHub Repository</span>
-                      <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </a>
-                  ) : (
-                    <div className="w-full flex items-center justify-between text-[14px] text-[#444444] border-b border-[#222222] pb-4">
-                      <span className="font-medium">GitHub Repository</span>
-                      <span className="text-[11px] font-mono text-[#333333] uppercase tracking-wider">Em breve</span>
+                {[
+                  { text: "Briefing recebido", status: "done" },
+                  { text: "Contrato assinado", status: "done" },
+                  { text: "Pagamento confirmado", status: "done" },
+                  { text: "Design & UX aprovados", status: "done" },
+                  { text: "Desenvolvimento Frontend", status: "active" },
+                  { text: "Integrações Backend", status: "pending" },
+                  { text: "Revisão Final", status: "pending" },
+                  { text: "Deploy & Publicação", status: "pending" },
+                ].map((step, i) => (
+                  <div key={i} className="flex items-center gap-4 text-sm font-medium">
+                    {step.status === "done" && <Check className="w-4 h-4 text-emerald-500 shrink-0" />}
+                    {step.status === "active" && <Hourglass className="w-4 h-4 text-[#009EE3] shrink-0 animate-pulse" />}
+                    {step.status === "pending" && <Circle className="w-2 h-2 text-white/10 shrink-0 mx-1 fill-current" />}
+                    
+                    <span className={`
+                      ${step.status === "done" ? "text-white/40 line-through decoration-white/10" : ""}
+                      ${step.status === "active" ? "text-white" : ""}
+                      ${step.status === "pending" ? "text-white/20" : ""}
+                    `}>
+                      {step.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── COLUNA DIREITA: CARDS & OPERACIONAL ── */}
+          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+            
+            {/* CARDS VIVOS */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><CreditCard className="w-3 h-3"/> Pagamentos</span>
+                <span className="text-2xl font-light text-white">R$ {(p.value / 2).toLocaleString('pt-BR')} pagos</span>
+              </div>
+              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><MonitorSmartphone className="w-3 h-3"/> Próxima Entrega</span>
+                <span className="text-xl font-medium text-white">Deploy Frontend</span>
+              </div>
+              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><FileText className="w-3 h-3"/> Arquivos Recebidos</span>
+                <span className="text-xl font-medium text-white">14 arquivos</span>
+              </div>
+              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><Activity className="w-3 h-3"/> Última Atualização</span>
+                <span className="text-xl font-medium text-emerald-400">Hoje, 13:42</span>
+              </div>
+            </div>
+
+            {/* ÁREA TÉCNICA (INFRAESTRUTURA) */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Server className="w-4 h-4 text-white/50" /></div>
+                <h3 className="text-lg font-bold">Infraestrutura Operacional</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                {[
+                  { label: "Domínio", value: "site.com.br", status: "Conectado", icon: Globe },
+                  { label: "Deploy / Hospedagem", value: "Vercel Pro", status: "Ativo", icon: Zap },
+                  { label: "Repositório", value: "GitHub Privado", status: "Seguro", icon: GitBranch },
+                  { label: "Google Analytics", value: "GA4 Integrado", status: "Coletando", icon: PieChart },
+                  { label: "Google Tag Manager", value: "GTM-XXXX", status: "Ativo", icon: Code2 },
+                  { label: "Meta Pixel", value: "Pixel ID 001", status: "Coletando", icon: Activity },
+                ].map((tech, i) => (
+                  <div key={i} className="flex justify-between items-center pb-4 border-b border-white/5">
+                    <div className="flex items-center gap-3">
+                      <tech.icon className="w-4 h-4 text-white/20" />
+                      <div>
+                        <span className="block text-[10px] font-mono text-white/30 uppercase tracking-wider">{tech.label}</span>
+                        <span className="text-sm font-medium text-white/80">{tech.value}</span>
+                      </div>
                     </div>
-                  )}
-                  <label className="w-full flex items-center justify-between text-[14px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors group cursor-pointer">
-                    <span className="font-medium">Upload de Arquivos</span>
-                    <Download className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity rotate-180" />
-                    <input
-                      type="file"
-                      multiple
-                      className="hidden"
-                      onChange={async (e) => {
-                        const files = e.target.files;
-                        if (!files || files.length === 0) return;
-                        const token = localStorage.getItem("clientToken");
-                        const formData = new FormData();
-                        Array.from(files as FileList).forEach((f: File) => formData.append("files", f));
-                        formData.append("category", "other");
-                        try {
-                          const res = await fetch(`http://localhost:3001/api/projects/${p.id}/files`, {
-                            method: "POST",
-                            headers: { "Authorization": `Bearer ${token}` },
-                            body: formData
-                          });
-                          const data = await res.json();
-                          if (data.success) alert(`✅ ${data.files.length} arquivo(s) enviado(s) com sucesso!`);
-                          else alert("Erro ao enviar arquivos.");
-                        } catch {
-                          alert("Erro de conexão ao enviar arquivos.");
-                        }
-                      }}
-                    />
-                  </label>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">{tech.status}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-
-            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                <Activity className="w-4 h-4" /> Tracking & Ads
-              </h3>
-              <div className="space-y-3">
-                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
-                    <span className="text-[#A1A1AA] font-medium">Google Analytics</span>
-                    <span className="text-green-500 font-medium">Ativo</span>
+            {/* UPLOAD DE MATERIAIS */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><UploadCloud className="w-4 h-4 text-white/50" /></div>
+                <h3 className="text-lg font-bold">Arquivos & Materiais</h3>
+              </div>
+              <label className="w-full border-2 border-dashed border-white/10 hover:border-white/20 hover:bg-white/[0.02] transition-colors rounded-2xl h-40 flex flex-col items-center justify-center cursor-pointer group">
+                <UploadCloud className="w-8 h-8 text-white/20 group-hover:text-white/50 transition-colors mb-3" />
+                <span className="text-sm font-medium text-white/70">Solte seus arquivos aqui</span>
+                <span className="text-[11px] text-white/30 mt-1">Logo, fotos, textos ou referências.</span>
+                <input type="file" multiple className="hidden" onChange={() => alert("Upload simulado. Na produção enviará ao servidor.")} />
+              </label>
+              <div className="mt-6 space-y-3">
+                {['logo-final.svg', 'referencias.pdf', 'fotos-produtos.zip'].map((file, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm text-white/40 bg-white/5 px-4 py-3 rounded-xl border border-white/5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500/50" /> {file}
                   </div>
-                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
-                    <span className="text-[#A1A1AA] font-medium">Google Tag Manager</span>
-                    <span className="text-green-500 font-medium">Ativo</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[13px] border-b border-[#222222] pb-3">
-                    <span className="text-[#A1A1AA] font-medium">Meta Pixel</span>
-                    <span className="text-green-500 font-medium">Ativo</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[13px]">
-                    <span className="text-[#A1A1AA] font-medium">Search Console</span>
-                    <span className="text-green-500 font-medium">Indexado</span>
-                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="bg-[#0A0A0A] border border-[#222222] rounded-2xl p-8">
-              <h3 className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-6 flex items-center gap-2 text-[#666666]">
-                <FileText className="w-4 h-4" /> Documentação
-              </h3>
-              <div className="space-y-3">
-                  <button className="w-full flex items-center justify-between text-[13px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors bg-[#000000] border border-[#222222] hover:border-[#444444] px-4 py-3 rounded-xl group">
-                    <span className="truncate font-medium">Contrato_Prestacao_Servico.pdf</span>
-                    <Download className="w-4 h-4 text-[#666666] group-hover:text-[#EDEDED] transition-colors shrink-0" />
+            {/* ENTREGÁVEIS */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
+              <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"><Shield className="w-4 h-4 text-emerald-500" /></div>
+                  <h3 className="text-lg font-bold">Entrega Oficial</h3>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded-full uppercase tracking-widest">Liberado no final</span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 relative z-10">
+                {['projeto.zip', 'documentacao.pdf', 'acessos-tecnicos.txt', 'contrato-assinado.pdf'].map((file, i) => (
+                  <button key={i} className="flex items-center justify-between p-4 bg-black border border-white/5 hover:border-white/15 rounded-xl transition-colors group/btn">
+                    <span className="text-sm font-medium text-white/60 group-hover/btn:text-white truncate pr-4">{file}</span>
+                    <Download className="w-4 h-4 text-white/20 group-hover/btn:text-white/50 shrink-0" />
                   </button>
-                  <button className="w-full flex items-center justify-between text-[13px] text-[#A1A1AA] hover:text-[#EDEDED] transition-colors bg-[#000000] border border-[#222222] hover:border-[#444444] px-4 py-3 rounded-xl group">
-                    <span className="truncate font-medium">Nota_Fiscal.pdf</span>
-                    <Download className="w-4 h-4 text-[#666666] group-hover:text-[#EDEDED] transition-colors shrink-0" />
-                  </button>
+                ))}
               </div>
             </div>
+
           </div>
         </div>
       </div>
     );
   };
 
-  const renderChamados = () => (
-    <div className="max-w-2xl mx-auto animate-in fade-in duration-700">
-      <div className="mb-12">
-        <h1 className="text-[40px] md:text-[48px] leading-[1.1] font-semibold tracking-[-0.04em] mb-4 text-[#EDEDED]">
-          Suporte e Demanda.
-        </h1>
-        <p className="text-[#A1A1AA] text-[16px] leading-relaxed">
-          Abra chamados para manutenções, melhorias ou inicie o escopo de um novo projeto.
-        </p>
-      </div>
-      
-      <form className="space-y-8 bg-[#0A0A0A] border border-[#222222] p-8 md:p-12 rounded-2xl">
-        <div>
-          <label className="block text-[11px] uppercase tracking-[0.1em] font-semibold text-[#666666] mb-3">Projeto Referente</label>
-          <select className="w-full bg-[#000000] border border-[#222222] rounded-xl px-4 py-4 text-[14px] text-[#EDEDED] focus:outline-none focus:border-[#666666] transition-all appearance-none">
-            <option value="">Selecione o projeto</option>
-            {projects.map((p: any) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-            <option value="novo">Novo Projeto</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-[11px] uppercase tracking-[0.1em] font-semibold text-[#666666] mb-3">Tipo de Demanda</label>
-          <select className="w-full bg-[#000000] border border-[#222222] rounded-xl px-4 py-4 text-[14px] text-[#EDEDED] focus:outline-none focus:border-[#666666] transition-all appearance-none">
-            <option>Correção Técnica</option>
-            <option>Alteração de Escopo</option>
-            <option>Suporte Operacional</option>
-            <option>Novo Projeto</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-[11px] uppercase tracking-[0.1em] font-semibold text-[#666666] mb-3">Descrição Técnica</label>
-          <textarea 
-            rows={5}
-            className="w-full bg-[#000000] border border-[#222222] rounded-xl px-4 py-4 text-[14px] text-[#EDEDED] focus:outline-none focus:border-[#666666] transition-all resize-none"
-            placeholder="Detalhe sua necessidade com clareza..."
-          ></textarea>
-        </div>
-
-        <button className="w-full bg-[#EDEDED] text-black font-semibold tracking-wide py-4 rounded-xl hover:bg-white transition-colors">
-          Protocolar Solicitação
-        </button>
-      </form>
-    </div>
-  );
-
-  const renderFinanceiro = () => (
-    <div className="space-y-16 animate-in fade-in duration-700">
-      <div className="max-w-3xl">
-        <h1 className="text-[40px] md:text-[48px] leading-[1.1] font-semibold tracking-[-0.04em] mb-4 text-[#EDEDED]">
-          Posição Financeira.
-        </h1>
-        <p className="text-[#A1A1AA] text-[16px] leading-relaxed max-w-xl">
-          Transparência total sobre investimentos, faturas processadas e pendentes.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#222222] border border-[#222222] rounded-2xl overflow-hidden">
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Investimento Total</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-[#EDEDED]">R$ {financeiro.receitaTotal}</span>
-        </div>
-        <div className="bg-[#0A0A0A] p-6 md:p-8">
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Quitado</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-[#EDEDED]">R$ {financeiro.recebido}</span>
-        </div>
-        <div className="bg-[#0A0A0A] p-6 md:p-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent pointer-events-none"></div>
-          <span className="text-[#666666] text-[10px] uppercase tracking-[0.2em] font-semibold block mb-4">Pendente</span>
-          <span className="text-4xl md:text-5xl font-light tracking-tight text-orange-500/90">R$ {financeiro.pendente}</span>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-[#666666] font-semibold mb-8">Extrato Operacional</h2>
-        <div className="border border-[#222222] bg-[#0A0A0A] rounded-2xl overflow-hidden w-full">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[14px] whitespace-nowrap">
-              <thead className="border-b border-[#222222] bg-[#111111]">
-                <tr>
-                  <th className="px-6 py-5 text-[11px] uppercase tracking-[0.1em] font-semibold text-[#A1A1AA]">Operação</th>
-                  <th className="px-6 py-5 text-[11px] uppercase tracking-[0.1em] font-semibold text-[#A1A1AA]">Valor (R$)</th>
-                  <th className="px-6 py-5 text-[11px] uppercase tracking-[0.1em] font-semibold text-[#A1A1AA]">Pago (R$)</th>
-                  <th className="px-6 py-5 text-[11px] uppercase tracking-[0.1em] font-semibold text-[#A1A1AA]">Restante (R$)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#222222]">
-                {financeiro.tabela.map((t: any, i: number) => (
-                  <tr key={i} className="hover:bg-[#111111] transition-colors">
-                    <td className="px-6 py-5 font-medium text-[#EDEDED]">{t.projeto}</td>
-                    <td className="px-6 py-5 text-[#A1A1AA]">{t.valor}</td>
-                    <td className="px-6 py-5 text-[#EDEDED]">{t.pago}</td>
-                    <td className="px-6 py-5 text-[#666666]">{t.restante}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans selection:bg-[#EDEDED]/30">
-      {/* Top Nav */}
-      <nav className="border-b border-[#222222] bg-[#050505] sticky top-0 z-50">
-        <div className="px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#0A0A0A] border border-[#222222] text-[#EDEDED] rounded-lg flex items-center justify-center font-bold text-sm">
-                {clientData.name.substring(0,2).toUpperCase()}
-              </div>
-              <span className="font-semibold text-[15px]">{clientData.name}</span>
+      {/* ── NAV ── */}
+      <nav className="border-b border-white/5 bg-[#050505]/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="px-6 lg:px-12 h-16 flex items-center justify-between w-full">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm">
+              {clientData.name.substring(0,2).toUpperCase()}
             </div>
-            <div className="h-6 w-px bg-[#222222] mx-2 hidden md:block"></div>
-            <div className="hidden md:flex gap-6 text-[14px]">
-              <button 
-                onClick={() => { setActiveTab("overview"); setSelectedProject(null); }}
-                className={`py-5 border-b-2 font-medium transition-colors ${activeTab === "overview" && !selectedProject ? "border-[#EDEDED] text-[#EDEDED]" : "border-transparent text-[#A1A1AA] hover:text-[#EDEDED]"}`}
-              >
-                Projetos
-              </button>
-              <button 
-                onClick={() => { setActiveTab("financeiro"); setSelectedProject(null); }}
-                className={`py-5 border-b-2 font-medium transition-colors ${activeTab === "financeiro" ? "border-[#EDEDED] text-[#EDEDED]" : "border-transparent text-[#A1A1AA] hover:text-[#EDEDED]"}`}
-              >
-                Financeiro
-              </button>
-              <button 
-                onClick={() => { setActiveTab("chamados"); setSelectedProject(null); }}
-                className={`py-5 border-b-2 font-medium transition-colors ${activeTab === "chamados" ? "border-[#EDEDED] text-[#EDEDED]" : "border-transparent text-[#A1A1AA] hover:text-[#EDEDED]"}`}
-              >
-                Chamados
-              </button>
+            <div>
+              <span className="font-semibold text-sm block">{clientData.name}</span>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-white/30">Portal Privado</span>
             </div>
           </div>
-          <button onClick={handleLogout} className="text-[#A1A1AA] hover:text-[#EDEDED] text-sm font-medium transition-colors flex items-center gap-2">
+          <button onClick={handleLogout} className="text-white/40 hover:text-white text-[11px] font-mono uppercase tracking-widest transition-colors flex items-center gap-2">
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Sair</span>
+            <span className="hidden sm:inline">Sair do ambiente</span>
           </button>
         </div>
       </nav>
 
-      <main className="p-6 md:p-10 w-full max-w-5xl mx-auto">
-        {selectedProject ? renderProjectDetail() : (
-          <>
-            {activeTab === "overview" && renderProjectOverview()}
-            {activeTab === "chamados" && renderChamados()}
-            {activeTab === "financeiro" && renderFinanceiro()}
-          </>
-        )}
+      {/* ── MAIN ── */}
+      <main className="p-6 lg:p-12 w-full">
+        {selectedProject ? renderProjectDetail() : renderProjectOverview()}
       </main>
     </div>
   );
-};
-
-export default ClientDashboard;
+}

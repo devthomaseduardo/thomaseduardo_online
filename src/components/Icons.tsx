@@ -103,3 +103,9 @@ export const IconGrowth = ({ className }: { className?: string }) => (
     <path d="M12 10V18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+
+export const LogoTE = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 8H11M8.5 8V16M14 8H18.5M14 12H17.5M14 16H18.5M14 8V16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);

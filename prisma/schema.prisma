@@ -8,58 +8,252 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ==========================================
+// CLIENTES
+// ==========================================
+
 model Client {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
-  email      String   @unique
+  email      String    @unique
   cnpj       String?
-  clientType String   // "new" or "old"
-  password   String   // Senha segura para o cliente acessar o portal
+  clientType String    @default("new")
+  password   String
   projects   Project[]
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("Client")
 }
 
+// ==========================================
+// PROJETOS
+// ==========================================
+
 model Project {
-  id                 String   @id // Usado para PROJ-XXXX
+  id                 String          @id @default(uuid())
   name               String
-  phase              String
-  financial          String
-  value              Float
-  domainHostingValue Float    @default(0)
-  
-  // Features do portal
+  phase              String          @default("Briefing")
+  financial          String          @default("pending")
+  value              Float           @default(0)
+  domainHostingValue Float           @default(0)
+  status             String          @default("briefing")
+  progresso          Int             @default(0)
+  tipo               String          @default("website")
+  descricao          String?
+  proximaAcao        String?
+  dataEntregaPrevista DateTime?
+
   seo                Boolean  @default(false)
   analytics          Boolean  @default(false)
   support            Boolean  @default(false)
   ads                Boolean  @default(false)
-  
+
   internalNotes      String?
-  repoUrl            String?  // URL do repositório GitHub
-  productionUrl      String?  // URL do site em produção
-  
+  repoUrl            String?
+  productionUrl      String?
+
   clientId           String
   client             Client   @relation(fields: [clientId], references: [id])
-  
+
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
   invoices           Invoice[]
   files              ProjectFile[]
+  timeline           TimelineEvent[]
+  tasks              Task[]
+  contracts          Contract[]
+  deploys            Deploy[]
+  integrations       Integration[]
+
+  @@map("Project")
 }
 
-model Invoice {
-  id          String   @id @default(uuid())
-  description String
-  amount      Float
-  status      String   @default("pending") // pending, paid, canceled, overdue
-  type        String   @default("service")  // service, nf, contract
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
-  dueDate     DateTime?
-  paidAt      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// ==========================================
+// TAREFAS
+// ==========================================
+
+model Task {
+  id             String    @id @default(uuid())
+  titulo         String
+  descricao      String?
+  status         String    @default("pendente") // pendente, em_andamento, bloqueada, concluida
+  prioridade     String    @default("media")    // baixa, media, alta, urgente
+  responsavel    String?
+  prazo          DateTime?
+  visivelCliente Boolean   @default(false)
+  ordem          Int       @default(0)
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Task")
 }
+
+// ==========================================
+// TIMELINE
+// ==========================================
+
+model TimelineEvent {
+  id             String    @id @default(uuid())
+  titulo         String
+  descricao      String?
+  tipo           String    @default("admin") // sistema, admin, cliente, financeiro, contrato, upload, deploy, projeto
+  visivelCliente Boolean   @default(false)
+  criadoPor      String    @default("admin")
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("TimelineEvent")
+}
+
+// ==========================================
+// FINANCEIRO
+// ==========================================
+
+model Invoice {
+  id               String    @id @default(uuid())
+  description      String
+  amount           Float
+  status           String    @default("pending") // pending, paid, partial, canceled, overdue
+  type             String    @default("service")
+  valorPago        Float     @default(0)
+  saldo            Float     @default(0)
+  vencimento       DateTime?
+  paidAt           DateTime?
+  metodoPagamento  String?
+  pixCopiaCola     String?
+  mercadoPagoUrl   String?
+
+  projectId        String
+  project          Project   @relation(fields: [projectId], references: [id])
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  payments         Payment[]
+
+  @@map("Invoice")
+}
+
+model Payment {
+  id        String    @id @default(uuid())
+  invoiceId String
+  invoice   Invoice   @relation(fields: [invoiceId], references: [id])
+  valor     Float
+  metodo    String
+  status    String    @default("pago")
+  pagoEm   DateTime  @default(now())
+  createdAt DateTime  @default(now())
+
+  @@map("Payment")
+}
+
+// ==========================================
+// CONTRATOS
+// ==========================================
+
+model Contract {
+  id             String    @id @default(uuid())
+  titulo         String
+  status         String    @default("rascunho") // rascunho, enviado, assinado, cancelado
+  versao         String    @default("1.0")
+  fileUrl        String?
+  visivelCliente Boolean   @default(false)
+  enviadoEm      DateTime?
+  assinadoEm     DateTime?
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Contract")
+}
+
+// ==========================================
+// DEPLOYS
+// ==========================================
+
+model Deploy {
+  id             String    @id @default(uuid())
+  ambiente       String    @default("production") // production, staging, preview
+  url            String?
+  provider       String    @default("vercel")
+  status         String    @default("pending") // pending, building, success, failed
+  branch         String    @default("main")
+  commitHash     String?
+  logs           String?
+  visivelCliente Boolean   @default(false)
+  deployedAt     DateTime?
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Deploy")
+}
+
+// ==========================================
+// ARQUIVOS
+// ==========================================
+
+model ProjectFile {
+  id             String    @id @default(uuid())
+  originalName   String
+  fileName       String
+  mimeType       String
+  size           Int
+  path           String
+  category       String    @default("other")
+  uploadedBy     String    @default("client")
+  status         String    @default("pendente") // pendente, aprovado, rejeitado
+  visivelCliente Boolean   @default(true)
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id])
+
+  createdAt      DateTime  @default(now())
+
+  @@map("ProjectFile")
+}
+
+// ==========================================
+// ANALYTICS / INTEGRAÇÕES
+// ==========================================
+
+model Integration {
+  id             String    @id @default(uuid())
+  tipo           String    // google_analytics, gtm, meta_pixel, google_ads, search_console
+  identificador  String?
+  dashboardUrl   String?
+  status         String    @default("ativo")
+  visivelCliente Boolean   @default(false)
+  metricas       String?   // JSON com métricas manuais
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Integration")
+}
+
+// ==========================================
+// DOCUMENTOS LEGADOS (manter compatibilidade)
+// ==========================================
 
 model Document {
   id          String   @id @default(uuid())
@@ -70,19 +264,6 @@ model Document {
   url         String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
 
-model ProjectFile {
-  id           String   @id @default(uuid())
-  originalName String
-  fileName     String   // stored filename on disk
-  mimeType     String
-  size         Int      // in bytes
-  path         String   // relative path to the upload
-  category     String   @default("other") // brand, copy, media, access, contract, nf, delivery, other
-  uploadedBy   String   @default("client") // client | admin
-  projectId    String
-  project      Project  @relation(fields: [projectId], references: [id])
-  createdAt    DateTime @default(now())
+  @@map("Document")
 }
-

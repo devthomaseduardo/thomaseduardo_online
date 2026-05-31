@@ -1,0 +1,77 @@
+import React, { useState } from "react";
+import { BarChart3, PieChart, TrendingUp, Users, Eye } from "lucide-react";
+import { useAdminData } from "./useAdminData";
+
+const API = "http://localhost:3001/api/v2";
+const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+
+export function AnalyticsModule() {
+  const { projects: data, loading } = useAdminData();
+
+  const allIntegrations = data.flatMap(p => (p.integrations ?? []).map((i: any) => ({ ...i, project: p })))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  return (
+    <div className="py-12 px-10 xl:px-16 w-full">
+      <div className="mb-12 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Analytics</h1>
+          <p className="text-white/30 text-sm">Central de inteligência de dados.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        {[
+          { label: "Sessões Totais", val: "124K", icon: Users },
+          { label: "Taxa de Conversão", val: "3.2%", icon: TrendingUp },
+          { label: "Tempo Médio", val: "2m 14s", icon: Eye },
+          { label: "Eventos Disparados", val: "840K", icon: BarChart3 }
+        ].map((k, i) => (
+          <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+            <k.icon className="w-5 h-5 text-white/20 mb-3" />
+            <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1">{k.label}</p>
+            <p className="text-2xl font-bold text-white">{k.val}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="p-6 border-b border-white/[0.06] flex items-center justify-between">
+          <h3 className="font-semibold text-white">Integrações Ativas (GTM, GA4, Pixel)</h3>
+        </div>
+        {loading ? (
+          <div className="py-20 text-center text-white/20 font-mono text-sm">Sincronizando...</div>
+        ) : allIntegrations.length === 0 ? (
+          <div className="py-20 text-center border-t border-white/[0.06] border-dashed">
+            <PieChart className="w-8 h-8 text-white/10 mx-auto mb-3" />
+            <p className="text-white/30 text-sm">Nenhuma integração configurada.</p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/[0.06] bg-white/[0.01]">
+                {["Projeto", "Provider", "API Key / Tracking ID", "Status"].map(h => (
+                  <th key={h} className="text-left text-[10px] font-mono text-white/30 uppercase tracking-widest px-6 py-4">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.04]">
+              {allIntegrations.map(i => (
+                <tr key={i.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <td className="px-6 py-4 text-sm font-medium text-white">{i.project?.name}</td>
+                  <td className="px-6 py-4 text-sm text-white/60">{i.provider}</td>
+                  <td className="px-6 py-4 text-xs font-mono text-white/40">{i.apiKey}</td>
+                  <td className="px-6 py-4">
+                    <span className="bg-emerald-400/10 text-emerald-400 text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-md">
+                      Ativo
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}

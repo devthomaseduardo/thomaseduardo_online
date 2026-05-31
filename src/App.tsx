@@ -20,8 +20,7 @@ const LinkBio  = lazy(() => import("./pages/LinkBio"));
 const Redirect = lazy(() => import("./pages/RedirectPage"));
 const Shop     = lazy(() => import("./pages/Shop"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Material = lazy(() => import("./pages/Material"));
-const Payment  = lazy(() => import("./pages/Payment"));
+
 const ClientPortalLogin = lazy(() => import("./pages/ClientPortalLogin"));
 const ClientDashboard = lazy(() => import("./pages/ClientDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -64,15 +63,12 @@ function App() {
             <Route path="/links"    element={<LinkBio />} />
             <Route path="/r"        element={<Redirect />} />
             <Route path="/shop"     element={<Shop />} />
-            <Route path="/material" element={<Material />} />
-            <Route path="/pagamento" element={<Payment />} />
-            <Route path="/payment"  element={<Payment />} />
+
             <Route path="/cases"    element={<Projects />} />
             <Route path="/projetos" element={<Projects />} />
             <Route path="/portal"   element={<ClientPortalLogin />} />
             <Route path="/portal/dashboard" element={<ClientDashboard />} />
-            <Route path="/portal/material" element={<Material />} />
-            <Route path="/portal/pagamento" element={<Payment />} />
+
             <Route path="/proposta" element={<Proposta />} />
             <Route path="/admin"    element={<AdminDashboard />} />
           </Routes>

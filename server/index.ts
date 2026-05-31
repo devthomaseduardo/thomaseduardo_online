@@ -156,8 +156,95 @@ app.get('/api/clients/me', authenticateToken, async (req: any, res: any) => {
     res.status(500).json({ error: 'Failed to fetch client data' });
   }
 });
+// ─── TEMPORARY SEED ROUTE ────────────────────────────────────────────────────────
+app.get('/api/seed-clients', async (req, res) => {
+  try {
+    const clients = [
+      {
+        name: "Sleep House",
+        email: "contato@sleephouse.com.br",
+        password: "password123",
+        projectName: "Digital Showroom de Colchões Premium",
+        phase: "Entregue",
+        financial: "Pago",
+        value: 12500.0,
+        description: "Um digital showroom de alto padrão para uma rede de lojas de colchões premium. O projeto entrega uma experiência de marca editorial e imersiva."
+      },
+      {
+        name: "LP Yázigi",
+        email: "contato@yazigi.com.br",
+        password: "password123",
+        projectName: "Página de Alta Conversão para Captação de Alunos",
+        phase: "Em Produção",
+        financial: "Pendente",
+        value: 5700.0,
+        description: "Página comercial de alta velocidade focada em apresentar a escola de idiomas e capturar contatos qualificados para o time de matrículas."
+      },
+      {
+        name: "Bras Service",
+        email: "contato@brasservice.com",
+        password: "password123",
+        projectName: "Sistema Integrado de Ordem de Serviço",
+        phase: "Entregue",
+        financial: "Pago",
+        value: 28000.0,
+        description: "Sistema de gestão técnica integrado para organizar chamados, alocar visitas de técnicos nas ruas e gerenciar estoque."
+      },
+      {
+        name: "Hazap Vendas",
+        email: "contato@hazap.com.br",
+        password: "password123",
+        projectName: "Painel de Vendas e CRM Comercial",
+        phase: "Em Produção",
+        financial: "Pago",
+        value: 18000.0,
+        description: "Painel de controle de vendas completo para gerenciar leads, propostas e comissões da equipe comercial em tempo real."
+      }
+    ];
+
+    for (const c of clients) {
+      const client = await prisma.client.create({
+        data: {
+          name: c.name,
+          email: c.email,
+          password: c.password,
+          cnpj: Math.floor(Math.random() * 10000000).toString(),
+          clientType: "new"
+        }
+      });
+
+      const project = await prisma.project.create({
+        data: {
+          id: `PROJ-${Math.floor(Math.random() * 9000) + 1000}`,
+          name: c.projectName,
+          phase: c.phase,
+          financial: c.financial,
+          value: c.value,
+          clientId: client.id,
+          seo: true,
+          analytics: true
+        }
+      });
+      
+      await prisma.invoice.create({
+        data: {
+          description: "Sinal inicial de 50%",
+          amount: c.value / 2,
+          status: "paid",
+          projectId: project.id,
+        }
+      });
+    }
+    
+    res.json({ success: true, message: "Clients seeded successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to seed clients' });
+  }
+});
 
 // ─── PROJECT FILE UPLOAD (Client) ─────────────────────────────────────────────
+
 
 app.post(
   '/api/projects/:projectId/files',
@@ -477,21 +564,30 @@ app.get('/api/admin/dashboard', async (req, res) => {
       p.phase === 'Aguardando Sinal' || p.phase === 'Onboarding'
     ).length;
 
-    const pipeline = projects.map(p => ({
-      id: p.id,
-      client: p.client.name,
-      status: p.phase,
-      payment: p.financial,
-      progress: p.phase === 'Concluído' ? '100%' : '50%',
-      email: p.client.email,
-      phone: p.client.cnpj || 'Não informado',
-      seo: p.seo,
-      analytics: p.analytics,
-      support: p.support,
-      ads: p.ads,
-      repoUrl: p.repoUrl,
-      productionUrl: p.productionUrl,
-    }));
+    const pipeline = projects.map(p => {
+      const projectInvoices = invoices.filter(i => i.projectId === p.id);
+      const totalPaid = projectInvoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
+      const balance = p.value - totalPaid;
+      
+      return {
+        id: p.id,
+        client: p.client.name,
+        status: p.phase,
+        payment: p.financial,
+        progress: p.phase === 'Concluído' ? '100%' : '50%',
+        email: p.client.email,
+        phone: p.client.cnpj || 'Não informado',
+        seo: p.seo,
+        analytics: p.analytics,
+        support: p.support,
+        ads: p.ads,
+        repoUrl: p.repoUrl,
+        productionUrl: p.productionUrl,
+        value: p.value,
+        totalPaid,
+        balance,
+      };
+    });
 
     const paymentsData = invoices.map(i => ({
       id: i.id,
@@ -521,7 +617,9 @@ app.get('/api/admin/dashboard', async (req, res) => {
   }
 });
 
-// ─── START ────────────────────────────────────────────────────────────────────
+// ─── API V2 ───────────────────────────────────────────────────────────────────
+import apiV2Routes from './routes/api.js';
+app.use('/api/v2', apiV2Routes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
