@@ -19,6 +19,8 @@ model Client {
   cnpj       String?
   clientType String    @default("new")
   password   String
+  phone      String?
+  obs        String?
   projects   Project[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

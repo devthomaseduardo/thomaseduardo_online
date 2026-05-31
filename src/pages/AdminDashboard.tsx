@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   LayoutDashboard, Users, Briefcase, DollarSign, FileText,
   UploadCloud, Rocket, BarChart3, Settings, LogOut, Eye, EyeOff,
-  ChevronRight, X, Plus, Bell, Command, Search, Activity, Clock, CheckCircle2
+  ChevronRight, X, Plus, Bell, Command, Search, Activity, Clock, CheckCircle2, Menu
 } from "lucide-react";
 import { ProjectsKanban } from "../components/admin/ProjectsKanban";
 import { ClientesModule } from "../components/admin/ClientesModule";
@@ -124,16 +124,16 @@ function Overview({ token }: { token: string }) {
   ];
 
   return (
-    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8">
+    <div className="py-6 px-5 md:py-10 md:px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-6 md:space-y-8">
       
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Command Center</h1>
-          <p className="text-white/40 text-sm font-mono uppercase tracking-widest">Sistemas operacionais online</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-1">Command Center</h1>
+          <p className="text-white/40 text-xs md:text-sm font-mono uppercase tracking-widest">Sistemas operacionais online</p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex items-center gap-2 text-[10px] md:text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20 w-fit">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
           SISTEMAS ONLINE
         </div>
       </div>
@@ -292,9 +292,11 @@ export default function AdminDashboard() {
   const [token, setToken] = useState("");
   const [active, setActive] = useState("Overview");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleNavClick = (t: string) => {
     if (t === active) return;
+    setMobileMenuOpen(false);
     setIsTransitioning(true);
     setTimeout(() => {
       setActive(t);
@@ -328,24 +330,38 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col md:flex-row relative" style={{ fontFamily: "'Inter', sans-serif" }}>
+      
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/80 md:hidden" onClick={() => setMobileMenuOpen(false)} />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="w-[220px] shrink-0 border-r border-white/[0.06] flex flex-col h-screen sticky top-0">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[240px] bg-[#050505] border-r border-white/[0.06] flex flex-col h-screen transition-transform duration-300 md:static md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Logo */}
-        <div className="px-6 h-16 flex items-center gap-3 border-b border-white/[0.06]">
-          <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-black">
-            <LogoTE className="w-4 h-4" />
+        <div className="px-6 h-16 flex items-center justify-between border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-black">
+              <LogoTE className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white leading-none">Thomas Eduardo</p>
+              <p className="text-[10px] text-white/30 font-mono mt-0.5">Operacional</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-white leading-none">Thomas Eduardo</p>
-            <p className="text-[10px] text-white/30 font-mono mt-0.5">Operacional</p>
-          </div>
+          <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white p-1">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto custom-scrollbar">
           {NAV.map(({ id, icon: Icon }) => (
-            <button key={id} onClick={() => setActive(id)}
+            <button key={id} onClick={() => handleNavClick(id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 active === id
                   ? "bg-white/[0.08] text-white"
@@ -368,15 +384,20 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 relative">
+      <main className="flex-1 flex flex-col min-w-0 relative h-screen overflow-hidden">
         {isTransitioning && <PageLoader />}
         
         {/* Header Superior */}
-        <header className="h-16 border-b border-white/[0.06] flex items-center justify-between px-8 shrink-0 relative z-10 bg-[#050505]/80 backdrop-blur-md">
-          <div className="flex items-center gap-4 flex-1">
-            <Search className="w-4 h-4 text-white/30" />
-            <input type="text" placeholder="Buscar no ecossistema (⌘K)" 
-              className="bg-transparent text-sm text-white placeholder-white/30 outline-none w-full max-w-md" />
+        <header className="h-16 border-b border-white/[0.06] flex items-center justify-between px-4 md:px-8 shrink-0 relative z-10 bg-[#050505]/80 backdrop-blur-md gap-3 md:gap-4">
+          <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+            <button onClick={() => setMobileMenuOpen(true)} className="md:hidden text-white/40 hover:text-white p-1 -ml-1">
+              <Menu className="w-6 h-6 shrink-0" />
+            </button>
+            <div className="flex-1 flex items-center gap-3 min-w-0">
+              <Search className="w-4 h-4 text-white/30 shrink-0" />
+              <input type="text" placeholder="Buscar... (⌘K)" 
+                className="bg-transparent text-sm text-white placeholder-white/30 outline-none w-full max-w-md truncate" />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <button className="text-white/40 hover:text-white transition-colors relative">

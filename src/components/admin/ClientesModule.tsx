@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Plus, X, Edit2, Trash2, Users, Search, MoreVertical, Shield, Mail, Lock, Activity } from "lucide-react";
+import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 
@@ -17,24 +18,12 @@ const STATUS_COLOR: Record<string, string> = {
 const EMPTY = { name: "", email: "", cnpj: "", clientType: "new", password: "", phone: "", obs: "" };
 
 export function ClientesModule() {
-  const [clients, setClients] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { clients, loading, mutate: load } = useAdminData();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [toast, setToast] = useState("");
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const r = await fetch(`${API}/clients`, { headers: hdrs() });
-      setClients(r.ok ? await r.json() : []);
-    } catch { setClients([]); }
-    setLoading(false);
-  };
-
-  useEffect(() => { load(); }, []);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 

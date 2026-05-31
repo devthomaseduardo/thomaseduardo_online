@@ -48,15 +48,15 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
         className="fixed inset-y-0 right-0 w-full max-w-4xl bg-[#050505] border-l border-white/[0.06] z-50 shadow-2xl flex flex-col">
         
         {/* Header Fixo */}
-        <header className="px-6 py-5 md:px-10 md:py-8 border-b border-white/[0.06] flex items-center justify-between shrink-0 bg-[#0A0A0A]">
-          <div>
+        <header className="px-5 py-5 md:px-10 md:py-8 border-b border-white/[0.06] flex items-start justify-between shrink-0 bg-[#0A0A0A] gap-4">
+          <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-1 md:mb-2">
-              <h2 className="text-xl md:text-3xl font-bold text-white tracking-tight">{project.name}</h2>
-              <span className="px-2 py-0.5 rounded text-[9px] md:text-[10px] font-mono uppercase bg-white/5 text-white/50 border border-white/10">{project.client?.name}</span>
+              <h2 className="text-lg md:text-2xl lg:text-3xl font-bold text-white tracking-tight break-words" style={{ wordBreak: 'break-word' }}>{project.name}</h2>
+              <span className="px-2 py-0.5 rounded text-[9px] md:text-[10px] font-mono uppercase bg-white/5 text-white/50 border border-white/10 shrink-0 mt-1 md:mt-0">{project.client?.name}</span>
             </div>
-            <p className="text-[10px] md:text-xs text-white/40 font-mono">ID: {project.id}</p>
+            <p className="text-[10px] md:text-xs text-white/40 font-mono truncate">ID: {project.id}</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors shrink-0">
+          <button onClick={onClose} className="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors shrink-0 md:mt-1 -mr-2">
             <X className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         </header>

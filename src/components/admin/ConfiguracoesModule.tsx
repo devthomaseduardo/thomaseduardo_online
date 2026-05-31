@@ -3,7 +3,7 @@ import { Settings, Shield, Key, Bell, Database, HardDrive, Lock } from "lucide-r
 
 export function ConfiguracoesModule() {
   return (
-    <div className="py-12 px-10 xl:px-16 w-full max-w-5xl">
+    <div className="w-full py-6 px-5 md:py-10 md:px-10 space-y-8 max-w-5xl mx-auto">
       <div className="mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Configurações</h1>
         <p className="text-white/30 text-sm">Núcleo do sistema e preferências operacionais.</p>

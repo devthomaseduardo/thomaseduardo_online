@@ -29,7 +29,7 @@ export function FinanceiroModule() {
   );
 
   return (
-    <div className="py-12 px-10 xl:px-16 w-full">
+    <div className="w-full py-6 px-5 md:py-10 md:px-10 space-y-8 max-w-7xl mx-auto">
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
