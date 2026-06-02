@@ -32,7 +32,7 @@ export const STAGGER = {
 export const FADE_UP = {
   initial: "hidden",
   whileInView: "visible",
-  viewport: { once: true, margin: "0px" },
+  viewport: { once: false, margin: "0px" },
   variants: FADE_UP_VARIANT,
 };
 

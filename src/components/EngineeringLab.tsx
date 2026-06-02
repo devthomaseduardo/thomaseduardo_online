@@ -8,7 +8,7 @@ export const EngineeringLab = () => {
   const { t, lang } = useLang();
 
   return (
-    <section id="lab" className="section-padding px-6 bg-pg-bg border-t border-white/5">
+    <section id="lab" className="section-padding px-6 bg-pg-bg">
       <div className="max-w-5xl mx-auto">
         <motion.div 
           {...FADE_UP}
@@ -31,7 +31,7 @@ export const EngineeringLab = () => {
               key={item.id}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: false }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
               className="p-6 border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] transition-colors group rounded-xl"
             >

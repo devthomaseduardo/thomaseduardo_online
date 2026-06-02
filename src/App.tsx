@@ -5,6 +5,7 @@ import { LangProvider } from "./contexts/LangContext";
 // ─── Above-the-fold: loaded eagerly for instant FCP ─────────────────────────
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import FloatingSocial from "./components/FloatingSocial";
 
 // ─── Below-the-fold: lazy-loaded as user scrolls ────────────────────────────
 const AboutSection       = lazy(() => import("./components/AboutSection"));
@@ -35,6 +36,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
       <Navbar />
+      <FloatingSocial />
       <main>
         <Hero />
         <Suspense fallback={null}>

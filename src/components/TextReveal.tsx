@@ -9,7 +9,7 @@ const TextReveal = ({ children, delay = 0 }: { children: string; delay?: number 
     <motion.span
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true }}
+      viewport={{ once: false }}
       variants={{
         visible: { transition: { staggerChildren: 0.05, delayChildren: delay } }
       }}

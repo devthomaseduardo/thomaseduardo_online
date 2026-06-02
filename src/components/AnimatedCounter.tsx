@@ -3,7 +3,7 @@ import { useInView, animate } from "motion/react";
 
 const AnimatedCounter = ({ to, suffix = "" }: { to: number; suffix?: string }) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: false });
 
   useEffect(() => {
     if (!inView || !ref.current) return;

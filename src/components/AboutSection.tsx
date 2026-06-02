@@ -9,15 +9,15 @@ const AboutSection = () => {
   const { t } = useLang();
 
   return (
-    <section id="sobre" className="relative section-padding px-6 flex items-center justify-center overflow-hidden bg-pg-bg border-t border-white/5">
-      <div className="max-w-7xl mx-auto relative z-10 w-full px-6">
+    <section id="sobre" className="relative section-padding px-6 flex items-center justify-center overflow-hidden bg-pg-bg">
+      <div className="w-full px-6 md:px-16 lg:px-24 mx-auto relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           {/* Text Column */}
           <motion.div {...FADE_UP} className="max-w-2xl">
             <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">
               {t.about.eyebrow}
             </span>
-            <h2 className="text-[clamp(32px,4vw,64px)] font-medium mb-10 tracking-tighter leading-[1.1] text-white">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tighter leading-[1.1] text-white">
               <TextReveal>{t.about.h2a}</TextReveal> <br className="hidden sm:block" />
               <span className="text-white/40"><TextReveal delay={0.2}>{t.about.h2b}</TextReveal></span>
             </h2>
@@ -26,20 +26,6 @@ const AboutSection = () => {
               {t.about.p1}
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              {t.about.tags.map((tag, idx) => (
-                <motion.span
-                  key={tag}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="px-6 py-3 rounded-lg border border-white/10 bg-white/[0.02] text-xs font-mono text-white/60 uppercase tracking-widest backdrop-blur-md"
-                >
-                  {tag}
-                </motion.span>
-              ))}
-            </div>
           </motion.div>
 
           {/* Certifications & Infra Column */}
@@ -54,7 +40,7 @@ const AboutSection = () => {
                     key={cert.title}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ delay: idx * 0.1, duration: 0.8 }}
                     className="group flex items-start gap-5"
                   >
@@ -83,7 +69,7 @@ const AboutSection = () => {
             </div>
 
             {/* Operating Systems & Cloud -> Infraestrutura Base */}
-            <div className="pt-10 border-t border-white/5">
+            <div className="pt-10">
               <span className="text-white/30 font-mono text-xs uppercase font-medium tracking-widest mb-8 block">
                 Infraestrutura & Cloud
               </span>
@@ -99,7 +85,7 @@ const AboutSection = () => {
                     key={os.name}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: false }}
                     transition={{ delay: idx * 0.1, duration: 0.8 }}
                     className="flex items-center gap-3 px-5 py-2.5 rounded-lg bg-white/[0.02] border border-white/5 opacity-70 hover:opacity-100 transition-opacity"
                   >
