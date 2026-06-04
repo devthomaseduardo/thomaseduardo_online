@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {},
+    "types": ["node"],
+    "lib": ["ES2022"]
+  },
+  "include": ["server", "api", "prisma", "scripts", "seed.js", "test-client.js"]
+}
