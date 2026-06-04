@@ -39,6 +39,7 @@ const AdminLeads = lazy(() => import("./pages/admin/Leads").then(m => ({ default
 const AdminMessages = lazy(() => import("./pages/admin/Messages").then(m => ({ default: m.Messages })));
 const AdminTeam = lazy(() => import("./pages/admin/Team").then(m => ({ default: m.Team })));
 const AdminSettings = lazy(() => import("./pages/admin/Settings").then(m => ({ default: m.Settings })));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin").then(m => ({ default: m.AdminLogin })));
 const Proposta = lazy(() => import("./pages/Proposta"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const ProjectMaterials = lazy(() => import("./pages/ProjectMaterials"));
@@ -91,6 +92,7 @@ function App() {
             <Route path="/portal/dashboard" element={<ClientDashboard />} />
 
             <Route path="/proposta" element={<Proposta />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="projects" element={<AdminProjects />} />

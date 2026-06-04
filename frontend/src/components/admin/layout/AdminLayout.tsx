@@ -1,9 +1,18 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 
 export function AdminLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
+    if (!token) {
+      navigate('/admin/login');
+    }
+  }, [navigate]);
+
   return (
     <div className="flex h-screen bg-[#050505] text-zinc-300 font-sans overflow-hidden">
       <AdminSidebar />
