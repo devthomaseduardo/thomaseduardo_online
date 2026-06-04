@@ -7,7 +7,10 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
-import processPaymentHandler from '../api/process_payment.ts';
+import portalRouter from './routes/portal.ts';
+import paymentsRouter from './routes/payments.ts';
+import authRouter from './routes/auth.ts';
+import projectsRouter from './routes/projects.ts';
 
 // ─── Security bootstrap (must be first) ─────────────────────────────────────
 import './lib/env.js';  // validates and crashes if env is missing
@@ -128,7 +131,11 @@ app.use(cors({
 app.use(generalLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(UPLOADS_DIR));
-app.post('/api/process_payment', processPaymentHandler);
+
+// Mount newly extracted routers (non-destructive mount alongside existing handlers)
+app.use('/api', authRouter);
+app.use('/api/projects', projectsRouter(upload));
+
 
 
 // ─── Auth middlewares ─────────────────────────────────────────────────────────
@@ -191,6 +198,10 @@ app.post('/api/admin/login', adminLoginLimiter, async (req: any, res: any) => {
     return res.status(500).json({ error: 'Erro interno.' });
   }
 });
+
+  // Mount modular routers after auth middlewares are defined
+  app.use('/api/portal', portalRouter);
+  app.use('/api/payments', authenticateAdmin, paymentsRouter);
 
 
 // ─── CLIENT AUTH ──────────────────────────────────────────────────────────────

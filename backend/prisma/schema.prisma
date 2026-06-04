@@ -13,17 +13,25 @@ datasource db {
 // ==========================================
 
 model Client {
-  id         String    @id @default(uuid())
-  name       String
-  email      String    @unique
-  cnpj       String?
-  clientType String    @default("new")
-  password   String
-  phone      String?
-  obs        String?
-  projects   Project[]
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  name           String
+  email          String    @unique
+  cnpj           String?
+  clientType     String    @default("new")
+  password       String
+  phone          String?
+  obs            String?
+  portalKey      String?   @unique
+  portalActive   Boolean   @default(true)
+  portalExpires  DateTime?
+  ltv            Float?    @default(0)
+  score          Int?      @default(0)
+  lastLogin      DateTime?
+  projects       Project[]
+  proposals      Proposal[]
+  messages       Message[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@map("Client")
 }
@@ -68,6 +76,8 @@ model Project {
   contracts          Contract[]
   deploys            Deploy[]
   integrations       Integration[]
+  proposals          Proposal[]
+  messages           Message[]
 
   @@map("Project")
 }
@@ -251,6 +261,91 @@ model Integration {
   updatedAt      DateTime  @updatedAt
 
   @@map("Integration")
+}
+
+// ==========================================
+// PROPOSTAS COMERCIAIS
+
+model Proposal {
+  id            String    @id @default(uuid())
+  title         String
+  description   String?
+  status        String    @default("draft") // draft, sent, approved, rejected
+  stage         String    @default("draft")
+  amount        Float     @default(0)
+  version       Int       @default(1)
+  approvalLink  String?
+  acceptedAt    DateTime?
+
+  clientId      String?
+  client        Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId     String?
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("Proposal")
+}
+
+// ==========================================
+// LEADS E CRM
+
+model Lead {
+  id             String    @id @default(uuid())
+  name           String
+  email          String?
+  phone          String?
+  source         String?   @default("site")
+  status         String    @default("new") // new, qualified, meeting, proposal, won, lost
+  owner          String?
+  notes          String?
+  nextActionAt   DateTime?
+  converted      Boolean   @default(false)
+  convertedAt    DateTime?
+  convertedToId  String?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Lead")
+}
+
+// ==========================================
+// MENSAGENS
+
+model Message {
+  id           String    @id @default(uuid())
+  projectId    String?
+  clientId     String?
+  senderType   String    @default("internal") // internal, client, system
+  senderName   String?
+  content      String
+  read         Boolean   @default(false)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  project      Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client       Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("Message")
+}
+
+// ==========================================
+// EQUIPE / USUÁRIOS INTERNOS
+
+model TeamMember {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  role         String   @default("editor")
+  permissions  String?  // JSON string with permission flags
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@map("TeamMember")
 }
 
 // ==========================================

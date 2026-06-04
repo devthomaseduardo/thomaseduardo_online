@@ -1,3 +1,23 @@
+import { config } from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+
+/**
+ * Load .env file into process.env before validation.
+ * Search parent directories so backend can run from /backend while .env is at repo root.
+ */
+const envCandidates = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), '../.env'),
+  path.resolve(process.cwd(), '../../.env'),
+];
+const envPath = envCandidates.find(p => fs.existsSync(p));
+if (envPath) {
+  config({ path: envPath });
+} else {
+  config();
+}
+
 /**
  * Environment validation — fails fast if any required variable is missing.
  * NEVER use fallback values for security-sensitive variables.

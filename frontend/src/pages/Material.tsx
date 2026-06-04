@@ -1,213 +1,447 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Image as ImageIcon, FileText, Palette, Key, CheckCircle2, HelpCircle, ChevronDown, Info } from "lucide-react";
-import { useLang } from "../contexts/LangContext";
-import { FADE_UP } from "../constants/animations";
+import {
+  LayoutGrid, FolderOpen, CreditCard, MessageSquare,
+  Upload, Check, Clock, Eye, Shield, ArrowRight, ArrowLeft,
+  Palette, Image as ImageIcon, Type, Key, FileText, Layers,
+  Zap, Lock, Star, ChevronRight, X
+} from "lucide-react";
+import fundoBg from "../assets/fundo-filosofia.webp";
 
-const MaterialPage = () => {
-  const { lang } = useLang();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+// ─── Types ───────────────────────────────────────────────────────────────────
+type Status = "pending" | "received" | "reviewing";
+type NavId  = "dashboard" | "projetos" | "materiais" | "pagamentos" | "mensagens";
 
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+// ─── Data ────────────────────────────────────────────────────────────────────
+const NAV_ITEMS: { id: NavId; label: string; icon: React.ElementType }[] = [
+  { id: "dashboard",  label: "Dashboard",   icon: LayoutGrid   },
+  { id: "projetos",   label: "Projetos",    icon: Layers       },
+  { id: "materiais",  label: "Materiais",   icon: FolderOpen   },
+  { id: "pagamentos", label: "Pagamentos",  icon: CreditCard   },
+  { id: "mensagens",  label: "Mensagens",   icon: MessageSquare},
+];
 
-  const materials = [
-    {
-      id: "materiais",
-      icon: <Palette className="w-6 h-6 text-white/70" />,
-      title_pt: "Materiais necessários",
-      title_en: "Required materials",
-      desc_pt: "Para iniciar, precisaremos da sua logo, manual de identidade visual, textos institucionais, imagens em alta resolução, vídeos, referências visuais e acessos importantes (como painel de domínio).",
-      desc_en: "To start, we'll need your logo, brand guidelines, institutional texts, high-resolution images, videos, visual references, and important access (such as domain panel).",
-      solution_pt: "Se não tiver marca ou textos prontos, nós guiamos a produção, utilizamos bancos de imagens licenciados ou criamos uma identidade visual do zero.",
-      solution_en: "If you don't have a brand or texts ready, we guide the production, use licensed stock images, or create a visual identity from scratch."
-    },
-    {
-      id: "etapas",
-      icon: <CheckCircle2 className="w-6 h-6 text-white/70" />,
-      title_pt: "Etapas do projeto",
-      title_en: "Project stages",
-      desc_pt: "O processo segue um fluxo linear: briefing inicial, organização dos materiais, aprovação da proposta, pagamento inicial, design (UI/UX), desenvolvimento frontend/backend, rodada de revisão, publicação (deploy) e entrega final.",
-      desc_en: "The process follows a linear flow: initial briefing, organization of materials, proposal approval, initial payment, design (UI/UX), frontend/backend development, review round, publication (deploy), and final delivery.",
-      solution_pt: "Você será notificado a cada avanço através da sua Área Privada e não precisa se preocupar com cronograma, nós gerenciamos tudo.",
-      solution_en: "You will be notified at every step through your Private Area and don't need to worry about the schedule, we manage everything."
-    },
-    {
-      id: "pagamentos",
-      icon: <FileText className="w-6 h-6 text-white/70" />,
-      title_pt: "Pagamentos",
-      title_en: "Payments",
-      desc_pt: "Aceitamos pagamentos via PIX, checkout seguro via Mercado Pago (cartão de crédito em até 12x) e faturamento direto. Todo o saldo, invoices e contratação de serviços adicionais são gerenciados na sua Área do Cliente.",
-      desc_en: "We accept payments via PIX, secure checkout via Mercado Pago (credit card up to 12x), and direct billing. All balance, invoices, and additional services are managed in your Client Area.",
-      solution_pt: "Emitimos Notas Fiscais para todas as transações, disponíveis para download imediatamente após a confirmação.",
-      solution_en: "We issue Invoices for all transactions, available for download immediately after confirmation."
-    },
-    {
-      id: "entregas",
-      icon: <ChevronDown className="w-6 h-6 text-white/70" />,
-      title_pt: "Entregas",
-      title_en: "Deliverables",
-      desc_pt: "No fim do projeto, você recebe: o projeto publicado em alta performance, arquivos fonte em formato ZIP, acesso aos repositórios no GitHub, documentação técnica da arquitetura e todos os acessos administrativos configurados.",
-      desc_en: "At the end of the project, you receive: the high-performance published project, source files in ZIP format, access to GitHub repositories, technical architecture documentation, and all administrative accesses configured.",
-      solution_pt: "Você é 100% dono de todo o código fonte e da propriedade intelectual gerada.",
-      solution_en: "You own 100% of the source code and intellectual property generated."
-    },
-    {
-      id: "suporte",
-      icon: <Info className="w-6 h-6 text-white/70" />,
-      title_pt: "Suporte e próximos passos",
-      title_en: "Support and next steps",
-      desc_pt: "Após a entrega, você terá um período de ajustes finos. Oferecemos também planos de manutenção contínua, infraestrutura, melhorias futuras e prioridade na contratação de novos serviços.",
-      desc_en: "After delivery, you'll have a fine-tuning period. We also offer ongoing maintenance plans, infrastructure, future improvements, and priority in hiring new services.",
-      solution_pt: "Nossa parceria não acaba no deploy. Mantemos uma infraestrutura ativa para escalar sua operação.",
-      solution_en: "Our partnership doesn't end at deploy. We maintain an active infrastructure to scale your operation."
-    }
-  ];
+const SIDEBAR_SECTIONS = [
+  {
+    icon: Palette,
+    title: "Identidade Visual",
+    desc: "Logo, cores, tipografia e manual da marca definem a base visual do projeto.",
+  },
+  {
+    icon: Zap,
+    title: "Fluxo de Progresso",
+    desc: "Quatro etapas lineares garantem clareza e controle total do processo.",
+  },
+  {
+    icon: Layers,
+    title: "Categorização de Materiais",
+    desc: "Cada arquivo tem sua categoria e tipo definido para agilizar o desenvolvimento.",
+  },
+  {
+    icon: Star,
+    title: "Estados de Status",
+    desc: "Recebido, Em análise e Pendente — visibilidade total do que foi entregue.",
+  },
+  {
+    icon: Eye,
+    title: "Experiência do Usuário",
+    desc: "Interface construída para reduzir atrito e maximizar clareza operacional.",
+  },
+  {
+    icon: Lock,
+    title: "Confiança e Segurança",
+    desc: "Todos os arquivos são tratados com sigilo e utilizados exclusivamente no projeto.",
+  },
+];
 
+const STEPS = [
+  { num: "01", label: "Briefing"  },
+  { num: "02", label: "Materiais" },
+  { num: "03", label: "Pagamento" },
+  { num: "04", label: "Kickoff"   },
+];
+
+interface MatCard {
+  id:       string;
+  icon:     React.ElementType;
+  title:    string;
+  desc:     string;
+  formats:  string;
+}
+
+const MATERIALS: MatCard[] = [
+  {
+    id: "briefing",  icon: FileText,   title: "Briefing do Projeto",
+    desc: "Documento de escopo, objetivos e expectativas do projeto.",
+    formats: "PDF · DOCX · TXT",
+  },
+  {
+    id: "logo",      icon: Palette,    title: "Logo da Empresa",
+    desc: "Versão principal da marca em alta resolução e variações.",
+    formats: "SVG · AI · PNG · PDF",
+  },
+  {
+    id: "brand",     icon: Layers,     title: "Manual da Marca",
+    desc: "Guia de identidade visual, paleta de cores e tipografia.",
+    formats: "PDF · AI · Figma",
+  },
+  {
+    id: "images",    icon: ImageIcon,  title: "Imagens e Fotos",
+    desc: "Fotos institucionais, produtos ou referências visuais.",
+    formats: "JPG · PNG · WebP",
+  },
+  {
+    id: "texts",     icon: Type,       title: "Textos e Conteúdo",
+    desc: "Textos institucionais, descrições e conteúdo editorial.",
+    formats: "DOCX · PDF · TXT",
+  },
+  {
+    id: "access",    icon: Key,        title: "Acessos e Credenciais",
+    desc: "Domínio, hospedagem, redes sociais ou painéis admin.",
+    formats: "TXT · PDF · Planilha",
+  },
+];
+
+// ─── Status badge ─────────────────────────────────────────────────────────────
+const StatusBadge = ({ status }: { status: Status }) => {
+  const cfg = {
+    received:  { label: "Recebido",   cls: "text-emerald-400 bg-emerald-400/10 border-emerald-400/25", Icon: Check  },
+    reviewing: { label: "Em análise", cls: "text-amber-400  bg-amber-400/10  border-amber-400/25",  Icon: Eye    },
+    pending:   { label: "Pendente",   cls: "text-white/25   bg-white/[0.04]  border-white/[0.08]",  Icon: Clock  },
+  }[status];
   return (
-    <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
-      
-      <main className="section-padding px-6 max-w-5xl mx-auto pt-32 pb-32">
-        {/* Page Header */}
-        <motion.div {...FADE_UP} className="mb-16">
-          <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-6">
-            {lang === "pt" ? "Portal de Novos Clientes" : "New Clients Portal"}
-          </span>
-          <h1 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tighter leading-[1.1] text-white mb-6 uppercase">
-            {lang === "pt" ? "Processo de Desenvolvimento" : "Development Process"}
-          </h1>
-          <p className="text-lg md:text-xl text-white/50 font-light max-w-2xl leading-relaxed">
-            {lang === "pt" 
-              ? "Para garantir a excelência e rapidez na entrega, aqui está um guia completo de como o seu projeto será conduzido, desde o briefing até a publicação final."
-              : "To ensure excellence and speed in delivery, here is a complete guide on how your project will be conducted, from briefing to final publication."}
-          </p>
-        </motion.div>
-
-        {/* Material List (Accordion) */}
-        <div className="flex flex-col gap-4">
-          {materials.map((item, index) => {
-            const isExpanded = expandedId === item.id;
-            
-            return (
-              <motion.div 
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-                className={`bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden transition-colors ${isExpanded ? 'bg-white/[0.04]' : 'hover:bg-white/[0.03]'}`}
-              >
-                <button 
-                  onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                  className="w-full text-left p-8 sm:p-10 flex items-center justify-between gap-6 outline-none cursor-pointer"
-                >
-                  <div className="flex items-center gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
-                        {item.icon}
-                      </div>
-                    </div>
-                    <h3 className="text-2xl md:text-3xl font-medium text-white">
-                      {lang === "pt" ? item.title_pt : item.title_en}
-                    </h3>
-                  </div>
-                  
-                  <motion.div 
-                    animate={{ rotate: isExpanded ? 180 : 0 }} 
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="flex-shrink-0 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 text-white/50"
-                  >
-                    <ChevronDown className="w-5 h-5" />
-                  </motion.div>
-                </button>
-                
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
-                    >
-                      <div className="px-6 sm:px-8 pb-8 pt-2">
-                        <div className="flex flex-col gap-6 pl-0 md:pl-20">
-                          <p className="text-white/60 leading-relaxed font-light flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-green-500/70 mt-0.5 flex-shrink-0" />
-                            <span>{lang === "pt" ? item.desc_pt : item.desc_en}</span>
-                          </p>
-                          
-                          <div className="pt-6 mt-2 border-t border-white/5">
-                            <h4 className="text-xs font-mono text-white/30 uppercase tracking-widest mb-3 flex items-center gap-2">
-                              <HelpCircle className="w-3.5 h-3.5" />
-                              {lang === "pt" ? "E se eu não tiver?" : "What if I don't have it?"}
-                            </h4>
-                            <p className="text-white/50 font-light leading-relaxed text-sm md:text-base">
-                              {lang === "pt" ? item.solution_pt : item.solution_en}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Importance Note */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 bg-white/[0.02] border border-white/10 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-start"
-        >
-          <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10 flex-shrink-0 mt-1">
-            <Info className="w-5 h-5 text-white/70" />
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-white mb-2">
-              {lang === "pt" ? "Por que isso é importante?" : "Why is this important?"}
-            </h3>
-            <p className="text-white/60 font-light leading-relaxed text-sm md:text-base">
-              {lang === "pt" 
-                ? "O envio completo e correto destes materiais logo no início nos permite focar 100% na qualidade do design e no resultado, evitando pausas no desenvolvimento e garantindo que o seu projeto seja entregue com o nível de excelência que sua marca merece."
-                : "The complete and correct submission of these materials right at the beginning allows us to focus 100% on the quality of the design and the result, avoiding pauses in development and ensuring your project is delivered with the level of excellence your brand deserves."}
-            </p>
-          </div>
-        </motion.div>
-        
-        {/* Next Steps CTA */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 text-center border-t border-white/10 pt-16"
-        >
-          <h2 className="text-2xl text-white font-medium mb-4">
-            {lang === "pt" ? "Tudo pronto para começar?" : "Ready to get started?"}
-          </h2>
-          <p className="text-white/50 font-light mb-8 max-w-md mx-auto">
-            {lang === "pt" 
-              ? "Reúna o que tiver disponível e nos envie. O que faltar, nós resolvemos em conjunto durante o projeto."
-              : "Gather what you have available and send it to us. What is missing, we will solve together during the project."}
-          </p>
-          <a 
-            href="https://wa.me/5511999999999" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center h-12 px-8 bg-white text-black font-medium text-sm tracking-wide rounded-full hover:bg-white/90 transition-colors"
-          >
-            {lang === "pt" ? "ENVIAR MATERIAIS" : "SEND MATERIALS"}
-          </a>
-        </motion.div>
-
-      </main>
-    </div>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.15em] border ${cfg.cls}`}>
+      <cfg.Icon className="w-3 h-3" />{cfg.label}
+    </span>
   );
 };
 
-export default MaterialPage;
+// ─── Upload Card ──────────────────────────────────────────────────────────────
+const UploadCard = ({
+  card, status, onUpload,
+}: { card: MatCard; status: Status; onUpload: (id: string) => void }) => {
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const Icon = card.icon;
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`relative flex flex-col rounded-2xl border bg-[#0a0a0a] overflow-hidden transition-all duration-300 group ${
+        dragging
+          ? "border-white/30 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.15)]"
+          : status === "received"
+          ? "border-emerald-500/20"
+          : "border-white/[0.07] hover:border-white/[0.13]"
+      }`}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => { e.preventDefault(); setDragging(false); onUpload(card.id); }}
+    >
+      <input ref={inputRef} type="file" multiple className="hidden" onChange={() => onUpload(card.id)} />
+
+      {/* Card header */}
+      <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className={`w-9 h-9 rounded-xl flex items-center justify-center border shrink-0 ${
+            status === "received"
+              ? "border-emerald-500/20 bg-emerald-500/10"
+              : "border-white/[0.06] bg-white/[0.03]"
+          }`}>
+            <Icon className={`w-4 h-4 ${status === "received" ? "text-emerald-400" : "text-white/35"}`} />
+          </div>
+          <div>
+            <span className="block text-[14px] font-semibold tracking-tight text-white">{card.title}</span>
+            <span className="block text-[11px] text-white/30 mt-0.5 leading-relaxed">{card.desc}</span>
+          </div>
+        </div>
+        <StatusBadge status={status} />
+      </div>
+
+      {/* Drop zone */}
+      <div
+        onClick={() => status !== "received" && inputRef.current?.click()}
+        className={`mx-6 mb-6 flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed py-8 transition-all duration-300 ${
+          status === "received"
+            ? "border-emerald-500/15 bg-emerald-500/[0.03] cursor-default"
+            : "border-white/[0.07] hover:border-white/20 cursor-pointer hover:bg-white/[0.02]"
+        }`}
+      >
+        {status === "received" ? (
+          <>
+            <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <Check className="w-5 h-5 text-emerald-400" />
+            </div>
+            <span className="text-[12px] font-mono text-emerald-400/70 uppercase tracking-widest">Arquivo recebido</span>
+          </>
+        ) : (
+          <>
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${
+              dragging ? "border-white/30 bg-white/10" : "border-white/[0.08] bg-white/[0.03]"
+            }`}>
+              <Upload className="w-4 h-4 text-white/35" />
+            </div>
+            <div className="text-center">
+              <span className="block text-[12px] text-white/40">Arraste e solte o arquivo aqui</span>
+              <span className="block text-[11px] text-white/20 mt-0.5">ou clique para selecionar</span>
+            </div>
+            <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.15em]">{card.formats}</span>
+          </>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+export default function MaterialPage() {
+  const [activeNav] = useState<NavId>("materiais");
+  const [statuses, setStatuses] = useState<Record<string, Status>>({
+    briefing: "received",
+    logo:     "reviewing",
+    brand:    "pending",
+    images:   "pending",
+    texts:    "pending",
+    access:   "pending",
+  });
+
+  React.useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const handleUpload = (id: string) => setStatuses(p => ({ ...p, [id]: "reviewing" }));
+
+  const received  = Object.values(statuses).filter(s => s === "received").length;
+  const reviewing = Object.values(statuses).filter(s => s === "reviewing").length;
+  const pending   = Object.values(statuses).filter(s => s === "pending").length;
+  const progress  = Math.round((received / MATERIALS.length) * 100);
+
+  return (
+    <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
+
+      {/* ══ LEFT SIDEBAR ════════════════════════════════════════════════════ */}
+      <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto">
+
+        {/* Logo */}
+        <div className="h-16 flex items-center gap-3 px-7 border-b border-white/[0.05] shrink-0">
+          <div className="w-7 h-7 bg-white flex items-center justify-center rounded-sm shrink-0">
+            <span className="text-black text-[11px] font-black">TE</span>
+          </div>
+          <div>
+            <span className="block text-[13px] font-semibold tracking-tight">Thomas Eduardo</span>
+            <span className="block text-[10px] font-mono text-white/25 uppercase tracking-wider">Portal do Cliente</span>
+          </div>
+        </div>
+
+        {/* Design annotation */}
+        <div className="px-7 pt-8 pb-4 shrink-0">
+          <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-white/20 block mb-1">Design da Página</span>
+          <span className="text-[18px] font-bold tracking-tight leading-tight block">Página de Materiais</span>
+          <span className="text-[11px] text-white/30 block mt-1">Onboarding do Projeto</span>
+        </div>
+
+        {/* Divider */}
+        <div className="mx-7 border-t border-white/[0.05] mb-6" />
+
+        {/* Sidebar sections */}
+        <div className="px-5 space-y-1 flex-1">
+          {SIDEBAR_SECTIONS.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.07 }}
+              className="flex gap-3 p-3 rounded-xl border border-transparent hover:border-white/[0.07] hover:bg-white/[0.02] transition-all cursor-default"
+            >
+              <div className="w-7 h-7 rounded-lg border border-white/[0.07] bg-white/[0.03] flex items-center justify-center shrink-0 mt-0.5">
+                <s.icon className="w-3.5 h-3.5 text-white/35" />
+              </div>
+              <div>
+                <span className="block text-[12px] font-semibold text-white/70 mb-0.5">{s.title}</span>
+                <span className="block text-[11px] text-white/25 leading-relaxed">{s.desc}</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Progress summary */}
+        <div className="mx-5 my-6 p-4 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-white/25">Progresso</span>
+            <span className="text-[13px] font-bold">{progress}%</span>
+          </div>
+          <div className="w-full h-px bg-white/[0.06] relative overflow-hidden rounded-full">
+            <motion.div
+              className="absolute left-0 top-0 h-full bg-white"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+            />
+          </div>
+          <div className="flex gap-4 mt-3">
+            {[
+              { label: "Recebidos", val: received,  cls: "text-emerald-400" },
+              { label: "Análise",   val: reviewing, cls: "text-amber-400"   },
+              { label: "Pendente",  val: pending,   cls: "text-white/25"    },
+            ].map(m => (
+              <div key={m.label}>
+                <span className={`block text-[15px] font-bold ${m.cls}`}>{m.val}</span>
+                <span className="block text-[9px] font-mono uppercase tracking-wider text-white/20">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* ══ MAIN CONTENT ════════════════════════════════════════════════════ */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+        {/* Top navigation */}
+        <header className="h-16 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40 shrink-0">
+          <nav className="flex items-center gap-1">
+            {NAV_ITEMS.map(item => {
+              const Icon = item.icon;
+              const isActive = item.id === activeNav;
+              return (
+                <button
+                  key={item.id}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all ${
+                    isActive
+                      ? "bg-white/[0.07] text-white font-medium"
+                      : "text-white/35 hover:text-white/60 hover:bg-white/[0.03]"
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-white/25"}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/60">CL</div>
+          </div>
+        </header>
+
+        {/* ── HERO ──────────────────────────────────────────────────────── */}
+        <section className="grid grid-cols-1 lg:grid-cols-[1fr_340px] items-stretch min-h-[340px] border-b border-white/[0.05]">
+          <div className="px-10 py-14 flex flex-col justify-center">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+              <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.3em] text-white/25 border border-white/[0.07] px-3 py-1.5 rounded-sm mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                Onboarding
+              </span>
+              <h1 className="text-[clamp(36px,4.5vw,68px)] font-bold tracking-tighter leading-[1.0] mb-5">
+                Vamos estruturar<br />sua operação.
+              </h1>
+              <p className="text-[15px] text-white/35 max-w-lg leading-relaxed">
+                Antes do desenvolvimento, precisamos reunir todas as informações e materiais que irão orientar o projeto e garantir o melhor resultado.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Background image panel */}
+          <div className="border-l border-white/[0.05] relative overflow-hidden hidden lg:block">
+            {/* Image */}
+            <img
+              src={fundoBg}
+              alt="Fundo"
+              className="absolute inset-0 w-full h-full object-cover object-center"
+            />
+            {/* Dark overlay so left content stays readable */}
+            <div className="absolute inset-0 bg-black/50" />
+            {/* Subtle vignette on the left edge to blend with main content */}
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#060606] to-transparent" />
+          </div>
+        </section>
+
+        {/* ── PROGRESS TIMELINE ─────────────────────────────────────────── */}
+        <section className="px-10 py-8 border-b border-white/[0.05]">
+          <div className="flex items-center gap-0 max-w-2xl">
+            {STEPS.map((step, i) => {
+              const isDone   = i < 1;
+              const isActive = i === 1;
+              return (
+                <React.Fragment key={step.num}>
+                  <div className="flex items-center gap-3 min-w-max">
+                    <div className={`w-8 h-8 rounded-sm flex items-center justify-center border text-[10px] font-mono font-bold transition-all ${
+                      isDone   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" :
+                      isActive ? "border-white/30 bg-white/[0.07] text-white" :
+                                 "border-white/[0.07] text-white/20"
+                    }`}>
+                      {isDone ? <Check className="w-3.5 h-3.5" /> : step.num}
+                    </div>
+                    <span className={`text-[12px] font-medium ${
+                      isActive ? "text-white" : isDone ? "text-white/35" : "text-white/20"
+                    }`}>{step.label}</span>
+                  </div>
+                  {i < STEPS.length - 1 && (
+                    <div className={`h-px w-12 md:w-20 mx-3 shrink-0 ${i < 1 ? "bg-emerald-500/20" : "bg-white/[0.05]"}`} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+
+          {/* Progress bar */}
+          <div className="mt-6 flex items-center gap-4 max-w-2xl">
+            <div className="flex-1 h-[2px] bg-white/[0.05] rounded-full overflow-hidden relative">
+              <motion.div
+                className="absolute inset-y-0 left-0 bg-white rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 1.4, ease: "easeOut" }}
+              />
+            </div>
+            <span className="text-[11px] font-mono text-white/25 shrink-0">{progress}% completo</span>
+          </div>
+        </section>
+
+        {/* ── MATERIALS GRID ────────────────────────────────────────────── */}
+        <section className="px-10 py-10 flex-1">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-[22px] font-bold tracking-tight mb-1">Materiais do Projeto</h2>
+              <p className="text-[13px] text-white/30">Envie todos os materiais solicitados abaixo para que possamos iniciar o desenvolvimento.</p>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-mono text-white/25">
+              <span>{received}/{MATERIALS.length}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {MATERIALS.map((card, i) => (
+              <motion.div key={card.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
+                <UploadCard card={card} status={statuses[card.id] as Status} onUpload={handleUpload} />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SECURITY BANNER ───────────────────────────────────────────── */}
+        <div className="mx-10 mb-8 flex items-center gap-5 px-7 py-5 border border-white/[0.06] rounded-2xl bg-[#0a0a0a]">
+          <div className="w-10 h-10 rounded-xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center shrink-0">
+            <Shield className="w-5 h-5 text-white/30" />
+          </div>
+          <div>
+            <span className="block text-[13px] font-semibold text-white/80 mb-0.5">Seus dados estão seguros</span>
+            <span className="block text-[12px] text-white/30 leading-relaxed">
+              Todas as informações e arquivos enviados são confidenciais e utilizados exclusivamente para o desenvolvimento do seu projeto.
+            </span>
+          </div>
+        </div>
+
+        {/* ── BOTTOM ACTIONS ────────────────────────────────────────────── */}
+        <div className="px-10 pb-12 flex items-center justify-between">
+          <button className="flex items-center gap-2 text-[12px] font-mono uppercase tracking-widest text-white/30 hover:text-white transition-colors">
+            <ArrowLeft className="w-4 h-4" />Voltar ao Dashboard
+          </button>
+          <button className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.18em] px-7 py-3.5 rounded-xl transition-all duration-200 group">
+            Continuar para Pagamento
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
+      </div>
+
+    </div>
+  );
+}

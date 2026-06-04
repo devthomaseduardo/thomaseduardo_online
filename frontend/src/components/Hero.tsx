@@ -3,27 +3,23 @@ import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
-import heroBg from "../assets/hero-web.webp";
+import adminHero from "../assets/admin-hero.png";
 
 const Hero = () => {
   const { t, lang } = useLang();
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-pg-bg">
-      {/* Background Image Setup */}
-      <div 
-        className="absolute inset-0 z-0 opacity-85"
-        style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      {/* Gradient Overlays for Readability and Seamless Blending */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-pg-bg/40 to-pg-bg" />
-      <div className="absolute inset-0 z-0 bg-black/30" />
+    <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-[#060606]">
+      {/* Background Image Setup from LandingPage */}
+      <div className="absolute inset-0 z-0">
+        <img src={adminHero} alt="" className="absolute right-0 top-0 w-1/2 h-full object-cover object-left opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060606] via-[#060606]/85 to-[#060606]/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#060606]" />
+        {/* vertical light beam */}
+        <div className="absolute right-1/3 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+      </div>
 
-      <div className="w-full px-6 md:px-16 lg:px-24 relative z-10 flex flex-col items-center justify-center text-center mt-12">
+      <div className="w-full px-6 md:px-16 lg:px-24 relative z-10 flex flex-col items-start justify-center text-left mt-12">
         <motion.div
           {...HERO_FADE_UP}
           className="mb-8"
@@ -44,7 +40,7 @@ const Hero = () => {
         <motion.h1 
           {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
-          className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[1.0] text-white pb-6 text-center"
+          className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[1.0] text-white pb-6 text-left"
         >
           {t.hero.h1a} <br />
           {t.hero.h1b}
@@ -61,7 +57,7 @@ const Hero = () => {
         <motion.div
           {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.3 }}
-          className="flex flex-col items-center justify-center gap-6 mt-16 w-full sm:w-auto"
+          className="flex flex-col items-start justify-center gap-6 mt-16 w-full sm:w-auto"
         >
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto e resolver meus gargalos.")}`}

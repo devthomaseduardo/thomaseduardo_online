@@ -1,306 +1,368 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "motion/react";
-import { 
-  CheckCircle2, Circle, Globe, Link as LinkIcon, FileText, LogOut, ArrowLeft,
-  CreditCard, Activity, Download, UploadCloud, MonitorSmartphone, Server,
-  GitBranch, Check, Hourglass, Zap, Shield, ChevronRight, PieChart, Code2
+import { motion, AnimatePresence } from "motion/react";
+import {
+  LayoutGrid, FileText, CreditCard, FolderOpen, Zap, BarChart2,
+  LogOut, CheckCircle2, Circle, Clock, ArrowUpRight, ChevronRight,
+  Server, GitBranch, Globe, Activity, Shield, Download, UploadCloud,
+  Check, Hourglass, AlertCircle, Bell, Search, Command
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function ClientDashboard() {
-  const navigate = useNavigate();
-  const [selectedProject, setSelectedProject] = useState<any>(null);
-  const [clientData, setClientData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+// ─── Types ────────────────────────────────────────────────────────────────────
+type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics";
 
-  useEffect(() => {
-    const fetchClientData = async () => {
-      const token = localStorage.getItem("clientToken");
-      if (!token) {
-        navigate("/portal");
-        return;
-      }
-      try {
-        const res = await fetch("/api/clients/me", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error("Não autorizado");
-        const data = await res.json();
-        setClientData(data);
-      } catch (err) {
-        localStorage.removeItem("clientToken");
-        navigate("/portal");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchClientData();
-  }, [navigate]);
+interface NavItem { id: NavId; label: string; icon: React.ElementType; }
 
-  const handleLogout = () => {
-    localStorage.removeItem("clientToken");
-    localStorage.removeItem("clientId");
-    navigate("/portal");
+const NAV: NavItem[] = [
+  { id: "overview",     label: "Projetos",     icon: LayoutGrid },
+  { id: "contracts",    label: "Contratos",    icon: FileText   },
+  { id: "payments",     label: "Pagamentos",   icon: CreditCard },
+  { id: "files",        label: "Arquivos",     icon: FolderOpen },
+  { id: "deployments",  label: "Deployments",  icon: Zap        },
+  { id: "analytics",    label: "Analytics",    icon: BarChart2  },
+];
+
+const ACTIVITY = [
+  { time: "Agora",    msg: "Deploy frontend publicado em produção",     type: "deploy"   },
+  { time: "2h atrás", msg: "Arquivo logo-final.svg recebido",           type: "file"     },
+  { time: "5h atrás", msg: "Pagamento da parcela 2/3 confirmado",       type: "payment"  },
+  { time: "Ontem",    msg: "Revisão de design aprovada pelo cliente",   type: "check"    },
+  { time: "2 dias",   msg: "Repositório privado criado no GitHub",      type: "git"      },
+  { time: "3 dias",   msg: "Contrato assinado digitalmente",            type: "contract" },
+];
+
+const TIMELINE = [
+  { id: "kickoff",  label: "Kickoff",      status: "done"   },
+  { id: "design",   label: "Design & UX",  status: "done"   },
+  { id: "dev",      label: "Development",  status: "active" },
+  { id: "review",   label: "Review",       status: "pending"},
+  { id: "launch",   label: "Launch",       status: "pending"},
+];
+
+const METRICS = [
+  { label: "Projetos Ativos",   value: "3",    sub: "+1 este mês",      color: "#fff"        },
+  { label: "Tarefas Pendentes", value: "7",    sub: "2 com prazo hoje",  color: "#f59e0b"     },
+  { label: "Faturas",           value: "R$12k", sub: "2/3 pagas",        color: "#10b981"     },
+  { label: "Deploy Status",     value: "Live",  sub: "99.9% uptime",     color: "#3b82f6"     },
+];
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
+const StatusDot = ({ status }: { status: string }) => {
+  const cls = status === "done" ? "bg-emerald-500" : status === "active" ? "bg-blue-500 animate-pulse" : "bg-white/10";
+  return <span className={`w-2 h-2 rounded-full shrink-0 ${cls}`} />;
+};
+
+const ActivityIcon = ({ type }: { type: string }) => {
+  const map: Record<string, [React.ElementType, string]> = {
+    deploy:   [Zap,          "text-blue-400  bg-blue-400/10"],
+    file:     [FolderOpen,   "text-amber-400 bg-amber-400/10"],
+    payment:  [CreditCard,   "text-emerald-400 bg-emerald-400/10"],
+    check:    [CheckCircle2, "text-white/60  bg-white/5"],
+    git:      [GitBranch,    "text-purple-400 bg-purple-400/10"],
+    contract: [FileText,     "text-white/60  bg-white/5"],
   };
+  const [Icon, cls] = map[type] ?? [Activity, "text-white/40 bg-white/5"];
+  return (
+    <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${cls}`}>
+      <Icon className="w-3.5 h-3.5" />
+    </span>
+  );
+};
 
-  if (loading) {
-    return <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center font-mono text-sm tracking-widest uppercase">Carregando Infraestrutura...</div>;
-  }
+// ─── Panels ──────────────────────────────────────────────────────────────────
+const PanelOverview = ({ projects }: { projects: any[] }) => (
+  <div className="space-y-10">
+    {/* Metrics */}
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      {METRICS.map((m, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.07, duration: 0.4 }}
+          className="bg-[#0c0c0c] border border-white/[0.06] rounded-2xl p-5 flex flex-col gap-3 hover:border-white/[0.12] transition-colors"
+        >
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30">{m.label}</span>
+          <span className="text-2xl font-semibold tracking-tight" style={{ color: m.color }}>{m.value}</span>
+          <span className="text-[11px] text-white/30">{m.sub}</span>
+        </motion.div>
+      ))}
+    </div>
 
-  if (!clientData) return null;
-  const projects = clientData.projects || [];
-
-  const renderProjectOverview = () => (
-    <div className="space-y-12 animate-in fade-in duration-700 w-full">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white">
-          Sua infraestrutura digital.
-        </h1>
-        <p className="text-white/50 text-lg font-light">
-          Acompanhe o progresso, saúde financeira e o status operacional dos seus ecossistemas.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {projects.map(p => (
-          <div 
-            key={p.id} 
-            onClick={() => setSelectedProject(p)}
-            className="bg-[#0A0A0A] border border-white/5 hover:border-white/15 rounded-3xl p-8 cursor-pointer transition-all duration-300 group relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#009EE3]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative z-10">
-              <div className="flex justify-between items-start mb-12">
-                <h3 className="text-2xl font-bold tracking-tight text-white">{p.name}</h3>
-                <span className="px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-semibold bg-white/5 border border-white/10 text-white/50 group-hover:text-white/80 transition-colors">
-                  {p.phase}
-                </span>
+    {/* Timeline */}
+    <div className="bg-[#0c0c0c] border border-white/[0.06] rounded-2xl p-6">
+      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-6">Timeline do Projeto</span>
+      <div className="flex items-center gap-0 overflow-x-auto">
+        {TIMELINE.map((step, i) => (
+          <React.Fragment key={step.id}>
+            <div className="flex flex-col items-center gap-2 min-w-[90px]">
+              <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+                step.status === "done"    ? "border-emerald-500 bg-emerald-500/10" :
+                step.status === "active" ? "border-blue-500   bg-blue-500/10 ring-2 ring-blue-500/20" :
+                                           "border-white/10   bg-white/[0.02]"
+              }`}>
+                {step.status === "done"   ? <Check   className="w-3.5 h-3.5 text-emerald-400" /> :
+                 step.status === "active" ? <Hourglass className="w-3.5 h-3.5 text-blue-400" /> :
+                                            <Circle  className="w-2 h-2 text-white/10 fill-current" />}
               </div>
-              
-              <div className="flex justify-between items-end border-t border-white/5 pt-6 mt-8">
-                <div>
-                  <span className="block text-[10px] uppercase tracking-widest text-white/30 mb-1">Status</span>
-                  <span className="text-sm font-medium text-emerald-500 flex items-center gap-2">
-                    <Circle className="w-2 h-2 fill-current" /> Operação Ativa
-                  </span>
-                </div>
-                <button className="text-xs font-mono uppercase tracking-widest text-white/40 group-hover:text-white flex items-center gap-2 transition-colors">
-                  Acessar Painel <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
+              <span className={`text-[10px] font-mono text-center whitespace-nowrap ${
+                step.status === "done" ? "text-white/40" : step.status === "active" ? "text-white" : "text-white/20"
+              }`}>{step.label}</span>
             </div>
-          </div>
+            {i < TIMELINE.length - 1 && (
+              <div className={`h-[1px] flex-1 mx-1 ${i < TIMELINE.findIndex(s => s.status === "active") ? "bg-emerald-500/40" : "bg-white/[0.06]"}`} />
+            )}
+          </React.Fragment>
         ))}
-        {projects.length === 0 && (
-          <div className="col-span-full py-20 text-center border border-white/5 border-dashed rounded-3xl">
-            <p className="text-white/40">Nenhum projeto ativo encontrado.</p>
-          </div>
-        )}
       </div>
     </div>
-  );
 
-  const renderProjectDetail = () => {
-    const p = selectedProject;
-    
-    // Fake timeline mapping to narrative
-    const progressPercent = 72; // Hardcoded feel for the post-proposal experience
-    const currentStepText = "Desenvolvimento Frontend";
-    
-    return (
-      <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
-        <button 
-          onClick={() => setSelectedProject(null)}
-          className="flex items-center gap-2 text-white/40 hover:text-white text-[11px] uppercase tracking-widest font-mono transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Voltar para projetos
-        </button>
-
-        {/* ── HERO ── */}
-        <div>
-          <h1 className="text-[clamp(36px,5vw,56px)] font-bold tracking-tight mb-4 leading-[1.1]">
-            Seu projeto está em andamento.
-          </h1>
-          <p className="text-white/50 text-lg font-light max-w-2xl">
-            Acompanhe o progresso de <strong className="text-white font-medium">{p.name}</strong>, pagamentos, arquivos e infraestrutura técnica em tempo real.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
-          {/* ── COLUNA ESQUERDA: TIMELINE VIVA (STICKY) ── */}
-          <div className="lg:col-span-4 xl:col-span-3 lg:sticky lg:top-24 space-y-6">
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#009EE3]/10 blur-[50px] rounded-full pointer-events-none" />
-              
-              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 block mb-2">Passo atual:</span>
-              <h3 className="text-2xl font-bold tracking-tight text-[#009EE3] mb-6">{currentStepText}</h3>
-              
-              {/* Progress Bar */}
-              <div className="w-full bg-white/5 rounded-full h-2 mb-2 overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }} animate={{ width: `${progressPercent}%` }} transition={{ duration: 1, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-[#009EE3]/50 to-[#009EE3]"
-                />
-              </div>
-              <div className="text-right text-[10px] font-mono text-white/30 mb-8">{progressPercent}%</div>
-
-              {/* Checklist Narrativa */}
-              <div className="space-y-4">
-                {[
-                  { text: "Briefing recebido", status: "done" },
-                  { text: "Contrato assinado", status: "done" },
-                  { text: "Pagamento confirmado", status: "done" },
-                  { text: "Design & UX aprovados", status: "done" },
-                  { text: "Desenvolvimento Frontend", status: "active" },
-                  { text: "Integrações Backend", status: "pending" },
-                  { text: "Revisão Final", status: "pending" },
-                  { text: "Deploy & Publicação", status: "pending" },
-                ].map((step, i) => (
-                  <div key={i} className="flex items-center gap-4 text-sm font-medium">
-                    {step.status === "done" && <Check className="w-4 h-4 text-emerald-500 shrink-0" />}
-                    {step.status === "active" && <Hourglass className="w-4 h-4 text-[#009EE3] shrink-0 animate-pulse" />}
-                    {step.status === "pending" && <Circle className="w-2 h-2 text-white/10 shrink-0 mx-1 fill-current" />}
-                    
-                    <span className={`
-                      ${step.status === "done" ? "text-white/40 line-through decoration-white/10" : ""}
-                      ${step.status === "active" ? "text-white" : ""}
-                      ${step.status === "pending" ? "text-white/20" : ""}
-                    `}>
-                      {step.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
+    {/* Projects grid */}
+    <div>
+      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-4">Projetos Ativos</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {(projects.length > 0 ? projects : [
+          { id: 1, name: "Portal Operacional", phase: "Development" },
+          { id: 2, name: "Landing Page",       phase: "Review"      },
+        ]).map((p: any) => (
+          <motion.div
+            key={p.id}
+            whileHover={{ scale: 1.01 }}
+            className="bg-[#0c0c0c] border border-white/[0.06] hover:border-white/[0.14] rounded-2xl p-6 cursor-pointer group transition-all"
+          >
+            <div className="flex justify-between items-start mb-8">
+              <h3 className="font-semibold text-base tracking-tight">{p.name}</h3>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 border border-white/[0.08] px-2 py-1 rounded-lg">{p.phase}</span>
             </div>
-          </div>
-
-          {/* ── COLUNA DIREITA: CARDS & OPERACIONAL ── */}
-          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-            
-            {/* CARDS VIVOS */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><CreditCard className="w-3 h-3"/> Pagamentos</span>
-                <span className="text-2xl font-light text-white">R$ {(p.value / 2).toLocaleString('pt-BR')} pagos</span>
-              </div>
-              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><MonitorSmartphone className="w-3 h-3"/> Próxima Entrega</span>
-                <span className="text-xl font-medium text-white">Deploy Frontend</span>
-              </div>
-              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><FileText className="w-3 h-3"/> Arquivos Recebidos</span>
-                <span className="text-xl font-medium text-white">14 arquivos</span>
-              </div>
-              <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mb-4 flex items-center gap-2"><Activity className="w-3 h-3"/> Última Atualização</span>
-                <span className="text-xl font-medium text-emerald-400">Hoje, 13:42</span>
-              </div>
+            <div className="flex justify-between items-center border-t border-white/[0.05] pt-4">
+              <span className="flex items-center gap-1.5 text-xs text-emerald-500">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Operação Ativa
+              </span>
+              <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors" />
             </div>
-
-            {/* ÁREA TÉCNICA (INFRAESTRUTURA) */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><Server className="w-4 h-4 text-white/50" /></div>
-                <h3 className="text-lg font-bold">Infraestrutura Operacional</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-                {[
-                  { label: "Domínio", value: "site.com.br", status: "Conectado", icon: Globe },
-                  { label: "Deploy / Hospedagem", value: "Vercel Pro", status: "Ativo", icon: Zap },
-                  { label: "Repositório", value: "GitHub Privado", status: "Seguro", icon: GitBranch },
-                  { label: "Google Analytics", value: "GA4 Integrado", status: "Coletando", icon: PieChart },
-                  { label: "Google Tag Manager", value: "GTM-XXXX", status: "Ativo", icon: Code2 },
-                  { label: "Meta Pixel", value: "Pixel ID 001", status: "Coletando", icon: Activity },
-                ].map((tech, i) => (
-                  <div key={i} className="flex justify-between items-center pb-4 border-b border-white/5">
-                    <div className="flex items-center gap-3">
-                      <tech.icon className="w-4 h-4 text-white/20" />
-                      <div>
-                        <span className="block text-[10px] font-mono text-white/30 uppercase tracking-wider">{tech.label}</span>
-                        <span className="text-sm font-medium text-white/80">{tech.value}</span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">{tech.status}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* UPLOAD DE MATERIAIS */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center"><UploadCloud className="w-4 h-4 text-white/50" /></div>
-                <h3 className="text-lg font-bold">Arquivos & Materiais</h3>
-              </div>
-              <label className="w-full border-2 border-dashed border-white/10 hover:border-white/20 hover:bg-white/[0.02] transition-colors rounded-2xl h-40 flex flex-col items-center justify-center cursor-pointer group">
-                <UploadCloud className="w-8 h-8 text-white/20 group-hover:text-white/50 transition-colors mb-3" />
-                <span className="text-sm font-medium text-white/70">Solte seus arquivos aqui</span>
-                <span className="text-[11px] text-white/30 mt-1">Logo, fotos, textos ou referências.</span>
-                <input type="file" multiple className="hidden" onChange={() => alert("Upload simulado. Na produção enviará ao servidor.")} />
-              </label>
-              <div className="mt-6 space-y-3">
-                {['logo-final.svg', 'referencias.pdf', 'fotos-produtos.zip'].map((file, i) => (
-                  <div key={i} className="flex items-center gap-3 text-sm text-white/40 bg-white/5 px-4 py-3 rounded-xl border border-white/5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500/50" /> {file}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ENTREGÁVEIS */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none group-hover:bg-emerald-500/10 transition-colors" />
-              <div className="flex items-center justify-between mb-8 relative z-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"><Shield className="w-4 h-4 text-emerald-500" /></div>
-                  <h3 className="text-lg font-bold">Entrega Oficial</h3>
-                </div>
-                <span className="text-[10px] font-mono text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded-full uppercase tracking-widest">Liberado no final</span>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 relative z-10">
-                {['projeto.zip', 'documentacao.pdf', 'acessos-tecnicos.txt', 'contrato-assinado.pdf'].map((file, i) => (
-                  <button key={i} className="flex items-center justify-between p-4 bg-black border border-white/5 hover:border-white/15 rounded-xl transition-colors group/btn">
-                    <span className="text-sm font-medium text-white/60 group-hover/btn:text-white truncate pr-4">{file}</span>
-                    <Download className="w-4 h-4 text-white/20 group-hover/btn:text-white/50 shrink-0" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </div>
+          </motion.div>
+        ))}
       </div>
-    );
+    </div>
+  </div>
+);
+
+const PanelDeployments = () => (
+  <div className="space-y-4">
+    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-6">Infraestrutura Operacional</span>
+    {[
+      { label: "Domínio",           value: "thomaseduardo.online", status: "Conectado",  icon: Globe,     color: "emerald" },
+      { label: "Deploy",            value: "Vercel Pro",           status: "Live",       icon: Zap,       color: "emerald" },
+      { label: "Repositório",       value: "GitHub Privado",       status: "Seguro",     icon: GitBranch, color: "blue"    },
+      { label: "Google Analytics",  value: "GA4 Integrado",        status: "Coletando",  icon: Activity,  color: "emerald" },
+      { label: "Meta Pixel",        value: "Pixel Ativo",          status: "Ativo",      icon: Shield,    color: "emerald" },
+      { label: "Servidor",          value: "99.9% Uptime",         status: "Estável",    icon: Server,    color: "emerald" },
+    ].map((item, i) => (
+      <motion.div
+        key={i}
+        initial={{ opacity: 0, x: -8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: i * 0.06 }}
+        className="flex items-center justify-between px-5 py-4 bg-[#0c0c0c] border border-white/[0.06] rounded-xl hover:border-white/[0.12] transition-colors"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+            <item.icon className="w-3.5 h-3.5 text-white/40" />
+          </div>
+          <div>
+            <span className="block text-[10px] font-mono uppercase tracking-wider text-white/25">{item.label}</span>
+            <span className="text-sm font-medium text-white/80">{item.value}</span>
+          </div>
+        </div>
+        <span className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-lg ${
+          item.color === "emerald" ? "text-emerald-400 bg-emerald-400/10 border border-emerald-400/20" :
+                                     "text-blue-400   bg-blue-400/10   border border-blue-400/20"
+        }`}>{item.status}</span>
+      </motion.div>
+    ))}
+  </div>
+);
+
+const PanelFiles = () => (
+  <div className="space-y-6">
+    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/[0.08] hover:border-white/20 rounded-2xl cursor-pointer group transition-colors">
+      <UploadCloud className="w-7 h-7 text-white/20 group-hover:text-white/50 mb-2 transition-colors" />
+      <span className="text-sm text-white/50">Solte seus arquivos aqui</span>
+      <span className="text-[11px] text-white/25 mt-1">Logo, fotos, textos, referências</span>
+      <input type="file" multiple className="hidden" />
+    </label>
+    <div className="space-y-2">
+      {["logo-final.svg","referencias.pdf","fotos-produto.zip","brief-aprovado.docx"].map((f, i) => (
+        <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#0c0c0c] border border-white/[0.06] rounded-xl group hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500/60" />
+            <span className="text-sm text-white/60">{f}</span>
+          </div>
+          <Download className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors cursor-pointer" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const PanelPlaceholder = ({ label }: { label: string }) => (
+  <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/[0.06] rounded-2xl">
+    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/20">{label}</span>
+    <span className="text-white/10 text-xs mt-2">Em breve</span>
+  </div>
+);
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+export default function ClientDashboard() {
+  const navigate  = useNavigate();
+  const [active, setActive]     = useState<NavId>("overview");
+  const [clientData, setClient] = useState<any>(null);
+  const [loading, setLoading]   = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("clientToken");
+    if (!token) { navigate("/portal"); return; }
+    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(d => { setClient(d); setLoading(false); })
+      .catch(() => { localStorage.removeItem("clientToken"); navigate("/portal"); });
+  }, [navigate]);
+
+  if (loading) return (
+    <div className="min-h-screen bg-[#060606] flex items-center justify-center">
+      <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/20 animate-pulse">Inicializando ambiente...</span>
+    </div>
+  );
+  if (!clientData) return null;
+
+  const projects = clientData.projects || [];
+  const initials = clientData.name?.substring(0, 2).toUpperCase() ?? "TE";
+
+  const panels: Record<NavId, React.ReactNode> = {
+    overview:    <PanelOverview projects={projects} />,
+    deployments: <PanelDeployments />,
+    files:       <PanelFiles />,
+    contracts:   <PanelPlaceholder label="Contratos" />,
+    payments:    <PanelPlaceholder label="Pagamentos" />,
+    analytics:   <PanelPlaceholder label="Analytics" />,
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#EDEDED] font-sans selection:bg-[#EDEDED]/30">
-      {/* ── NAV ── */}
-      <nav className="border-b border-white/5 bg-[#050505]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="px-6 lg:px-12 h-16 flex items-center justify-between w-full">
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm">
-              {clientData.name.substring(0,2).toUpperCase()}
-            </div>
-            <div>
-              <span className="font-semibold text-sm block">{clientData.name}</span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-white/30">Portal Privado</span>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="text-white/40 hover:text-white text-[11px] font-mono uppercase tracking-widest transition-colors flex items-center gap-2">
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Sair do ambiente</span>
-          </button>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-[#060606] text-[#e8e8e8] font-sans flex">
 
-      {/* ── MAIN ── */}
-      <main className="p-6 lg:p-12 w-full">
-        {selectedProject ? renderProjectDetail() : renderProjectOverview()}
-      </main>
+      {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
+      <aside className="w-[220px] shrink-0 border-r border-white/[0.05] flex flex-col sticky top-0 h-screen bg-[#060606]">
+        {/* Logo */}
+        <div className="px-5 h-14 flex items-center border-b border-white/[0.05]">
+          <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center mr-3">
+            <span className="text-black text-[10px] font-black">TE</span>
+          </div>
+          <span className="text-sm font-semibold tracking-tight">Portal</span>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-0.5">
+          {NAV.map(item => {
+            const Icon = item.icon;
+            const isActive = active === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActive(item.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-[13px] transition-all ${
+                  isActive
+                    ? "bg-white/[0.07] text-white font-medium"
+                    : "text-white/40 hover:text-white/70 hover:bg-white/[0.03]"
+                }`}
+              >
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-white/30"}`} />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* User footer */}
+        <div className="px-3 pb-4 border-t border-white/[0.05] pt-4">
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-bold text-white/70 shrink-0">{initials}</div>
+            <div className="flex-1 min-w-0">
+              <span className="block text-[12px] font-medium truncate">{clientData.name}</span>
+              <span className="block text-[10px] text-white/25 font-mono">Cliente Ativo</span>
+            </div>
+            <button onClick={() => { localStorage.removeItem("clientToken"); navigate("/portal"); }}>
+              <LogOut className="w-3.5 h-3.5 text-white/20 hover:text-white/60 transition-colors" />
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── MAIN ────────────────────────────────────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0">
+
+        {/* Topbar */}
+        <header className="h-14 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40">
+          <div className="flex items-center gap-3">
+            <h1 className="text-[22px] font-bold tracking-tight">
+              {active === "overview" ? "Bem-vindo à sua operação." : NAV.find(n => n.id === active)?.label}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/30 hover:text-white/60 text-[12px] font-mono transition-colors">
+              <Search className="w-3 h-3" />
+              <span>Buscar</span>
+              <span className="flex items-center gap-0.5 text-white/15"><Command className="w-2.5 h-2.5" />K</span>
+            </button>
+            <button className="w-8 h-8 rounded-lg border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors relative">
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full" />
+            </button>
+          </div>
+        </header>
+
+        {/* Content + Activity */}
+        <div className="flex flex-1 min-h-0">
+
+          {/* Panel */}
+          <main className="flex-1 overflow-y-auto p-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                {panels[active]}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+
+          {/* Activity Feed */}
+          <aside className="w-[260px] shrink-0 border-l border-white/[0.05] overflow-y-auto p-5 hidden xl:block">
+            <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-5">Atividade Recente</span>
+            <div className="space-y-4">
+              {ACTIVITY.map((a, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="flex gap-3 items-start"
+                >
+                  <ActivityIcon type={a.type} />
+                  <div>
+                    <p className="text-[12px] text-white/60 leading-snug">{a.msg}</p>
+                    <span className="text-[10px] text-white/20 font-mono mt-1 block">{a.time}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </aside>
+
+        </div>
+      </div>
     </div>
   );
 }

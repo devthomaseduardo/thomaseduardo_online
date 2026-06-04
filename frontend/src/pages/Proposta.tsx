@@ -1,527 +1,346 @@
-import React, { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from "motion/react";
-import { 
-  ArrowRight, CheckCircle2, ChevronRight, Lock, Play, Pause,
-  FileText, UploadCloud, CreditCard, LayoutTemplate, Code2, CheckSquare,
-  Globe, Package, Download, Terminal, Zap, Shield, HelpCircle, User, BarChart3
+import React, { useState } from "react";
+import { motion } from "motion/react";
+import {
+  LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
+  ArrowRight, ArrowLeft, Check, Shield, Zap, TrendingUp,
+  Clock, Package, Code2, Globe, Database, Cloud, ChevronRight
 } from "lucide-react";
+import paymentBg from "../assets/payment-hero.webp";
 
-/* ─── DADOS ────────────────────────────────────────── */
-
-const stepsData = [
-  {
-    num: "01",
-    tag: "Entendimento",
-    title: "Primeiro, entendemos o que precisa ser construído.",
-    text: "Antes de falar em layout ou código, organizamos o objetivo do projeto, público, referências, funcionalidades e prioridades.",
-    icon: HelpCircle
-  },
-  {
-    num: "02",
-    tag: "Proposta",
-    title: "Depois, transformamos a ideia em uma proposta clara.",
-    text: "Você recebe uma visão objetiva do escopo, investimento, prazo, etapas e entregáveis.",
-    icon: FileText
-  },
-  {
-    num: "03",
-    tag: "Materiais",
-    title: "Com a proposta aprovada, reunimos os materiais.",
-    text: "Logos, textos, imagens, vídeos, referências, acessos e arquivos importantes ficam organizados em uma área própria.",
-    icon: UploadCloud
-  },
-  {
-    num: "04",
-    tag: "Pagamento",
-    title: "Tudo financeiro fica transparente.",
-    text: "Você acompanha entrada, saldo, parcelas, serviços adicionais, PIX, Mercado Pago e notas fiscais quando necessário.",
-    icon: CreditCard
-  },
-  {
-    num: "05",
-    tag: "Design",
-    title: "Criamos a estrutura visual com foco em clareza e conversão.",
-    text: "O projeto ganha direção visual, hierarquia, responsividade e experiência pensada para o usuário final.",
-    icon: LayoutTemplate
-  },
-  {
-    num: "06",
-    tag: "Desenvolvimento",
-    title: "Depois, tudo é transformado em código real.",
-    text: "O projeto é desenvolvido com performance, responsividade, SEO, integrações, deploy e boas práticas técnicas.",
-    icon: Code2
-  },
-  {
-    num: "07",
-    tag: "Portal do Cliente",
-    title: "Você acompanha o projeto em uma área privada.",
-    text: "No portal, ficam contratos, pagamentos, materiais, arquivos, repositórios, deploys, tags, analytics e histórico do projeto.",
-    icon: Lock
-  },
-  {
-    num: "08",
-    tag: "Revisão",
-    title: "Revisamos, ajustamos e validamos antes da publicação.",
-    text: "O cliente pode solicitar ajustes, conferir detalhes e aprovar a entrega com clareza.",
-    icon: CheckSquare
-  },
-  {
-    num: "09",
-    tag: "Publicação",
-    title: "Com tudo aprovado, o projeto vai ao ar.",
-    text: "Configuramos domínio, hospedagem, deploy, analytics, tags, SEO técnico e estrutura final.",
-    icon: Globe
-  },
-  {
-    num: "10",
-    tag: "Entrega Final",
-    title: "Você recebe tudo organizado.",
-    text: "O projeto é entregue com arquivos finais, ZIP, repositório, documentação, acessos e estrutura pronta para continuidade.",
-    icon: Package
-  }
+// ─── Nav ──────────────────────────────────────────────────────────────────────
+const NAV = [
+  { id: "dashboard",  label: "Dashboard",  icon: LayoutGrid    },
+  { id: "projetos",   label: "Projetos",   icon: Layers        },
+  { id: "materiais",  label: "Materiais",  icon: FolderOpen    },
+  { id: "propostas",  label: "Propostas",  icon: CreditCard    },
+  { id: "mensagens",  label: "Mensagens",  icon: MessageSquare },
 ];
 
-const services = [
-  {
-    id: "landing",
-    name: "Landing Page",
-    tag: "Para campanhas, captação, autoridade e conversão.",
-    desc: "Página de alta conversão para lançar produtos ou captar leads.",
-    price: "a partir de R$ 800",
-    turnaround: "7–14 dias",
-    features: ["Design UI/UX premium", "Responsividade", "SEO técnico", "Analytics", "Deploy"]
-  },
-  {
-    id: "site",
-    name: "Website Completo",
-    tag: "Para presença institucional e estrutura de marca.",
-    desc: "Site institucional completo com múltiplas páginas e CMS.",
-    price: "a partir de R$ 1.500",
-    turnaround: "21–30 dias",
-    features: ["Múltiplas páginas", "CMS para edição", "Blog", "Formulários", "Infraestrutura"]
-  },
-  {
-    id: "app",
-    name: "Sistema / Web App",
-    tag: "Para operação, áreas privadas e funcionalidades sob medida.",
-    desc: "Sistemas web customizados com banco de dados e autenticação.",
-    price: "sob consulta",
-    turnaround: "30–90 dias",
-    features: ["Backend completo", "Banco de dados", "Autenticação", "APIs", "Escalabilidade"]
-  }
+const STEPS = [
+  { num: "01", label: "O Problema"    },
+  { num: "02", label: "A Oportunidade"},
+  { num: "03", label: "A Solução"     },
+  { num: "04", label: "Arquitetura"   },
+  { num: "05", label: "Investimento"  },
+  { num: "06", label: "Cronograma"    },
 ];
 
-/* ─── COMPONENTES VISUAIS (MOCKUPS FAKES) ────────────── */
+const PROBLEMS = [
+  { icon: Clock,       title: "Tempo perdido",          desc: "Processos manuais consomem horas que deveriam ser investidas no crescimento." },
+  { icon: TrendingUp,  title: "Falta de visibilidade",  desc: "Sem dados centralizados, as decisões são baseadas em intuição, não em métricas." },
+  { icon: Zap,         title: "Escalabilidade limitada", desc: "Sistemas desconectados travam o crescimento quando ele mais importa." },
+];
 
-const StepVisual = ({ step }: { step: number }) => {
-  return (
-    <div className="w-full h-full bg-[#080808] border border-white/5 rounded-3xl overflow-hidden relative flex items-center justify-center p-8 shadow-2xl">
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
-      
-      {step === 0 && (
-        <div className="w-full max-w-sm space-y-4">
-          <div className="h-4 w-1/3 bg-white/10 rounded" />
-          <div className="h-10 w-full bg-white/5 border border-white/10 rounded-xl" />
-          <div className="h-10 w-full bg-white/5 border border-white/10 rounded-xl" />
-          <div className="h-24 w-full bg-white/5 border border-white/10 rounded-xl" />
-          <div className="flex gap-2 items-center text-white/40 text-sm mt-4">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Público-alvo definido
-          </div>
-        </div>
-      )}
+const OPPORTUNITIES = [
+  { symbol: "+", label: "Produtividade",  desc: "Automação dos processos críticos libera equipe para tarefas estratégicas." },
+  { symbol: "+", label: "Visibilidade",   desc: "Dashboard centralizado com métricas em tempo real para decisões precisas." },
+  { symbol: "+", label: "Crescimento",    desc: "Infraestrutura escalável preparada para acompanhar sua operação." },
+];
 
-      {step === 1 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl p-6 relative">
-          <div className="absolute -top-3 -right-3 w-6 h-6 bg-emerald-500 rounded-full animate-pulse" />
-          <div className="flex justify-between items-start mb-6">
-            <div className="w-20 h-4 bg-white/20 rounded" />
-            <div className="w-12 h-4 bg-white/10 rounded" />
-          </div>
-          <div className="space-y-3 mb-6">
-            <div className="w-full h-2 bg-white/5 rounded" />
-            <div className="w-4/5 h-2 bg-white/5 rounded" />
-            <div className="w-full h-2 bg-white/5 rounded" />
-          </div>
-          <button className="w-full py-3 bg-white text-black font-bold text-sm rounded-lg">Aprovar Proposta</button>
-        </div>
-      )}
+const CHECKLIST = [
+  "Plataforma personalizada",
+  "Design moderno e responsivo",
+  "Automação de processos críticos",
+  "Dashboard administrativo completo",
+  "Integrações e APIs",
+  "Segurança e performance",
+  "Suporte e evolução contínua",
+];
 
-      {step === 2 && (
-        <div className="w-full max-w-sm border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-          <UploadCloud className="w-10 h-10 text-white/20 mb-4" />
-          <p className="text-white/60 font-medium text-sm mb-1">Arraste seus arquivos</p>
-          <p className="text-white/30 text-xs">Logos, fotos, textos e PDFs</p>
-          <div className="mt-6 flex gap-2 w-full justify-center">
-            <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center"><FileText className="w-5 h-5 text-blue-400/50" /></div>
-            <div className="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center"><FileText className="w-5 h-5 text-emerald-400/50" /></div>
-          </div>
-        </div>
-      )}
+const ARCH = [
+  { layer: "Frontend",  color: "text-sky-400",     items: ["React", "Next.js", "TypeScript"] },
+  { layer: "Backend",   color: "text-violet-400",  items: ["Node.js", "Prisma", "PostgreSQL"] },
+  { layer: "Cloud",     color: "text-emerald-400", items: ["AWS", "Vercel", "CI/CD"] },
+];
 
-      {step === 3 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/10">
-            <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center"><CreditCard className="w-8 h-8 text-white/20" /></div>
-            <div>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">Entrada 50%</p>
-              <p className="text-xl font-bold">R$ 400,00</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-white/40">Status</span>
-            <span className="text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full font-medium">Pago</span>
-          </div>
-        </div>
-      )}
+const TIMELINE = [
+  { week: "Semana 1",   label: "Descoberta e Planejamento" },
+  { week: "Semana 2",   label: "Arquitetura"               },
+  { week: "Semanas 3-4",label: "Desenvolvimento"           },
+  { week: "Semana 5",   label: "Testes e QA"               },
+  { week: "Semana 6",   label: "Entrega e Deploy"          },
+];
 
-      {step === 4 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl overflow-hidden">
-          <div className="h-8 border-b border-white/10 flex items-center px-4 gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500/50" />
-            <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
-            <div className="w-2 h-2 rounded-full bg-green-500/50" />
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="w-2/3 h-6 bg-white/10 rounded" />
-            <div className="w-full h-32 bg-white/5 rounded-xl border border-white/5" />
-            <div className="flex gap-4">
-              <div className="flex-1 h-20 bg-white/5 rounded-xl" />
-              <div className="flex-1 h-20 bg-white/5 rounded-xl" />
-            </div>
-          </div>
-        </div>
-      )}
+// ─── Section wrapper ──────────────────────────────────────────────────────────
+const Section = ({ id, num, tag, headline, children }: {
+  id: string; num: string; tag: string; headline: string; children: React.ReactNode;
+}) => (
+  <motion.section
+    id={id}
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.5 }}
+    className="px-10 py-16 border-b border-white/[0.05]"
+  >
+    <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.3em] text-white/20 mb-5">
+      <span>{num}</span><span className="text-white/10">•</span><span>{tag}</span>
+    </span>
+    <h2 className="text-[clamp(26px,3.5vw,52px)] font-bold tracking-tighter leading-[1.05] mb-10">{headline}</h2>
+    {children}
+  </motion.section>
+);
 
-      {step === 5 && (
-        <div className="w-full max-w-sm bg-[#050505] border border-white/10 rounded-2xl overflow-hidden font-mono text-xs">
-          <div className="h-8 border-b border-white/10 flex items-center px-4 text-white/30">src/app/page.tsx</div>
-          <div className="p-6 space-y-2 text-white/50">
-            <p><span className="text-blue-400">import</span> React <span className="text-blue-400">from</span> 'react';</p>
-            <p className="mt-4"><span className="text-purple-400">export default function</span> <span className="text-yellow-400">App</span>() {'{'}</p>
-            <p className="pl-4"><span className="text-blue-400">return</span> (</p>
-            <p className="pl-8 text-white/30">{'<main className="min-h-screen">'}</p>
-            <p className="pl-12 text-green-400/50">// Developing...</p>
-            <p className="pl-8 text-white/30">{'</main>'}</p>
-            <p className="pl-4">);</p>
-            <p>{'}'}</p>
-          </div>
-        </div>
-      )}
-
-      {step === 6 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl p-6">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center"><Lock className="w-4 h-4 text-blue-400" /></div>
-            <span className="font-bold">Portal Privado</span>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[FileText, CreditCard, UploadCloud, Terminal].map((Icon, i) => (
-              <div key={i} className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-2 items-start">
-                <Icon className="w-5 h-5 text-white/40" />
-                <div className="w-12 h-2 bg-white/10 rounded" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {step === 7 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl p-6">
-          <div className="space-y-4 mb-6">
-            {['Responsividade OK', 'Performance 100/100', 'SEO Configurado'].map((t, i) => (
-              <div key={i} className="flex items-center gap-3 text-sm">
-                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                <span className="text-white/60">{t}</span>
-              </div>
-            ))}
-          </div>
-          <button className="w-full py-3 bg-white/10 hover:bg-white/20 text-white font-bold text-sm rounded-lg transition-colors border border-white/10">Aprovar Entrega</button>
-        </div>
-      )}
-
-      {step === 8 && (
-        <div className="w-full max-w-sm text-center">
-          <div className="w-24 h-24 rounded-full bg-emerald-500/10 border border-emerald-500/20 mx-auto flex items-center justify-center mb-6">
-            <Globe className="w-10 h-10 text-emerald-400" />
-          </div>
-          <p className="font-mono text-emerald-400 text-sm mb-2">DEPLOY SUCCESSFUL</p>
-          <p className="text-white/40 text-xs">Projeto online e operando.</p>
-        </div>
-      )}
-
-      {step === 9 && (
-        <div className="w-full max-w-sm bg-black border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
-          <Package className="w-12 h-12 text-white/30 mb-6" />
-          <h3 className="font-bold mb-2">Entrega Finalizada</h3>
-          <p className="text-white/40 text-sm mb-6">Todos os arquivos empacotados e prontos.</p>
-          <button className="w-full py-3 bg-white text-black font-bold text-sm rounded-lg flex items-center justify-center gap-2">
-            <Download className="w-4 h-4" /> Baixar Assets (.zip)
-          </button>
-        </div>
-      )}
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+const Sidebar = ({ active }: { active: string }) => (
+  <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto">
+    <div className="h-16 flex items-center gap-3 px-7 border-b border-white/[0.05] shrink-0">
+      <div className="w-7 h-7 bg-white flex items-center justify-center rounded-sm shrink-0">
+        <span className="text-black text-[11px] font-black">TE</span>
+      </div>
+      <div>
+        <span className="block text-[13px] font-semibold tracking-tight">Thomas Eduardo</span>
+        <span className="block text-[10px] font-mono text-white/25 uppercase tracking-wider">Portal do Cliente</span>
+      </div>
     </div>
-  );
-};
 
-/* ─── PÁGINA ───────────────────────────────────────── */
+    <div className="px-7 pt-8 pb-6 border-b border-white/[0.05] shrink-0">
+      <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-white/20 block mb-1">Proposta Comercial</span>
+      <h1 className="text-[22px] font-bold tracking-tight leading-tight">Sleep House Campinas</h1>
+      <p className="text-[12px] text-white/30 mt-3 leading-relaxed">
+        Uma solução digital completa para fortalecer sua presença online, automatizar processos e gerar mais resultados.
+      </p>
+    </div>
 
-export default function PropostaStorytelling() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const [activeStep, setActiveStep] = useState(0);
+    <nav className="px-5 py-6 space-y-1 flex-1">
+      <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/15 px-3 mb-3 block">Seções</span>
+      {STEPS.map((s, i) => (
+        <a
+          key={s.num}
+          href={`#s${s.num}`}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
+            active === s.num
+              ? "bg-white/[0.07] text-white"
+              : "text-white/30 hover:text-white/60 hover:bg-white/[0.03]"
+          }`}
+        >
+          <span className="text-[10px] font-mono text-white/20 w-5 shrink-0">{s.num}</span>
+          <span className="text-[12px] font-medium">{s.label}</span>
+          {active === s.num && <ChevronRight className="w-3 h-3 ml-auto text-white/30" />}
+        </a>
+      ))}
+    </nav>
 
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const step = Math.min(stepsData.length - 1, Math.floor(latest * stepsData.length));
-    if (step !== activeStep) setActiveStep(step);
-  });
+    <div className="mx-5 mb-6 p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+      <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-white/20 block mb-2">Proposta Personalizada</span>
+      <p className="text-[11px] text-white/35 leading-relaxed">
+        Esta proposta foi elaborada exclusivamente para atender às necessidades do seu negócio.
+      </p>
+    </div>
+  </aside>
+);
 
-  // Progress bar width
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+// ─── Main ─────────────────────────────────────────────────────────────────────
+export default function PropostaPage() {
+  const [activeSection] = useState("01");
+
+  React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
-    <div className="bg-[#050505] text-white selection:bg-white/20">
-      
-      {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl px-6 py-4 flex items-center justify-between">
-        <a href="/" className="font-mono text-sm text-white/60 tracking-widest uppercase hover:text-white transition-colors">
-          Thomas Eduardo
-        </a>
-        <a href="/portal" className="flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white transition-colors border border-white/10 rounded-full px-4 py-2 hover:border-white/30">
-          <Lock className="w-3.5 h-3.5" /> Área do Cliente
-        </a>
-      </nav>
+    <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
+      <Sidebar active={activeSection} />
 
-      {/* ── 1. ABERTURA ── */}
-      <section className="relative min-h-[90vh] flex flex-col justify-center px-6 md:px-12 pt-32 pb-20">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-[#009EE3]/[0.02] blur-[150px] rounded-full" />
-        </div>
-        
-        <div className="max-w-4xl relative z-10 mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <span className="inline-block text-[10px] font-mono uppercase tracking-[0.3em] text-white/30 mb-8 border border-white/10 px-4 py-2 rounded-full">
-              Proposta Digital
-            </span>
-            <h1 className="text-[clamp(40px,6vw,80px)] font-bold tracking-[-0.04em] leading-[1.05] mb-8">
-              Do primeiro briefing<br />ao projeto publicado.
-            </h1>
-            <p className="text-white/50 text-lg md:text-xl font-light max-w-2xl mx-auto leading-relaxed mb-12">
-              Uma experiência organizada para transformar sua ideia em um site, sistema ou landing page funcional, visualmente refinada e pronta para operar.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-24">
-              <a href="#narrativa" className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold text-sm rounded-xl overflow-hidden">
-                <div className="absolute inset-0 bg-[#009EE3] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
-                  Ver etapas do projeto <ArrowRight className="w-4 h-4" />
-                </span>
-              </a>
-              <a href="https://wa.me/5511999999999?text=Ol%C3%A1%20Thomas%2C%20quero%20come%C3%A7ar%20um%20projeto." target="_blank" rel="noopener noreferrer" className="text-white/40 text-sm hover:text-white transition-colors font-medium flex items-center gap-2 border border-transparent hover:border-white/10 px-6 py-4 rounded-xl">
-                Começar agora
-              </a>
-            </div>
-          </motion.div>
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
 
-          {/* Cards inferiores */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1 }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { title: "Contrato digital", icon: Shield },
-              { title: "Pagamento organizado", icon: CreditCard },
-              { title: "Portal privado", icon: Lock },
-              { title: "Entrega técnica", icon: Package }
-            ].map((c, i) => (
-              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex flex-col items-center text-center gap-3">
-                <c.icon className="w-5 h-5 text-white/30" />
-                <span className="text-xs font-medium text-white/60">{c.title}</span>
+        {/* Top Nav */}
+        <header className="h-16 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40 shrink-0">
+          <nav className="flex items-center gap-1">
+            {NAV.map(item => {
+              const Icon = item.icon;
+              const isActive = item.id === "propostas";
+              return (
+                <button key={item.id} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all ${isActive ? "bg-white/[0.07] text-white font-medium" : "text-white/35 hover:text-white/60 hover:bg-white/[0.03]"}`}>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-white/25"}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/60">CL</div>
+        </header>
+
+        {/* Hero */}
+        <section className="grid grid-cols-1 lg:grid-cols-[1fr_320px] border-b border-white/[0.05] min-h-[280px]">
+          <div className="px-10 py-14 flex flex-col justify-center">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+              <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.3em] text-white/25 border border-white/[0.07] px-3 py-1.5 rounded-sm mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />Proposta Comercial
+              </span>
+              <h2 className="text-[clamp(34px,4vw,60px)] font-bold tracking-tighter leading-[1.0] mb-4">
+                Sua operação digital,<br />do zero ao ar.
+              </h2>
+              <p className="text-[14px] text-white/35 max-w-lg leading-relaxed">
+                Uma plataforma personalizada que conecta pessoas, processos e dados — desenvolvida para escalar com o seu negócio.
+              </p>
+            </motion.div>
+          </div>
+          <div className="border-l border-white/[0.05] relative overflow-hidden hidden lg:block">
+            <img src={paymentBg} alt="Hero" className="absolute inset-0 w-full h-full object-cover object-center" />
+            <div className="absolute inset-0 bg-black/55" />
+            <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#060606] to-transparent" />
+          </div>
+        </section>
+
+        {/* ── S01: O Problema ── */}
+        <Section id="s01" num="01" tag="O Problema" headline="Seu negócio enfrenta gargalos que limitam o crescimento.">
+          <p className="text-[14px] text-white/35 max-w-2xl leading-relaxed mb-10">
+            Processos manuais, sistemas desconectados e ausência de automação geram perda de tempo, erros e oportunidades desperdiçadas.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PROBLEMS.map((p, i) => {
+              const Icon = p.icon;
+              return (
+                <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="p-6 border border-white/[0.07] bg-[#0a0a0a] rounded-xl hover:border-white/[0.14] transition-all">
+                  <div className="w-8 h-8 border border-white/[0.08] bg-white/[0.03] rounded-lg flex items-center justify-center mb-4">
+                    <Icon className="w-4 h-4 text-white/40" />
+                  </div>
+                  <span className="block text-[13px] font-semibold mb-2">{p.title}</span>
+                  <span className="block text-[12px] text-white/30 leading-relaxed">{p.desc}</span>
+                </motion.div>
+              );
+            })}
+          </div>
+        </Section>
+
+        {/* ── S02: A Oportunidade ── */}
+        <Section id="s02" num="02" tag="A Oportunidade" headline="Transformar desafios em vantagem competitiva.">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {OPPORTUNITIES.map((o, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="p-7 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+                <span className="text-[36px] font-bold text-white/10 leading-none block mb-3">{o.symbol}</span>
+                <span className="block text-[15px] font-bold mb-2">{o.label}</span>
+                <span className="block text-[12px] text-white/30 leading-relaxed">{o.desc}</span>
+              </motion.div>
+            ))}
+          </div>
+        </Section>
+
+        {/* ── S03: A Solução ── */}
+        <Section id="s03" num="03" tag="A Solução" headline="Um sistema completo, pensado para sua operação.">
+          <p className="text-[14px] text-white/35 max-w-2xl leading-relaxed mb-10">
+            Desenvolvimento de uma plataforma personalizada que conecta pessoas, processos e dados em um único ecossistema digital.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
+            {CHECKLIST.map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-sm border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3 text-emerald-400" />
+                </div>
+                <span className="text-[13px] text-white/60">{item}</span>
               </div>
             ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── 2. STORYTELLING ANIMADO (STICKY) ── */}
-      <section id="narrativa" ref={containerRef} className="relative" style={{ height: `${stepsData.length * 100}vh` }}>
-        <div className="sticky top-0 h-screen flex flex-col overflow-hidden bg-[#050505]">
-          
-          {/* Progress Bar Header */}
-          <div className="absolute top-20 left-0 w-full h-1 bg-white/5 z-20">
-            <motion.div style={{ width: progressWidth }} className="h-full bg-gradient-to-r from-white/20 to-white/60" />
           </div>
+        </Section>
 
-          <div className="flex-1 flex items-center px-6 md:px-12 max-w-7xl mx-auto w-full relative z-10 pt-20">
-            
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={activeStep}
-                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="w-full flex flex-col lg:flex-row items-center gap-12 lg:gap-24"
-              >
-                
-                {/* Texto */}
-                <div className="flex-1 w-full space-y-4 md:space-y-6">
-                  <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
-                    <span className="text-5xl md:text-6xl lg:text-8xl font-bold font-mono text-white/10 leading-none">{stepsData[activeStep].num}</span>
-                    <div className="h-px flex-1 bg-white/5" />
-                    <span className="text-[9px] md:text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 border border-white/10 px-2 md:px-3 py-1 md:py-1.5 rounded-full whitespace-nowrap">
-                      {stepsData[activeStep].tag}
-                    </span>
-                  </div>
-                  
-                  <h2 className="text-2xl md:text-3xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
-                    {stepsData[activeStep].title}
-                  </h2>
-                  <p className="text-white/50 text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-xl">
-                    {stepsData[activeStep].text}
-                  </p>
-                </div>
-
-                {/* Visual Fake Component */}
-                <div className="w-full h-[250px] md:h-[350px] lg:flex-1 lg:h-[500px] shrink-0">
-                  <StepVisual step={activeStep} />
-                </div>
-
-              </motion.div>
-            </AnimatePresence>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ── 3. O QUE PODE SER CRIADO ── */}
-      <section className="px-6 py-40 border-t border-white/5 relative bg-[#050505]">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-20">
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/30 block mb-4">Serviços</span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">O que podemos criar.</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services.map((s, i) => (
-              <motion.div 
-                key={s.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-[#0A0A0A] border border-white/5 hover:border-white/15 rounded-3xl p-8 flex flex-col transition-all group"
-              >
-                <span className="text-[10px] font-mono uppercase tracking-widest text-white/30 mb-4 block min-h-[28px]">{s.tag}</span>
-                <h3 className="text-2xl font-bold mb-3">{s.name}</h3>
-                <p className="text-white/50 text-sm leading-relaxed mb-8 flex-grow">{s.desc}</p>
-                
-                <div className="space-y-3 mb-8">
-                  {s.features.map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-3 text-sm text-white/70">
-                      <div className="w-1 h-1 rounded-full bg-white/20" /> {feat}
+        {/* ── S04: Arquitetura ── */}
+        <Section id="s04" num="04" tag="Arquitetura" headline="Stack moderno e escalável.">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {ARCH.map((a, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="p-6 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+                <span className={`text-[10px] font-mono uppercase tracking-[0.2em] ${a.color} block mb-4`}>{a.layer}</span>
+                <div className="space-y-2">
+                  {a.items.map((item, j) => (
+                    <div key={j} className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                      <span className="text-[13px] text-white/70 font-mono">{item}</span>
                     </div>
                   ))}
                 </div>
-
-                <div className="border-t border-white/5 pt-6 mt-auto">
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <span className="block text-[10px] font-mono text-white/30 uppercase tracking-wider mb-1">Investimento inicial</span>
-                      <span className="text-white font-bold">{s.price}</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-[10px] font-mono text-white/30 uppercase tracking-wider mb-1">Prazo</span>
-                      <span className="text-white/60 text-sm">{s.turnaround}</span>
-                    </div>
-                  </div>
-                </div>
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* ── 4. PORTAL PRIVADO PREVIEW ── */}
-      <section className="px-6 py-40 border-t border-white/5 bg-[#030303] overflow-hidden">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1 w-full relative">
-            <div className="absolute inset-0 bg-gradient-to-tr from-[#009EE3]/5 to-transparent blur-3xl rounded-full" />
-            <div className="aspect-[4/3] w-full bg-[#080808] border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col shadow-2xl relative z-10">
-              {/* Fake Portal Header */}
-              <div className="flex justify-between items-center border-b border-white/10 pb-6 mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded bg-white flex items-center justify-center"><div className="w-3 h-3 bg-black" /></div>
-                  <div>
-                    <div className="w-24 h-3 bg-white/20 rounded mb-1" />
-                    <div className="w-16 h-2 bg-white/10 rounded" />
+        {/* ── S05: Investimento ── */}
+        <Section id="s05" num="05" tag="Investimento" headline="Investimento do Projeto.">
+          <div className="max-w-lg border border-white/[0.1] bg-[#0a0a0a] rounded-2xl overflow-hidden">
+            <div className="px-8 py-8 border-b border-white/[0.06]">
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">Pagamento único</span>
+              <span className="text-[56px] font-bold tracking-tighter leading-none block">R$ 4.900</span>
+              <span className="text-white/25 font-mono text-sm mt-1 block">,00</span>
+            </div>
+            <div className="divide-y divide-white/[0.04]">
+              {[
+                { icon: Package,  label: "Entrega completa",      desc: "Site + CMS + Treinamento"    },
+                { icon: Shield,   label: "Suporte incluso",       desc: "30 dias após entrega"        },
+                { icon: Code2,    label: "Tecnologia de ponta",   desc: "Escalável e segura"          },
+                { icon: Check,    label: "Garantia de satisfação", desc: "Revisões incluídas"         },
+              ].map((f, i) => {
+                const Icon = f.icon;
+                return (
+                  <div key={i} className="flex items-center gap-4 px-8 py-4">
+                    <div className="w-7 h-7 border border-white/[0.07] bg-white/[0.03] rounded-lg flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5 text-white/30" />
+                    </div>
+                    <div>
+                      <span className="block text-[13px] font-medium text-white/70">{f.label}</span>
+                      <span className="block text-[11px] text-white/25">{f.desc}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center"><User className="w-4 h-4 text-white/40" /></div>
-              </div>
-              {/* Fake Portal Content */}
-              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[FileText, CreditCard, UploadCloud, Terminal, BarChart3, Package].map((Icon, idx) => (
-                  <div key={idx} className="bg-black/50 border border-white/5 rounded-xl p-4 flex flex-col items-center justify-center gap-2 group hover:border-white/10 transition-colors">
-                    <Icon className="w-6 h-6 text-white/20 group-hover:text-white/40 transition-colors" />
-                    <div className="w-12 h-1.5 bg-white/5 rounded" />
-                  </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
-          
-          <div className="flex-1 w-full">
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/30 block mb-4">Workspace</span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-8">Tudo centralizado no portal do cliente.</h2>
-            <p className="text-white/50 text-lg font-light leading-relaxed mb-10">
-              Esqueça threads infinitas no e-mail ou mensagens perdidas. Toda a infraestrutura do seu projeto tem um endereço único e seguro.
+        </Section>
+
+        {/* ── S06: Cronograma ── */}
+        <Section id="s06" num="06" tag="Cronograma" headline="Entrega em 6 semanas.">
+          <div className="space-y-0 max-w-xl">
+            {TIMELINE.map((t, i) => (
+              <div key={i} className="flex gap-5">
+                <div className="flex flex-col items-center">
+                  <div className={`w-7 h-7 rounded-sm flex items-center justify-center border shrink-0 ${
+                    i === 0 ? "border-emerald-500/30 bg-emerald-500/10" : "border-white/[0.08]"
+                  }`}>
+                    <span className="text-[9px] font-mono text-white/30">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                  {i < TIMELINE.length - 1 && <div className="w-px flex-1 bg-white/[0.05] my-1" />}
+                </div>
+                <div className="pb-6">
+                  <span className="block text-[10px] font-mono uppercase tracking-widest text-white/25 mb-0.5">{t.week}</span>
+                  <span className="block text-[14px] font-medium text-white/70">{t.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
+        {/* ── CTA Final ── */}
+        <section className="px-10 py-16 border-b border-white/[0.05]">
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="max-w-2xl">
+            <h2 className="text-[clamp(28px,3.5vw,48px)] font-bold tracking-tighter leading-[1.0] mb-4">
+              Pronto para transformar<br />sua operação?
+            </h2>
+            <p className="text-[14px] text-white/35 mb-8 leading-relaxed">
+              Vamos iniciar este projeto juntos. Aprove a proposta e agendaremos o kickoff imediatamente.
             </p>
-            <ul className="grid grid-cols-2 gap-4">
-              {['Contratos', 'Pagamentos & Saldo', 'Upload de Materiais', 'Repositórios & Deploys', 'Analytics & GTM', 'Download ZIP', 'Notas Fiscais', 'Timeline Operacional'].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-white/60">
-                  <CheckCircle2 className="w-4 h-4 text-[#009EE3]/50" /> {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
+            <div className="flex items-center gap-4 flex-wrap">
+              <button className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.2em] px-8 py-4 rounded-xl transition-all duration-200 group">
+                Aprovar Proposta
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+              <button className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/30 border border-white/[0.08] hover:border-white/20 hover:text-white/60 px-8 py-4 rounded-xl transition-all">
+                Agendar Reunião
+              </button>
+            </div>
+          </motion.div>
+        </section>
 
-      {/* ── 5. CTA FINAL ── */}
-      <section className="py-40 px-6 border-t border-white/5 text-center relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-white/[0.02] blur-[100px] rounded-full pointer-events-none" />
-        
-        <div className="max-w-3xl mx-auto relative z-10">
-          <h2 className="text-[clamp(36px,5vw,64px)] font-bold tracking-tight mb-6 leading-tight">
-            Pronto para transformar sua ideia em uma operação digital real?
-          </h2>
-          <p className="text-white/50 text-lg font-light mb-12 max-w-xl mx-auto">
-            Envie sua ideia inicial e receba uma direção clara sobre escopo, prazo e investimento.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="https://wa.me/5511999999999?text=Ol%C3%A1%20Thomas%2C%20gostaria%20de%20falar%20sobre%20um%20projeto." target="_blank" rel="noopener noreferrer" className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-black font-bold text-sm rounded-xl overflow-hidden">
-              <div className="absolute inset-0 bg-[#009EE3] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
-                Falar pelo WhatsApp <ArrowRight className="w-4 h-4" />
-              </span>
-            </a>
-            <a href="/portal" className="inline-flex items-center justify-center gap-2 px-10 py-5 border border-white/10 text-white/60 hover:text-white hover:border-white/30 font-medium text-sm rounded-xl transition-all">
-              Acessar portal
-            </a>
-          </div>
+        {/* Bottom actions */}
+        <div className="px-10 pb-12 flex items-center justify-between pt-8">
+          <button className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
+            <ArrowLeft className="w-4 h-4" />Voltar
+          </button>
+          <a href="/material" className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
+            Ir para Materiais<ArrowRight className="w-4 h-4" />
+          </a>
         </div>
-      </section>
 
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-white/5 px-6 py-12 bg-[#050505]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="text-center md:text-left">
-            <p className="font-bold text-sm uppercase tracking-widest mb-1">Thomas Eduardo</p>
-            <p className="text-white/40 text-[10px] font-mono uppercase tracking-widest">Desenvolvedor Frontend & Full Stack</p>
-          </div>
-          <div className="flex gap-6 text-[10px] font-mono uppercase tracking-widest text-white/30">
-            <a href="https://github.com/thomaseduardo" className="hover:text-white transition-colors">GitHub</a>
-            <a href="https://linkedin.com/in/thomaseduardo" className="hover:text-white transition-colors">LinkedIn</a>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }

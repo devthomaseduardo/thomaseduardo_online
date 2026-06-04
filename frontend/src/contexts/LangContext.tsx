@@ -14,8 +14,8 @@ const translations = {
     },
     hero: {
       badge: "Engenharia de software para operações digitais",
-      h1a: "Seu software deve",
-      h1b: "trabalhar para você.",
+      h1a: "Software que",
+      h1b: "escala.",
       desc: "Desenvolvimento de ecossistemas operacionais privados para seus projetos. Organização, previsibilidade e retenção como diferencial técnico e estratégico.",
       ctaProjects: "VER IMPACTO",
       ctaContact: "RESOLVER GARGALOS",
@@ -101,8 +101,8 @@ const translations = {
     },
     hero: {
       badge: "Software engineering for digital operations",
-      h1a: "Your software must",
-      h1b: "work for you.",
+      h1a: "Software that",
+      h1b: "scales.",
       desc: "Development of private operational ecosystems for your projects. Organization, predictability, and retention as a technical and strategic differentiator.",
       ctaProjects: "VIEW IMPACT",
       ctaContact: "SOLVE BOTTLENECKS",

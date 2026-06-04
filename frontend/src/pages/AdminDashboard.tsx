@@ -1,447 +1,369 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { 
-  LayoutDashboard, Users, Briefcase, DollarSign, FileText,
-  UploadCloud, Rocket, BarChart3, Settings, LogOut, Eye, EyeOff,
-  ChevronRight, X, Plus, Bell, Command, Search, Activity, Clock, CheckCircle2, Menu
+import React, { useState } from "react";
+import { motion } from "motion/react";
+import {
+  LayoutGrid, Layers, Users, FileText, CreditCard, GitBranch,
+  MessageSquare, Settings, Search, Bell, Shield, Star,
+  TrendingUp, TrendingDown, Upload, Check, ChevronRight, ArrowRight, Zap
 } from "lucide-react";
-import { ProjectsKanban } from "../components/admin/ProjectsKanban";
-import { ClientesModule } from "../components/admin/ClientesModule";
-import { FinanceiroModule } from "../components/admin/FinanceiroModule";
-import { ContratosModule } from "../components/admin/ContratosModule";
-import { UploadsModule } from "../components/admin/UploadsModule";
-import { DeploysModule } from "../components/admin/DeploysModule";
-import { AnalyticsModule } from "../components/admin/AnalyticsModule";
-import { ConfiguracoesModule } from "../components/admin/ConfiguracoesModule";
-import { PageLoader } from "../components/admin/Loaders";
-import { LogoTE } from "../components/Icons";
+import adminHero from "../assets/admin-hero.png";
 
-const API = "";
-// Admin token key — stores JWT, NEVER the password
-const TOKEN_KEY = "adminToken";
-
-const hdrs = (t?: string) => ({
-  "Content-Type": "application/json",
-  ...(t ? { "Authorization": `Bearer ${t}` } : {}),
-});
-
-// ─── Gate ───────────────────────────────────────────────────────────────────
-function AdminGate({ onAuth }: { onAuth: (t: string) => void }) {
-  const [pass, setPass] = useState("");
-  const [show, setShow] = useState(false);
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault(); setLoading(true); setErr("");
-    try {
-      const r = await fetch(`${API}/api/admin/login`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pass })
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "Credencial incorreta.");
-      // Store ONLY the JWT token, NEVER the password
-      const jwt = data.token;
-      localStorage.setItem(TOKEN_KEY, jwt);
-      setPass(""); // clear password from memory immediately
-      onAuth(jwt);
-    } catch (e: any) { setErr(e.message); }
-    finally { setLoading(false); }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6">
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm">
-        <div className="mb-10 text-center">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center mx-auto mb-6 text-black">
-            <LogoTE className="w-6 h-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Acesso Restrito</h1>
-          <p className="text-white/30 text-sm mt-2 font-mono">infraestrutura operacional privada</p>
-        </div>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="relative">
-            <input
-              type={show ? "text" : "password"}
-              value={pass} onChange={e => setPass(e.target.value)}
-              placeholder="Chave de acesso"
-              className="w-full bg-[#0B0B0B] border border-white/[0.06] rounded-xl px-4 py-4 text-white text-sm outline-none focus:border-white/20 transition-colors pr-12 font-mono"
-            />
-            <button type="button" onClick={() => setShow(s => !s)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors">
-              {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          {err && <p className="text-red-400 text-xs font-mono">{err}</p>}
-          <button type="submit" disabled={loading}
-            className="w-full bg-white text-black font-semibold py-4 rounded-xl text-sm hover:bg-white/90 transition-colors disabled:opacity-40">
-            {loading ? "Verificando..." : "Entrar"}
-          </button>
-        </form>
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Nav item ────────────────────────────────────────────────────────────────
 const NAV = [
-  { id: "Overview",       icon: LayoutDashboard },
-  { id: "Clientes",       icon: Users },
-  { id: "Projetos",       icon: Briefcase },
-  { id: "Financeiro",     icon: DollarSign },
-  { id: "Contratos",      icon: FileText },
-  { id: "Uploads",        icon: UploadCloud },
-  { id: "Deploys",        icon: Rocket },
-  { id: "Analytics",      icon: BarChart3 },
-  { id: "Configurações",  icon: Settings },
+  { id:"overview",    label:"Overview",    icon:LayoutGrid   },
+  { id:"projects",    label:"Projects",    icon:Layers       },
+  { id:"clients",     label:"Clients",     icon:Users        },
+  { id:"proposals",   label:"Proposals",   icon:FileText     },
+  { id:"financial",   label:"Financial",   icon:CreditCard   },
+  { id:"contracts",   label:"Contracts",   icon:Shield       },
+  { id:"deployments", label:"Deployments", icon:GitBranch    },
+  { id:"leads",       label:"Leads",       icon:Star         },
+  { id:"messages",    label:"Messages",    icon:MessageSquare},
+  { id:"team",        label:"Team",        icon:Users        },
+  { id:"settings",    label:"Settings",    icon:Settings     },
 ];
 
-// ─── Overview placeholder ────────────────────────────────────────────────────
-function Overview({ token }: { token: string }) {
-  const [data, setData] = useState<any>(null);
-  
-  useEffect(() => {
-    fetch(`${API}/api/v2/dashboard`, { headers: hdrs(token) })
-      .then(r => r.ok ? r.json() : null).then(setData).catch(() => {});
-  }, [token]);
+const KPIS = [
+  { label:"Active Projects",  value:"7",       trend:"+2",   up:true,  icon:Layers      },
+  { label:"Monthly Revenue",  value:"R$18.5k", trend:"+18%", up:true,  icon:TrendingUp  },
+  { label:"Pending Revenue",  value:"R$34.2k", trend:"+12%", up:true,  icon:CreditCard  },
+  { label:"Open Proposals",   value:"4",       trend:"-1",   up:false, icon:FileText    },
+  { label:"Deployments",      value:"23",      trend:"+5",   up:true,  icon:GitBranch   },
+  { label:"Active Clients",   value:"11",      trend:"+3",   up:true,  icon:Users       },
+];
 
-  const kpis = data?.kpis ?? [
-    { label: "Projetos Ativos", value: "12", trend: "+2", good: true },
-    { label: "A Receber (BRL)", value: "R$ 45.2k", trend: "Em dia", good: true },
-    { label: "MRR", value: "R$ 12.8k", trend: "+15%", good: true },
-    { label: "Clientes", value: "24", trend: "0", good: true },
-  ];
+const FEED = [
+  { icon:Upload,       label:"Material submitted",  client:"Sleep House",   time:"2m ago",  color:"text-sky-400"     },
+  { icon:CreditCard,   label:"Payment confirmed",   client:"Portal Nexio",  time:"3h ago",  color:"text-emerald-400" },
+  { icon:GitBranch,    label:"Deploy completed",    client:"Sleep House",   time:"5h ago",  color:"text-violet-400"  },
+  { icon:Check,        label:"Proposal approved",   client:"Homma Design",  time:"8h ago",  color:"text-emerald-400" },
+  { icon:Star,         label:"Lead received",       client:"Via WhatsApp",  time:"1d ago",  color:"text-amber-400"   },
+  { icon:Shield,       label:"Contract signed",     client:"Pixel Labs",    time:"1d ago",  color:"text-white"       },
+];
 
-  const quickActions = [
-    { icon: Plus, label: "Novo Projeto", color: "text-[#009EE3]", bg: "bg-[#009EE3]/10" },
-    { icon: DollarSign, label: "Nova Fatura", color: "text-emerald-400", bg: "bg-emerald-400/10" },
-    { icon: FileText, label: "Gerar Contrato", color: "text-purple-400", bg: "bg-purple-400/10" },
-    { icon: UploadCloud, label: "Upload de Arquivo", color: "text-amber-400", bg: "bg-amber-400/10" },
-  ];
+const PROJECTS = [
+  { name:"Sleep House Campinas", stage:"Development", progress:72, status:"Active",   color:"bg-emerald-400", rev:"R$4.9k", due:"Jun 20" },
+  { name:"Homma Design System",  stage:"Review",      progress:91, status:"Review",   color:"bg-amber-400",   rev:"R$7.2k", due:"Jun 10" },
+  { name:"Portal Nexio",         stage:"Dev",         progress:38, status:"Dev",      color:"bg-sky-400",     rev:"R$12k",  due:"Jul 15" },
+  { name:"Pixel Labs Platform",  stage:"Planning",    progress:15, status:"Planning", color:"bg-violet-400",  rev:"R$9.5k", due:"Aug 1"  },
+];
 
-  const activities = [
-    { title: "Deploy concluído", desc: "Sleep House (v2.1.0)", time: "Há 10 min", icon: CheckCircle2, color: "text-emerald-400" },
-    { title: "Fatura paga", desc: "Cliente A - Ref 004", time: "Há 2 horas", icon: DollarSign, color: "text-emerald-400" },
-    { title: "Backup do banco", desc: "Automático (PostgreSQL)", time: "Ontem 00:00", icon: Activity, color: "text-[#009EE3]" },
-  ];
+const DEADLINES = [
+  { project:"Homma Design System",  due:"Jun 10", days:6,  urgent:true  },
+  { project:"Sleep House Campinas", due:"Jun 20", days:16, urgent:false },
+  { project:"Portal Nexio",         due:"Jul 15", days:41, urgent:false },
+];
 
-  const pipeline = data?.pipeline?.length > 0 ? data.pipeline : [
-    { id: 1, client: "Sleep House", progress: "80%", status: "Frontend" },
-    { id: 2, client: "Fintech App", progress: "35%", status: "Backend" },
-    { id: 3, client: "Studio Design", progress: "10%", status: "UI/UX" },
-  ];
+const MONTHS = ["J","F","M","A","M","J"];
+const BARS   = [38, 52, 47, 68, 72, 90];
 
-  return (
-    <div className="py-6 px-5 md:py-10 md:px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-6 md:space-y-8">
-      
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-1">Command Center</h1>
-          <p className="text-white/40 text-xs md:text-sm font-mono uppercase tracking-widest">Sistemas operacionais online</p>
-        </div>
-        <div className="flex items-center gap-2 text-[10px] md:text-xs font-mono text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20 w-fit">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          SISTEMAS ONLINE
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {quickActions.map((action, i) => {
-          const Icon = action.icon;
-          return (
-            <button key={i} className="group relative overflow-hidden bg-[#0B0B0B] border border-white/[0.06] hover:border-white/[0.15] rounded-xl p-4 transition-all text-left">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className={`w-10 h-10 rounded-lg ${action.bg} flex items-center justify-center mb-4`}>
-                <Icon className={`w-5 h-5 ${action.color}`} />
-              </div>
-              <p className="text-sm font-medium text-white group-hover:text-white/90 transition-colors">{action.label}</p>
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Main Column */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* KPIs */}
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
-            {kpis.map((k: any, i: number) => (
-              <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden group hover:border-white/[0.15] transition-colors">
-                <div className="absolute top-0 right-0 p-4">
-                  <span className={`text-xs font-mono px-2 py-1 rounded-md ${k.good ? 'bg-emerald-400/10 text-emerald-400' : 'bg-white/10 text-white/50'}`}>
-                    {k.trend}
-                  </span>
-                </div>
-                <p className="text-white/40 text-xs font-mono uppercase tracking-widest mb-2">{k.label}</p>
-                <p className="text-3xl font-bold text-white tracking-tight">{k.value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Pipeline */}
-          <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xs font-mono text-white/40 uppercase tracking-widest">Pipeline Ativo</h2>
-              <button className="text-xs text-[#009EE3] hover:underline font-mono">VER TODOS</button>
-            </div>
-            <div className="space-y-5">
-              {pipeline.map((p: any) => (
-                <div key={p.id} className="flex items-center gap-4 group">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-white/70 group-hover:bg-white/10 transition-colors">
-                    {p.client?.charAt(0)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="text-white/90 text-sm font-medium">{p.client}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10">{p.status}</span>
-                      </div>
-                      <span className="text-white/40 font-mono text-xs">{p.progress}</span>
-                    </div>
-                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-[#009EE3] to-blue-400 rounded-full transition-all duration-1000" style={{ width: p.progress ?? "0%" }} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Sidebar Column */}
-        <div className="space-y-6">
-          {/* Quick Stats / Health */}
-          <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6">
-            <h2 className="text-xs font-mono text-white/40 uppercase tracking-widest mb-6">Integrações & Infra</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-sm text-white/70">Vercel API</span>
-                </div>
-                <span className="text-xs font-mono text-emerald-400">99.9%</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-sm text-white/70">Database (Neon)</span>
-                </div>
-                <span className="text-xs font-mono text-emerald-400">Stable</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-amber-400" />
-                  <span className="text-sm text-white/70">Stripe Sync</span>
-                </div>
-                <span className="text-xs font-mono text-amber-400">Syncing...</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Activity Feed */}
-          <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 flex-1 flex flex-col">
-            <h2 className="text-xs font-mono text-white/40 uppercase tracking-widest mb-6 flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5" /> Log Recente
-            </h2>
-            <div className="space-y-5 flex-1">
-              {activities.map((act, i) => {
-                const Icon = act.icon;
-                return (
-                  <div key={i} className="flex gap-4">
-                    <div className="relative">
-                      <div className={`w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center ${act.color} z-10 relative`}>
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      {i !== activities.length - 1 && (
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-[1px] h-full bg-white/[0.06] -z-0" />
-                      )}
-                    </div>
-                    <div className="pt-1.5 pb-2">
-                      <p className="text-sm font-medium text-white/90 leading-none mb-1">{act.title}</p>
-                      <p className="text-xs text-white/40">{act.desc}</p>
-                      <p className="text-[10px] text-white/30 font-mono mt-1.5">{act.time}</p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-            <button className="w-full mt-4 py-2 border border-white/[0.06] rounded-lg text-xs font-mono text-white/40 hover:text-white/80 hover:bg-white/5 transition-all">
-              VER LOG COMPLETO
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
-// ─── Generic placeholder for unbuilt modules ─────────────────────────────────
-function Placeholder({ title, desc }: { title: string; desc: string }) {
-  return (
-    <div className="py-12 px-10 xl:px-16 w-full">
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold tracking-tight text-white mb-2">{title}</h1>
-        <p className="text-white/30 text-sm">{desc}</p>
-      </div>
-      <div className="border border-white/[0.06] border-dashed rounded-2xl py-24 flex items-center justify-center text-white/20 text-sm font-mono">
-        Em desenvolvimento
-      </div>
-    </div>
-  );
-}
-
-// ─── Shell ───────────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
-  const [authed, setAuthed] = useState(false);
-  const [token, setToken] = useState("");
-  const [active, setActive] = useState("Overview");
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleNavClick = (t: string) => {
-    if (t === active) return;
-    setMobileMenuOpen(false);
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setActive(t);
-      setTimeout(() => setIsTransitioning(false), 300);
-    }, 400);
-  };
-
-  useEffect(() => {
-    const t = localStorage.getItem(TOKEN_KEY);
-    if (t) {
-      // Basic JWT expiry check (decode without verifying signature — server still validates)
-      try {
-        const payload = JSON.parse(atob(t.split('.')[1]));
-        if (payload.exp && payload.exp * 1000 > Date.now()) {
-          setToken(t); setAuthed(true);
-        } else {
-          localStorage.removeItem(TOKEN_KEY); // expired
-        }
-      } catch {
-        localStorage.removeItem(TOKEN_KEY); // malformed
-      }
-    }
-  }, []);
-
-  const handleAuth = (t: string) => { setToken(t); setAuthed(true); };
-  const logout = () => { localStorage.removeItem(TOKEN_KEY); setAuthed(false); setToken(""); };
-
-
-  if (!authed) return <AdminGate onAuth={handleAuth} />;
-
-  const renderContent = () => {
-    switch (active) {
-      case "Overview":    return <Overview token={token} />;
-      case "Projetos":    return <ProjectsKanban />;
-      case "Clientes":    return <ClientesModule />;
-      case "Financeiro":  return <FinanceiroModule />;
-      case "Contratos":   return <ContratosModule />;
-      case "Uploads":     return <UploadsModule />;
-      case "Deploys":     return <DeploysModule />;
-      case "Analytics":   return <AnalyticsModule />;
-      case "Configurações": return <ConfiguracoesModule />;
-      default:            return <Overview token={token} />;
-    }
-  };
+  const [active, setActive] = useState("overview");
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col md:flex-row relative" style={{ fontFamily: "'Inter', sans-serif" }}>
-      
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/80 md:hidden" onClick={() => setMobileMenuOpen(false)} />
-        )}
-      </AnimatePresence>
+    <div className="h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
 
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-[240px] bg-[#050505] border-r border-white/[0.06] flex flex-col h-screen transition-transform duration-300 md:static md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* ── SIDEBAR ── */}
+      <aside className="w-[220px] shrink-0 border-r border-white/[0.05] flex flex-col bg-[#060606]">
         {/* Logo */}
-        <div className="px-6 h-16 flex items-center justify-between border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-black">
-              <LogoTE className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white leading-none">Thomas Eduardo</p>
-              <p className="text-[10px] text-white/30 font-mono mt-0.5">Operacional</p>
-            </div>
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-white/[0.05] shrink-0">
+          <div className="w-7 h-7 bg-white flex items-center justify-center rounded-sm shrink-0">
+            <span className="text-black text-[11px] font-black">TE</span>
           </div>
-          <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-white/40 hover:text-white p-1">
-            <X className="w-5 h-5" />
-          </button>
+          <div>
+            <span className="block text-[12px] font-semibold leading-none">Thomas Eduardo</span>
+            <span className="block text-[9px] font-mono text-white/20 uppercase tracking-wider mt-0.5">Dev de Software</span>
+          </div>
+        </div>
+
+        {/* Label */}
+        <div className="px-5 pt-5 pb-2">
+          <span className="text-[9px] font-mono uppercase tracking-[0.25em] text-white/15">Centro de Operações</span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto custom-scrollbar">
-          {NAV.map(({ id, icon: Icon }) => (
-            <button key={id} onClick={() => handleNavClick(id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                active === id
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/40 hover:text-white/70 hover:bg-white/[0.03]"
-              }`}>
-              <Icon className="w-4 h-4 shrink-0" />
-              {id}
-            </button>
-          ))}
+        <nav className="flex-1 overflow-y-auto px-3 pb-3 space-y-0.5">
+          {NAV.map(n => {
+            const Icon = n.icon;
+            const on = active === n.id;
+            return (
+              <button key={n.id} onClick={() => setActive(n.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-all text-left ${on ? "bg-white/[0.08] text-white font-medium" : "text-white/30 hover:text-white/60 hover:bg-white/[0.03]"}`}>
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${on ? "text-white" : "text-white/20"}`} />
+                {n.label}
+                {n.id === "messages" && <span className="ml-auto text-[9px] bg-white text-black font-bold px-1.5 py-0.5 rounded-sm">3</span>}
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Footer */}
-        <div className="px-3 py-4 border-t border-white/[0.06]">
-          <button onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/30 hover:text-white/60 transition-colors">
-            <LogOut className="w-4 h-4" />
-            Sair
-          </button>
+        {/* Plan card */}
+        <div className="mx-3 mb-3 p-3 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-3 h-3 text-amber-400" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-white/40">Studio Pro</span>
+          </div>
+          <p className="text-[10px] text-white/20 leading-relaxed">Todos os módulos ativos</p>
+        </div>
+
+        {/* Profile */}
+        <div className="p-3 border-t border-white/[0.05] shrink-0">
+          <div className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/[0.03] cursor-pointer transition-all">
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold shrink-0">TE</div>
+            <div className="min-w-0 flex-1">
+              <span className="block text-[11px] font-medium truncate">Thomas Eduardo</span>
+              <span className="block text-[9px] text-white/25 font-mono">Admin</span>
+            </div>
+            <ChevronRight className="w-3 h-3 text-white/20" />
+          </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 relative h-screen overflow-hidden">
-        {isTransitioning && <PageLoader />}
-        
-        {/* Header Superior */}
-        <header className="h-16 border-b border-white/[0.06] flex items-center justify-between px-4 md:px-8 shrink-0 relative z-10 bg-[#050505]/80 backdrop-blur-md gap-3 md:gap-4">
-          <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-            <button onClick={() => setMobileMenuOpen(true)} className="md:hidden text-white/40 hover:text-white p-1 -ml-1">
-              <Menu className="w-6 h-6 shrink-0" />
-            </button>
-            <div className="flex-1 flex items-center gap-3 min-w-0">
-              <Search className="w-4 h-4 text-white/30 shrink-0" />
-              <input type="text" placeholder="Buscar... (⌘K)" 
-                className="bg-transparent text-sm text-white placeholder-white/30 outline-none w-full max-w-md truncate" />
-            </div>
+      {/* ── MAIN ── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+        {/* Top Nav */}
+        <header className="h-16 border-b border-white/[0.05] flex items-center gap-3 px-6 bg-[#060606] shrink-0">
+          <div className="flex items-center gap-2 bg-[#0c0c0c] border border-white/[0.07] rounded-xl px-3 py-2 w-56">
+            <Search className="w-3.5 h-3.5 text-white/20 shrink-0" />
+            <input placeholder="Buscar operação..." className="bg-transparent text-[12px] text-white placeholder:text-white/20 focus:outline-none w-full" />
           </div>
-          <div className="flex items-center gap-4">
-            <button className="text-white/40 hover:text-white transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-[#009EE3] rounded-full border border-[#050505]" />
+          <div className="ml-auto flex items-center gap-2">
+            {[
+              { l:"New Client",   icon:Users    },
+              { l:"New Proposal", icon:FileText },
+              { l:"New Project",  icon:Layers   },
+            ].map(q => {
+              const Icon = q.icon;
+              return (
+                <button key={q.l} className="flex items-center gap-1.5 px-3 py-2 border border-white/[0.07] hover:border-white/[0.14] text-white/30 hover:text-white/60 text-[10px] font-mono rounded-lg transition-all">
+                  <Icon className="w-3 h-3" />{q.l}
+                </button>
+              );
+            })}
+            <button className="relative w-9 h-9 flex items-center justify-center border border-white/[0.07] rounded-lg hover:border-white/[0.14] transition-all">
+              <Bell className="w-4 h-4 text-white/30" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-400 rounded-full" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-white/10 to-white/5 border border-white/10 flex items-center justify-center text-white">
-              <LogoTE className="w-5 h-5" />
-            </div>
           </div>
         </header>
 
-        {/* Content View */}
-        <div className={`flex-1 overflow-y-auto flex relative z-0 transition-opacity duration-300 ${isTransitioning ? 'opacity-30 blur-[2px]' : 'opacity-100 blur-0'}`}>
-          <AnimatePresence mode="wait">
-            <motion.div key={active} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="w-full flex">
-              {renderContent()}
-            </motion.div>
-          </AnimatePresence>
+        {/* Scroll area */}
+        <div className="flex-1 overflow-y-auto">
+
+          {/* ── HERO with BG image ── */}
+          <section className="relative overflow-hidden border-b border-white/[0.05] min-h-[160px] flex items-center">
+            <img src={adminHero} alt="" className="absolute inset-0 w-full h-full object-cover object-center opacity-15" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#060606] via-[#060606]/80 to-transparent" />
+            <div className="relative z-10 px-8 py-10">
+              <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}>
+                <span className="text-[9px] font-mono uppercase tracking-[0.3em] text-white/20 block mb-2">
+                  {new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"})}
+                </span>
+                <h1 className="text-[clamp(28px,3.5vw,52px)] font-bold tracking-tighter leading-none mb-1">Bom dia, Thomas.</h1>
+                <p className="text-[13px] text-white/30">Sua operação está ativa. <span className="text-emerald-400 font-medium">7 projetos em execução.</span></p>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* ── KPI GRID ── */}
+          <section className="px-8 py-6 border-b border-white/[0.05]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+              {KPIS.map((k,i) => {
+                const Icon = k.icon;
+                return (
+                  <motion.div key={i} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.05 }}
+                    className="p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl hover:border-white/[0.12] transition-all group">
+                    <div className="flex items-center justify-between mb-3">
+                      <Icon className="w-4 h-4 text-white/20" />
+                      <span className={`text-[10px] font-mono flex items-center gap-0.5 ${k.up ? "text-emerald-400" : "text-red-400"}`}>
+                        {k.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}{k.trend}
+                      </span>
+                    </div>
+                    <span className="block text-[9px] font-mono uppercase tracking-[0.18em] text-white/20 mb-1">{k.label}</span>
+                    <span className="block text-[26px] font-bold tracking-tighter leading-none">{k.value}</span>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* ── CONTENT GRID ── */}
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] divide-x divide-white/[0.05]">
+
+            {/* LEFT */}
+            <div className="divide-y divide-white/[0.05]">
+
+              {/* Active Projects */}
+              <section className="px-8 py-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25">Active Projects</span>
+                  <button className="text-[9px] font-mono text-white/20 hover:text-white/50 flex items-center gap-1 transition-colors">All <ChevronRight className="w-3 h-3" /></button>
+                </div>
+                <div className="space-y-2">
+                  {PROJECTS.map((p,i) => (
+                    <motion.div key={i} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }} transition={{ delay:i*0.06 }}
+                      className="flex items-center gap-4 p-4 border border-white/[0.07] bg-[#0a0a0a] rounded-xl hover:border-white/[0.14] transition-all group">
+                      <div className={`w-1.5 h-10 rounded-full shrink-0 ${p.color} opacity-70`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="text-[13px] font-semibold truncate">{p.name}</span>
+                          <span className="text-[9px] font-mono text-white/30 shrink-0">{p.stage}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-0.5 bg-white/[0.05] rounded-full overflow-hidden">
+                            <motion.div className={`h-full ${p.color} rounded-full`} initial={{ width:0 }} animate={{ width:`${p.progress}%` }} transition={{ delay:i*0.1+0.3, duration:0.8 }} />
+                          </div>
+                          <span className="text-[10px] font-mono text-white/25 shrink-0">{p.progress}%</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="block text-[12px] font-bold">{p.rev}</span>
+                        <span className="block text-[10px] font-mono text-white/25">{p.due}</span>
+                      </div>
+                      <button className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-2.5 py-1.5 border border-white/[0.1] rounded-lg text-[10px] font-mono text-white/40 hover:text-white shrink-0 transition-all">
+                        Open <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </motion.div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Revenue + Proposals */}
+              <section className="px-8 py-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Revenue Chart */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25">Revenue</span>
+                    <span className="text-[10px] font-mono text-emerald-400">+18% MoM</span>
+                  </div>
+                  <div className="p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
+                    <span className="block text-[28px] font-bold tracking-tighter mb-1">R$18.5k</span>
+                    <span className="block text-[10px] text-white/25 font-mono mb-4">Junho 2025</span>
+                    <div className="flex items-end gap-1.5 h-16">
+                      {BARS.map((h,i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                          <motion.div initial={{ height:0 }} animate={{ height:`${h}%` }} transition={{ delay:i*0.08+0.4, duration:0.6 }}
+                            className={`w-full rounded-sm ${i===5 ? "bg-white" : "bg-white/[0.08]"}`} />
+                          <span className="text-[8px] font-mono text-white/15">{MONTHS[i]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {[{l:"Paid",v:"R$82k",c:"text-white"},{l:"Pending",v:"R$34k",c:"text-amber-400"},{l:"Forecast",v:"R$21k",c:"text-sky-400"}].map(f=>(
+                      <div key={f.l} className="p-3 border border-white/[0.06] bg-[#0a0a0a] rounded-xl text-center">
+                        <span className={`block text-[15px] font-bold ${f.c}`}>{f.v}</span>
+                        <span className="block text-[9px] font-mono text-white/20 mt-0.5">{f.l}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Proposals donut */}
+                <div>
+                  <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25 block mb-4">Proposals</span>
+                  <div className="p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl flex flex-col items-center">
+                    {/* SVG donut */}
+                    <div className="relative w-28 h-28 mb-4">
+                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3" />
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="74 26" />
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="16 84" strokeDashoffset="-74" />
+                        <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ef4444" strokeWidth="3" strokeDasharray="10 90" strokeDashoffset="-90" />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-[22px] font-bold leading-none">74%</span>
+                        <span className="text-[9px] font-mono text-white/25">CVR</span>
+                      </div>
+                    </div>
+                    <div className="w-full space-y-2">
+                      {[{l:"Approved",v:"6",c:"bg-emerald-400"},{l:"Pending",v:"4",c:"bg-amber-400"},{l:"Rejected",v:"2",c:"bg-red-400"}].map(s=>(
+                        <div key={s.l} className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full shrink-0 ${s.c}`} />
+                          <span className="text-[11px] text-white/40 flex-1">{s.l}</span>
+                          <span className="text-[12px] font-bold">{s.v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Deadlines */}
+              <section className="px-8 py-6">
+                <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25 block mb-4">Upcoming Deadlines</span>
+                <div className="space-y-2">
+                  {DEADLINES.map((d,i) => (
+                    <div key={i} className={`flex items-center gap-4 p-4 border rounded-xl transition-all ${d.urgent ? "border-red-500/20 bg-red-500/[0.04]" : "border-white/[0.07] bg-[#0a0a0a]"}`}>
+                      <div className={`text-center shrink-0 w-10 ${d.urgent ? "text-red-400" : "text-white/40"}`}>
+                        <span className="block text-[20px] font-bold leading-none">{d.days}</span>
+                        <span className="block text-[9px] font-mono">days</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="block text-[13px] font-medium truncate">{d.project}</span>
+                        <span className="block text-[10px] font-mono text-white/25">Due {d.due}</span>
+                      </div>
+                      {d.urgent && <span className="text-[9px] font-mono text-red-400 border border-red-500/20 px-2 py-0.5 rounded shrink-0">URGENT</span>}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* RIGHT — Feed */}
+            <div className="px-5 py-6 flex flex-col gap-6">
+              <div>
+                <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25 block mb-5">Operations Feed</span>
+                {FEED.map((f,i) => {
+                  const Icon = f.icon;
+                  return (
+                    <motion.div key={i} initial={{ opacity:0, x:8 }} animate={{ opacity:1, x:0 }} transition={{ delay:i*0.06 }}
+                      className="flex gap-3 pb-4">
+                      <div className="flex flex-col items-center">
+                        <div className="w-7 h-7 rounded-lg border border-white/[0.07] bg-white/[0.02] flex items-center justify-center shrink-0">
+                          <Icon className={`w-3.5 h-3.5 ${f.color}`} />
+                        </div>
+                        {i < FEED.length-1 && <div className="w-px flex-1 bg-white/[0.04] my-1" />}
+                      </div>
+                      <div className="pt-1">
+                        <span className="block text-[12px] font-medium">{f.label}</span>
+                        <span className="block text-[11px] text-white/25">{f.client}</span>
+                        <span className="block text-[9px] font-mono text-white/15 mt-0.5">{f.time}</span>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Leads mini */}
+              <div className="border-t border-white/[0.05] pt-5">
+                <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25 block mb-3">Leads Recentes</span>
+                {[{src:"WhatsApp",score:92,hot:true},{src:"Instagram",score:74,hot:false},{src:"Website",score:61,hot:false},{src:"Referral",score:88,hot:true}].map((l,i)=>(
+                  <div key={i} className="flex items-center gap-2 mb-2 px-3 py-2.5 border border-white/[0.06] bg-[#0a0a0a] rounded-xl">
+                    <span className="text-[11px] text-white/40 flex-1">{l.src}</span>
+                    <span className={`text-[9px] font-mono ${l.hot?"text-red-400":"text-amber-400"}`}>{l.hot?"Hot":"Warm"}</span>
+                    <span className="text-[11px] font-bold w-6 text-right">{l.score}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Deploy status */}
+              <div className="border-t border-white/[0.05] pt-5">
+                <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/25 block mb-3">Deploy Status</span>
+                {[{env:"Production",url:"sleep-house.vercel.app",ok:true},{env:"Staging",url:"portal-nexio.vercel.app",ok:true},{env:"Dev",url:"pixel-labs-dev",ok:false}].map((d,i)=>(
+                  <div key={i} className="flex items-center gap-2 mb-2 px-3 py-2.5 border border-white/[0.06] bg-[#0a0a0a] rounded-xl">
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${d.ok?"bg-emerald-400":"bg-amber-400"} animate-pulse`} />
+                    <div className="flex-1 min-w-0">
+                      <span className="block text-[10px] font-mono text-white/40 truncate">{d.url}</span>
+                      <span className="block text-[9px] font-mono text-white/20">{d.env}</span>
+                    </div>
+                    <span className={`text-[9px] font-mono ${d.ok?"text-emerald-400":"text-amber-400"}`}>{d.ok?"Live":"Build"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

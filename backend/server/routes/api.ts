@@ -1,16 +1,26 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { extractBearer, verifyAdminToken } from '../lib/jwt.js';
 
 const router = Router();
 const prisma = new PrismaClient();
 
 // ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
 const adminAuth = (req: Request, res: Response, next: Function) => {
-  const key = req.headers['x-admin-key'];
-  if (key !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' });
+  const bearerToken = extractBearer(req.headers['authorization'] as string | undefined);
+  if (bearerToken) {
+    const payload = verifyAdminToken(bearerToken);
+    if (payload?.role === 'admin') {
+      return next();
+    }
   }
-  next();
+
+  const key = req.headers['x-admin-key'];
+  if (key === process.env.ADMIN_PASSWORD) {
+    return next();
+  }
+
+  return res.status(401).json({ error: 'Unauthorized' });
 };
 
 // ─── HELPER: criar timeline event ──────────────────────────────────────────
@@ -143,6 +153,31 @@ router.delete('/clients/:id', adminAuth, async (req, res) => {
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: 'Erro ao excluir cliente.' });
+  }
+});
+
+router.post('/clients/:id/portal-key', adminAuth, async (req, res) => {
+  try {
+    const key = `${Math.random().toString(36).slice(2)}-${Date.now()}`;
+    const client = await prisma.client.update({
+      where: { id: req.params.id },
+      data: { portalKey: key, portalActive: true }
+    });
+    res.json({ clientId: client.id, portalKey: key });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/clients/:id/portal-key', adminAuth, async (req, res) => {
+  try {
+    await prisma.client.update({
+      where: { id: req.params.id },
+      data: { portalKey: null, portalActive: false }
+    });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -684,6 +719,300 @@ router.put('/projects/:projectId/files/:id', adminAuth, async (req, res) => {
 router.delete('/projects/:projectId/files/:id', adminAuth, async (req, res) => {
   try {
     await prisma.projectFile.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// PROPOSTAS COMERCIAIS
+
+router.get('/proposals', adminAuth, async (req, res) => {
+  try {
+    const proposals = await prisma.proposal.findMany({
+      include: { client: true, project: true },
+      orderBy: { updatedAt: 'desc' }
+    });
+    res.json(proposals);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/proposals', adminAuth, async (req, res) => {
+  try {
+    const { title, description, amount, clientId, projectId, status, stage, approvalLink } = req.body;
+    if (!title) return res.status(400).json({ error: 'title é obrigatório.' });
+
+    const proposal = await prisma.proposal.create({
+      data: {
+        title,
+        description,
+        amount: amount ?? 0,
+        clientId,
+        projectId,
+        status: status ?? 'draft',
+        stage: stage ?? 'draft',
+        approvalLink
+      }
+    });
+    res.status(201).json(proposal);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/proposals/:id', adminAuth, async (req, res) => {
+  try {
+    const { title, description, amount, status, stage, approvalLink, acceptedAt } = req.body;
+    const proposal = await prisma.proposal.update({
+      where: { id: req.params.id },
+      data: {
+        ...(title !== undefined && { title }),
+        ...(description !== undefined && { description }),
+        ...(amount !== undefined && { amount }),
+        ...(status !== undefined && { status }),
+        ...(stage !== undefined && { stage }),
+        ...(approvalLink !== undefined && { approvalLink }),
+        ...(acceptedAt !== undefined && { acceptedAt: new Date(acceptedAt) })
+      }
+    });
+    res.json(proposal);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/proposals/:id', adminAuth, async (req, res) => {
+  try {
+    await prisma.proposal.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/proposals/:id/convert', adminAuth, async (req, res) => {
+  try {
+    const proposal = await prisma.proposal.findUnique({ where: { id: req.params.id } });
+    if (!proposal) return res.status(404).json({ error: 'Proposal não encontrada.' });
+
+    const project = await prisma.project.create({
+      data: {
+        name: proposal.title,
+        clientId: proposal.clientId ?? '',
+        phase: 'Proposta',
+        financial: 'pending',
+        value: proposal.amount,
+        tipo: 'website',
+        descricao: proposal.description,
+        status: 'proposta',
+        progresso: 0
+      }
+    });
+
+    await prisma.proposal.update({
+      where: { id: proposal.id },
+      data: { status: 'approved', acceptedAt: new Date(), projectId: project.id }
+    });
+
+    res.json({ project, proposalConverted: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// LEADS E CRM
+
+router.get('/leads', adminAuth, async (req, res) => {
+  try {
+    const leads = await prisma.lead.findMany({ orderBy: { updatedAt: 'desc' } });
+    res.json(leads);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/leads', adminAuth, async (req, res) => {
+  try {
+    const { name, email, phone, source, status, owner, notes, nextActionAt } = req.body;
+    if (!name) return res.status(400).json({ error: 'name é obrigatório.' });
+
+    const lead = await prisma.lead.create({
+      data: {
+        name,
+        email,
+        phone,
+        source: source ?? 'site',
+        status: status ?? 'new',
+        owner,
+        notes,
+        nextActionAt: nextActionAt ? new Date(nextActionAt) : undefined
+      }
+    });
+    res.status(201).json(lead);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/leads/:id', adminAuth, async (req, res) => {
+  try {
+    const { name, email, phone, source, status, owner, notes, nextActionAt } = req.body;
+    const lead = await prisma.lead.update({
+      where: { id: req.params.id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(email !== undefined && { email }),
+        ...(phone !== undefined && { phone }),
+        ...(source !== undefined && { source }),
+        ...(status !== undefined && { status }),
+        ...(owner !== undefined && { owner }),
+        ...(notes !== undefined && { notes }),
+        ...(nextActionAt !== undefined && { nextActionAt: new Date(nextActionAt) })
+      }
+    });
+    res.json(lead);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/leads/:id', adminAuth, async (req, res) => {
+  try {
+    await prisma.lead.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/leads/:id/convert', adminAuth, async (req, res) => {
+  try {
+    const { clientName, clientEmail, clientCnpj, password } = req.body;
+    const lead = await prisma.lead.findUnique({ where: { id: req.params.id } });
+    if (!lead) return res.status(404).json({ error: 'Lead não encontrada.' });
+
+    if (!clientName || !clientEmail || !password) {
+      return res.status(400).json({ error: 'clientName, clientEmail e password são obrigatórios.' });
+    }
+
+    const bcrypt = await import('bcrypt');
+    const hashedPw = await bcrypt.default.hash(password, 10);
+
+    const client = await prisma.client.create({
+      data: {
+        name: clientName,
+        email: clientEmail,
+        cnpj: clientCnpj,
+        password: hashedPw,
+        clientType: 'converted'
+      }
+    });
+
+    await prisma.lead.update({
+      where: { id: lead.id },
+      data: { converted: true, convertedAt: new Date(), convertedToId: client.id }
+    });
+
+    res.json({ client, converted: true });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// MENSAGENS
+
+router.get('/projects/:id/messages', adminAuth, async (req, res) => {
+  try {
+    const messages = await prisma.message.findMany({
+      where: { projectId: req.params.id },
+      orderBy: { createdAt: 'asc' }
+    });
+    res.json(messages);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/projects/:id/messages', adminAuth, async (req, res) => {
+  try {
+    const { senderType, senderName, content, clientId } = req.body;
+    if (!content) return res.status(400).json({ error: 'content é obrigatório.' });
+
+    const message = await prisma.message.create({
+      data: {
+        projectId: req.params.id,
+        clientId,
+        senderType: senderType ?? 'internal',
+        senderName,
+        content,
+        read: false
+      }
+    });
+    res.status(201).json(message);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// EQUIPE / CONFIGURAÇÕES
+
+router.get('/team-members', adminAuth, async (req, res) => {
+  try {
+    const team = await prisma.teamMember.findMany({ orderBy: { createdAt: 'desc' } });
+    res.json(team);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/team-members', adminAuth, async (req, res) => {
+  try {
+    const { name, email, role, permissions, active } = req.body;
+    if (!name || !email) return res.status(400).json({ error: 'name e email são obrigatórios.' });
+
+    const member = await prisma.teamMember.create({
+      data: {
+        name,
+        email,
+        role: role ?? 'editor',
+        permissions: permissions ? JSON.stringify(permissions) : undefined,
+        active: active ?? true
+      }
+    });
+    res.status(201).json(member);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/team-members/:id', adminAuth, async (req, res) => {
+  try {
+    const { name, email, role, permissions, active } = req.body;
+    const member = await prisma.teamMember.update({
+      where: { id: req.params.id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(email !== undefined && { email }),
+        ...(role !== undefined && { role }),
+        ...(permissions !== undefined && { permissions: JSON.stringify(permissions) }),
+        ...(active !== undefined && { active })
+      }
+    });
+    res.json(member);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/team-members/:id', adminAuth, async (req, res) => {
+  try {
+    await prisma.teamMember.delete({ where: { id: req.params.id } });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

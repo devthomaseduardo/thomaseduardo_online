@@ -25,3 +25,7 @@ This repository is now organized into separate frontend and backend workspaces:
 
 - Use `backend/package.json` for server-specific commands and database seeding.
 - Use `frontend/package.json` for Vite build, preview, and asset tools.
+- Configure Neon/PostgreSQL by setting `DATABASE_URL` and `DIRECT_URL` in `.env`.
+  - `DATABASE_URL` is the runtime connection.
+  - `DIRECT_URL` is used by Prisma CLI for migrations and introspection.
+- A Neon example file is available in `.env.neon.example` for local setup.
