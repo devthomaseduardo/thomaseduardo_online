@@ -27,7 +27,18 @@ const Payment = lazy(() => import("./pages/Payment"));
 
 const Portal = lazy(() => import("./pages/Portal"));
 const ClientDashboard = lazy(() => import("./pages/ClientDashboard"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminLayout = lazy(() => import("./components/admin/layout/AdminLayout").then(m => ({ default: m.AdminLayout })));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const AdminProjects = lazy(() => import("./pages/admin/Projects").then(m => ({ default: m.Projects })));
+const AdminClients = lazy(() => import("./pages/admin/Clients").then(m => ({ default: m.Clients })));
+const AdminProposals = lazy(() => import("./pages/admin/Proposals").then(m => ({ default: m.Proposals })));
+const AdminFinancial = lazy(() => import("./pages/admin/Financial").then(m => ({ default: m.Financial })));
+const AdminContracts = lazy(() => import("./pages/admin/Contracts").then(m => ({ default: m.Contracts })));
+const AdminDeployments = lazy(() => import("./pages/admin/Deployments").then(m => ({ default: m.Deployments })));
+const AdminLeads = lazy(() => import("./pages/admin/Leads").then(m => ({ default: m.Leads })));
+const AdminMessages = lazy(() => import("./pages/admin/Messages").then(m => ({ default: m.Messages })));
+const AdminTeam = lazy(() => import("./pages/admin/Team").then(m => ({ default: m.Team })));
+const AdminSettings = lazy(() => import("./pages/admin/Settings").then(m => ({ default: m.Settings })));
 const Proposta = lazy(() => import("./pages/Proposta"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const ProjectMaterials = lazy(() => import("./pages/ProjectMaterials"));
@@ -80,7 +91,19 @@ function App() {
             <Route path="/portal/dashboard" element={<ClientDashboard />} />
 
             <Route path="/proposta" element={<Proposta />} />
-            <Route path="/admin"    element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="projects" element={<AdminProjects />} />
+              <Route path="clients" element={<AdminClients />} />
+              <Route path="proposals" element={<AdminProposals />} />
+              <Route path="financial" element={<AdminFinancial />} />
+              <Route path="contracts" element={<AdminContracts />} />
+              <Route path="deployments" element={<AdminDeployments />} />
+              <Route path="leads" element={<AdminLeads />} />
+              <Route path="messages" element={<AdminMessages />} />
+              <Route path="team" element={<AdminTeam />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
             <Route path="/landing"  element={<LandingPage />} />
             <Route path="/materials" element={<ProjectMaterials />} />
           </Routes>

@@ -261,8 +261,8 @@ export default function ClientDashboard() {
       <aside className="w-[220px] shrink-0 border-r border-white/[0.05] flex flex-col sticky top-0 h-screen bg-[#060606]">
         {/* Logo */}
         <div className="px-5 h-14 flex items-center border-b border-white/[0.05]">
-          <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center mr-3">
-            <span className="text-black text-[10px] font-black">TE</span>
+          <div className="w-6 h-6 flex items-center justify-center mr-3">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-sm font-semibold tracking-tight">Portal</span>
         </div>

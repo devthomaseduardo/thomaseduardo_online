@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   X, LayoutDashboard, Clock, CheckSquare, FileText, 
   DollarSign, Briefcase, Rocket, BarChart3, Plus, 
-  Trash2, CheckCircle2, Circle, Eye, EyeOff, Activity, AlertTriangle
+  CheckCircle2, Circle, Eye, EyeOff, Activity, AlertTriangle
 } from "lucide-react";
 import { useProjectDrawer } from "./useProjectDrawer";
 import { TimelineSkeleton } from "./Loaders";
@@ -119,8 +119,8 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
                           </button>
                           <span className={`text-sm ${t.isCompleted ? "text-white/30 line-through" : "text-white/80"}`}>{t.title}</span>
                         </div>
-                        <button onClick={() => deleteTask(t.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-opacity">
-                          <Trash2 className="w-3.5 h-3.5" />
+                        <button onClick={() => deleteTask(t.id)} title="Excluir tarefa" aria-label="Excluir tarefa" className="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-mono text-rose-400 hover:text-white transition-opacity">
+                          Excluir
                         </button>
                       </div>
                     ))
@@ -159,8 +159,8 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
                             ) : (
                               <button onClick={() => registerPayment(inv.id, inv.amount, 'Pix')} className="text-[9px] font-mono text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20 hover:bg-amber-400/20 transition-colors">PENDENTE</button>
                             )}
-                            <button onClick={() => deleteInvoice(inv.id)} className="opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400 transition-opacity" title="Remover Fatura">
-                              <Trash2 className="w-3.5 h-3.5" />
+                            <button onClick={() => deleteInvoice(inv.id)} title="Excluir fatura" aria-label="Excluir fatura" className="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-mono text-rose-400 hover:text-white transition-opacity">
+                              Excluir
                             </button>
                           </div>
                         </div>
@@ -192,8 +192,8 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
                           <button onClick={() => toggleTimelineVisibility(ev)} className="text-white/30 hover:text-white" title="Visibilidade Cliente">
                             {ev.visivelCliente ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                           </button>
-                          <button onClick={() => deleteTimelineEvent(ev.id)} className="text-white/30 hover:text-red-400">
-                            <Trash2 className="w-3.5 h-3.5" />
+                          <button onClick={() => deleteTimelineEvent(ev.id)} title="Excluir evento" aria-label="Excluir evento" className="text-[10px] uppercase font-mono text-rose-400 hover:text-white">
+                            Excluir
                           </button>
                         </div>
                       </div>

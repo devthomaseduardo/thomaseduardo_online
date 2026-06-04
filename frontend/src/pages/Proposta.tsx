@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   ArrowRight, ArrowLeft, Check, Shield, Zap, TrendingUp,
@@ -86,8 +86,8 @@ const Section = ({ id, num, tag, headline, children }: {
 const Sidebar = ({ active }: { active: string }) => (
   <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto">
     <div className="h-16 flex items-center gap-3 px-7 border-b border-white/[0.05] shrink-0">
-      <div className="w-7 h-7 bg-white flex items-center justify-center rounded-sm shrink-0">
-        <span className="text-black text-[11px] font-black">TE</span>
+      <div className="w-7 h-7 flex items-center justify-center shrink-0">
+        <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
       </div>
       <div>
         <span className="block text-[13px] font-semibold tracking-tight">Thomas Eduardo</span>
@@ -340,9 +340,9 @@ export default function PropostaPage() {
           >
             <ArrowLeft className="w-4 h-4" />Voltar
           </button>
-          <a href="/material" className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
+          <Link to="/material" className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
             Ir para Materiais<ArrowRight className="w-4 h-4" />
-          </a>
+          </Link>
         </div>
 
       </div>

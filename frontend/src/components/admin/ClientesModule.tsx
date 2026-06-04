@@ -106,13 +106,17 @@ export function ClientesModule() {
       {/* Tabela Bento Box */}
       <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden flex flex-col">
         {/* Toolbar */}
-        <div className="p-4 border-b border-white/[0.06] flex items-center gap-4 bg-white/[0.01]">
-          <div className="flex-1 relative max-w-sm">
+        <div className="p-4 border-b border-white/[0.06] flex flex-col md:flex-row items-start md:items-center gap-4 bg-white/[0.01]">
+          <div className="flex-1 relative max-w-sm w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nome ou e-mail..."
               className="w-full bg-[#050505] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors" />
           </div>
+          <button onClick={() => setSearch("")} disabled={!search}
+            className="h-10 px-4 rounded-lg border border-white/[0.08] text-[10px] uppercase tracking-[0.18em] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-white/70 hover:text-white hover:border-white/20 bg-white/5 hover:bg-white/10">
+            Limpar
+          </button>
         </div>
 
         {/* List */}
@@ -166,12 +170,13 @@ export function ClientesModule() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openEdit(c)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
                           Editar
                         </button>
-                        <button onClick={() => remove(c.id)} className="p-1.5 hover:bg-rose-500/10 rounded-lg text-white/30 hover:text-rose-400 transition-colors ml-2">
-                          <Trash2 className="w-4 h-4" />
+                        <button onClick={() => remove(c.id)} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-xs font-medium text-rose-200 hover:text-white transition-colors"
+                          title="Excluir cliente" aria-label="Excluir cliente">
+                          Excluir
                         </button>
                       </div>
                     </td>
