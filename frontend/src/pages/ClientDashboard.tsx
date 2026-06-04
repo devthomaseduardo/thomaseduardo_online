@@ -4,12 +4,12 @@ import {
   LayoutGrid, FileText, CreditCard, FolderOpen, Zap, BarChart2,
   LogOut, CheckCircle2, Circle, Clock, ArrowUpRight, ChevronRight,
   Server, GitBranch, Globe, Activity, Shield, Download, UploadCloud,
-  Check, Hourglass, AlertCircle, Bell, Search, Command
+  Check, Hourglass, AlertCircle, Bell, Search, Command, Settings
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics";
+type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "settings";
 
 interface NavItem { id: NavId; label: string; icon: React.ElementType; }
 
@@ -20,6 +20,7 @@ const NAV: NavItem[] = [
   { id: "files",        label: "Arquivos",     icon: FolderOpen },
   { id: "deployments",  label: "Deployments",  icon: Zap        },
   { id: "analytics",    label: "Analytics",    icon: BarChart2  },
+  { id: "settings",     label: "Configurações",icon: Settings   },
 ];
 
 const ACTIVITY = [
@@ -213,6 +214,23 @@ const PanelPlaceholder = ({ label }: { label: string }) => (
   </div>
 );
 
+const PanelSettings = () => (
+  <div className="space-y-6">
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold tracking-tight mb-2">Configurações</h2>
+      <p className="text-sm text-white/40 max-w-xl">Gerencie as preferências da sua conta e configurações do sistema.</p>
+    </div>
+    <div className="flex flex-col gap-2 max-w-sm">
+      {["Perfil", "Segurança", "Notificações", "Aparência", "Faturamento", "API Keys"].map((item) => (
+        <button key={item} className="w-full flex items-center justify-between p-4 bg-[#0c0c0c] border border-white/[0.06] rounded-xl hover:border-white/[0.12] transition-colors text-left group">
+          <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">{item}</span>
+          <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function ClientDashboard() {
   const navigate  = useNavigate();
@@ -252,6 +270,7 @@ export default function ClientDashboard() {
     contracts:   <PanelPlaceholder label="Contratos" />,
     payments:    <PanelPlaceholder label="Pagamentos" />,
     analytics:   <PanelPlaceholder label="Analytics" />,
+    settings:    <PanelSettings />,
   };
 
   return (

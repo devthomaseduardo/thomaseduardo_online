@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Eye, EyeOff, Shield, MessageSquare, Lock } from "lucide-react";
 import paymentBg from "../assets/payment-hero.webp";
+import { RotatingText } from "../components/RotatingText";
 
 export default function ClientPortalLogin() {
   const [showKey, setShowKey] = useState(false);
@@ -35,7 +36,7 @@ export default function ClientPortalLogin() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <span className="block text-[13px] font-semibold tracking-tight leading-none">Thomas Eduardo</span>
+            <span className="block text-[13px] font-semibold tracking-tight leading-none"><RotatingText /></span>
             <span className="block text-[9px] font-mono text-white/25 uppercase tracking-wider mt-0.5">Desenvolvimento de Software</span>
           </div>
         </div>
@@ -156,7 +157,7 @@ export default function ClientPortalLogin() {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
             Ambiente seguro
           </span>
-          <span className="text-[9px] font-mono text-white/10">© Thomas Eduardo</span>
+          <span className="text-[9px] font-mono text-white/10">© <RotatingText /></span>
         </div>
       </div>
 

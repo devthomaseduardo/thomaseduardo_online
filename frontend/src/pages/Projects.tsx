@@ -7,9 +7,11 @@ import { Footer } from "../components/Footer";
 import { ProjectCard } from "../components/ProjectSection";
 import projectsData from "../data/projects.json";
 import { FADE_UP } from "../constants/animations";
+import { useSVGL } from "../hooks/useSVGL";
 
 const ProjectsPage = () => {
   const { lang, t } = useLang();
+  const { getIcon } = useSVGL();
   const [activeTab, setActiveTab] = useState<"all" | "operational" | "infra">("all");
 
   // Same IDs featured on the home page — exclude here to avoid duplication
@@ -142,11 +144,17 @@ const ProjectsPage = () => {
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2.5">
-                    {project.technologies.map(tech => (
-                      <span key={tech} className="px-3 py-1.5 rounded-md border border-white/10 bg-white/[0.02] text-[10px] font-mono text-white/40 uppercase tracking-widest">
-                        {tech}
-                      </span>
-                    ))}
+                    {project.technologies.map(tech => {
+                      const iconUrl = getIcon(tech);
+                      return (
+                        <span key={tech} className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/[0.02] text-[10px] font-mono text-white/60 uppercase tracking-widest backdrop-blur-md">
+                          {iconUrl && (
+                            <img src={iconUrl} alt={tech} className="w-3.5 h-3.5 object-contain" loading="lazy" />
+                          )}
+                          {tech}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>

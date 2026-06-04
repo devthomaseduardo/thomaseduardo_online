@@ -12,11 +12,11 @@ const Hero = () => {
     <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-[#060606]">
       {/* Background Image Setup from LandingPage */}
       <div className="absolute inset-0 z-0">
-        <img src={heroWeb} alt="" className="absolute right-0 top-0 w-1/2 h-full object-cover object-left opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#060606] via-[#060606]/85 to-[#060606]/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#060606]" />
+        <img src={heroWeb} alt="" className="absolute right-0 top-0 w-[85%] md:w-3/4 h-full object-cover object-center md:object-left opacity-50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060606] from-30% via-[#060606]/90 via-50% to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060606]/20 via-transparent to-[#060606]" />
         {/* vertical light beam */}
-        <div className="absolute right-1/3 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+        <div className="absolute right-1/4 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
       </div>
 
       <div className="w-full px-6 md:px-16 lg:px-24 relative z-10 flex flex-col items-start justify-center text-left mt-12">
@@ -24,11 +24,11 @@ const Hero = () => {
           {...HERO_FADE_UP}
           className="mb-8"
         >
-          <div className="inline-flex items-center gap-3 px-2 py-2 pr-6 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:bg-white/[0.06] hover:border-white/20 transition-all duration-300">
+          <div className="inline-flex items-center gap-3 px-2 py-2 pr-6 rounded-full bg-white/[0.03] backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.05)] hover:bg-white/[0.06] transition-all duration-300">
             <img 
               src="/avatar.webp" 
               alt="Thomas" 
-              className="w-8 h-8 rounded-full object-cover border border-emerald-500/30"
+              className="w-8 h-8 rounded-full object-cover"
             />
             <span className="flex items-center gap-2 text-[10px] sm:text-xs font-mono font-bold text-white/80 tracking-widest uppercase">
               {lang === 'pt' ? 'Olá, eu sou o Thomas' : 'Hi, I am Thomas'} 

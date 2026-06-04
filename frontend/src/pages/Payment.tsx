@@ -6,6 +6,7 @@ import {
   Shield, Check, ArrowRight, ArrowLeft, QrCode, Copy,
   Clock, Package, Zap, Lock, Star
 } from "lucide-react";
+import { RotatingText } from "../components/RotatingText";
 import fundoBg from "../assets/payment-hero.webp";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -59,10 +60,9 @@ const POST_TIMELINE = [
 ];
 
 const PIX_KEY = "th.eduardo210@gmail.com";
-const AMOUNT  = 4900;
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
-const Sidebar = () => (
+const Sidebar = ({ amount, projectData }: { amount: number, projectData?: any }) => (
   <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto">
     {/* Logo */}
     <div className="h-16 flex items-center gap-3 px-7 border-b border-white/[0.05] shrink-0">
@@ -70,7 +70,7 @@ const Sidebar = () => (
         <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
       </div>
       <div>
-        <span className="block text-[13px] font-semibold tracking-tight">Thomas Eduardo</span>
+        <span className="block text-[13px] font-semibold tracking-tight"><RotatingText /></span>
         <span className="block text-[10px] font-mono text-white/25 uppercase tracking-wider">Portal do Cliente</span>
       </div>
     </div>
@@ -109,9 +109,11 @@ const Sidebar = () => (
     <div className="mx-5 mb-6 p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
       <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">Investimento Total</span>
       <span className="text-[36px] font-bold tracking-tighter leading-none block">
-        R$ {AMOUNT.toLocaleString("pt-BR")}
+        R$ {amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
       </span>
-      <span className="text-[11px] text-white/25 mt-2 block font-mono">Pagamento único · sem juros</span>
+      <span className="text-[11px] text-white/25 mt-2 block font-mono">
+        {projectData?.paymentTerms || "Pagamento sob consulta"}
+      </span>
     </div>
   </aside>
 );
@@ -179,7 +181,7 @@ const PanelCard = () => (
 export default function PaymentPage() {
   const navigate = useNavigate();
   const [method, setMethod] = useState<Method>("pix");
-  const [clientProjectId, setClientProjectId] = useState<string | null>(null);
+  const [projectData, setProjectData] = useState<any>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
 
@@ -194,7 +196,9 @@ export default function PaymentPage() {
       })
       .then((data) => {
         const project = data.projects?.[0];
-        if (project?.id) setClientProjectId(project.id);
+        if (project) {
+          setProjectData(project);
+        }
       })
       .catch(() => {
         localStorage.removeItem("clientToken");
@@ -202,9 +206,11 @@ export default function PaymentPage() {
       });
   }, []);
 
+  const amount = projectData ? (projectData.invoices?.find((i: any) => i.status === 'pending')?.amount || projectData.value) : 0;
+
   const handleConfirmPayment = async () => {
     setStatusMessage(null);
-    if (!clientProjectId) {
+    if (!projectData?.id) {
       setStatusMessage("Acesse o portal para vincular o pagamento ao seu projeto.");
       return;
     }
@@ -215,8 +221,8 @@ export default function PaymentPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          projectId: clientProjectId,
-          amount: AMOUNT,
+          projectId: projectData.id,
+          amount: amount,
           description: method === "pix" ? "Pagamento via PIX" : "Pagamento via cartão",
           type: "service",
         }),
@@ -237,7 +243,7 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
 
-      <Sidebar />
+      <Sidebar amount={amount} projectData={projectData} />
 
       {/* ══ MAIN ════════════════════════════════════════════════════════════ */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
@@ -340,7 +346,7 @@ export default function PaymentPage() {
                 ))}
                 <div className="flex items-center justify-between px-7 py-5 bg-white/[0.02]">
                   <span className="text-[11px] font-mono uppercase tracking-wider text-white/25">Investimento</span>
-                  <span className="text-[24px] font-bold tracking-tighter">R$ {AMOUNT.toLocaleString("pt-BR")}</span>
+                  <span className="text-[24px] font-bold tracking-tighter">R$ {amount.toLocaleString("pt-BR")}</span>
                 </div>
               </div>
             </div>
@@ -408,9 +414,9 @@ export default function PaymentPage() {
               <div className="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-1">Total a pagar</span>
-                  <span className="text-[32px] font-bold tracking-tighter leading-none">R$ {AMOUNT.toLocaleString("pt-BR")}</span>
+                  <span className="text-[32px] font-bold tracking-tighter leading-none">R$ {amount.toLocaleString("pt-BR")}</span>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg uppercase tracking-widest">Pagamento único</span>
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg uppercase tracking-widest">{projectData?.paymentTerms || "Pagamento único"}</span>
               </div>
 
               <AnimatePresence mode="wait">

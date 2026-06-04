@@ -7,7 +7,11 @@ import {
 } from "lucide-react";
 import adminHero from "../assets/admin-hero.png";
 import brutalistLogo from "../assets/brutalist-logo.png";
+import thomasAbout from "../assets/thomas-about.svg";
 import { RotatingText } from "../components/RotatingText";
+import { useSVGL } from "../hooks/useSVGL";
+import { DeviceMockup } from "../components/DeviceMockup";
+
 
 /* ─── DATA ─────────────────────────────────────────────── */
 const BENEFITS = [
@@ -142,6 +146,27 @@ function Benefits() {
   );
 }
 
+function About() {
+  return (
+    <section className="px-8 py-32 bg-[#060606]">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <motion.div initial={{ opacity:0, x:-20 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }} className="flex justify-center">
+          <img src={thomasAbout} alt="Thomas Eduardo" className="w-full h-auto max-w-sm opacity-90" />
+        </motion.div>
+        <motion.div initial={{ opacity:0, x:20 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}>
+          <h2 className="text-[clamp(32px,4vw,56px)] font-bold tracking-tighter leading-[1.1] mb-6">
+            Engenharia sob <br />
+            <span className="text-white/40">medida.</span>
+          </h2>
+          <p className="text-[16px] text-white/60 leading-relaxed max-w-lg font-light mb-8">
+            Desenvolvo soluções tecnológicas exclusivas para empresas que buscam escalar. Foco em arquitetura robusta, interfaces de alta performance e código sustentável a longo prazo.
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function Problem() {
   return (
     <section className="px-8 py-32">
@@ -205,6 +230,7 @@ function Services() {
 }
 
 function FeaturedCase() {
+  const { getIcon } = useSVGL();
   return (
     <section id="projetos" className="px-8 py-32">
       <div className="w-full max-w-7xl mx-auto">
@@ -216,26 +242,12 @@ function FeaturedCase() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Mockups */}
           <div className="lg:col-span-7 relative h-[500px]">
-            {/* Desktop */}
-            <div className="absolute top-0 left-0 w-4/5 h-[400px] border border-white/10 bg-[#111] shadow-2xl flex flex-col">
-              <div className="h-8 border-b border-white/10 flex items-center px-4 bg-black/50">
-                <div className="w-2.5 h-2.5 rounded-full bg-white/20 mr-1.5" />
-                <div className="w-2.5 h-2.5 rounded-full bg-white/20 mr-1.5" />
-                <div className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              </div>
-              <div className="flex-1 relative">
-                <img src={adminHero} className="w-full h-full object-cover opacity-60 grayscale" alt="Desktop Mockup" />
-              </div>
-            </div>
-            {/* Mobile */}
-            <div className="absolute bottom-0 right-0 w-[240px] h-[450px] border-4 border-[#222] bg-black shadow-2xl flex flex-col">
-              <div className="h-6 flex justify-center pt-2">
-                <div className="w-16 h-1.5 bg-[#222] rounded-full" />
-              </div>
-              <div className="flex-1 relative overflow-hidden bg-[#111] border-t border-white/10">
-                <img src={adminHero} className="w-full h-full object-cover opacity-50 grayscale" alt="Mobile Mockup" />
-              </div>
-            </div>
+            <DeviceMockup 
+              desktopImg={adminHero}
+              tabletImg={adminHero}
+              mobileImg={adminHero}
+              altText="Sleep House Mockup"
+            />
           </div>
 
           {/* Info */}
@@ -245,9 +257,15 @@ function FeaturedCase() {
               Sistema digital completo e arquitetura operacional projetada para unificar o estoque, gerenciar fluxo de vendas e oferecer um front-end de alta performance para a rede de franquias. O resultado foi um showroom robusto com integração nativa ao ecossistema existente.
             </p>
             <div className="flex flex-wrap gap-3 mb-10">
-              {["React", "Node.js", "PostgreSQL", "Tailwind"].map(t => (
-                <span key={t} className="px-3 py-1 border border-white/[0.15] text-[12px] text-white/60 font-mono">{t}</span>
-              ))}
+              {["React", "Node.js", "PostgreSQL", "Tailwind CSS"].map(tech => {
+                const iconUrl = getIcon(tech);
+                return (
+                  <span key={tech} className="inline-flex items-center gap-1.5 px-3 py-1 border border-white/[0.15] text-[12px] text-white/60 font-mono">
+                    {iconUrl && <img src={iconUrl} alt={tech} className="w-3.5 h-3.5 opacity-80" loading="lazy" />}
+                    {tech}
+                  </span>
+                );
+              })}
             </div>
             <a href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-all">
               Ver Case Completo <ArrowRight className="w-4 h-4" />
@@ -392,6 +410,7 @@ export default function LandingPage() {
       <Nav />
       <Hero />
       <Benefits />
+      <About />
       <Problem />
       <Services />
       <FeaturedCase />

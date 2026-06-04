@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
+import { RotatingText } from "../components/RotatingText";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -70,7 +71,7 @@ const LinkBio = () => {
             <div className="absolute inset-0 bg-white/5 blur-2xl opacity-30" />
             <img 
               src="/avatar-linkbio.png" 
-              alt="Thomas Eduardo" 
+              alt="Logo"
               className="w-full h-full object-cover relative z-10 grayscale rounded-lg" 
             />
           </div>
@@ -79,7 +80,7 @@ const LinkBio = () => {
             Senior Fullstack Engineer
           </span>
           <h1 className="text-4xl font-medium tracking-tighter leading-none mb-4">
-            Thomas Eduardo
+            <RotatingText />
           </h1>
           <p className="text-white/40 text-sm font-light max-w-xs leading-relaxed">
             Estrategista de software focado em impacto operacional e escala de produtos digitais.
@@ -158,7 +159,7 @@ const LinkBio = () => {
           className="mt-24 pt-12 border-t border-white/5"
         >
           <p className="text-pg-muted text-[10px] uppercase tracking-[0.4em] font-mono">
-            Thomas Eduardo © 2026
+            <RotatingText /> © 2026
           </p>
         </motion.div>
       </div>

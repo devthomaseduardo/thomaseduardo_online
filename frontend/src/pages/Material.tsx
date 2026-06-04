@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import fundoBg from "../assets/fundo-filosofia.webp";
 
+import { RotatingText } from "../components/RotatingText";
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Status = "pending" | "received" | "reviewing";
 type NavId  = "dashboard" | "projetos" | "materiais" | "pagamentos" | "mensagens";
@@ -230,7 +232,7 @@ export default function MaterialPage() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <span className="block text-[13px] font-semibold tracking-tight">Thomas Eduardo</span>
+            <span className="block text-[13px] font-semibold tracking-tight"><RotatingText /></span>
             <span className="block text-[10px] font-mono text-white/25 uppercase tracking-wider">Portal do Cliente</span>
           </div>
         </div>

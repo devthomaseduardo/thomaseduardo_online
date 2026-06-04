@@ -4,7 +4,8 @@ import {
   ArrowRight, Lock, ChevronDown, Copy, Check,
   FileText, CreditCard, BarChart3, Globe, Upload,
   GitBranch, Shield, Zap, Package, Layers, BarChart2,
-  Search, Server, Tag, CheckCircle2, QrCode, User, Eye, EyeOff
+  Search, Server, Tag, CheckCircle2, QrCode, User, Eye, EyeOff,
+  Settings as SettingsIcon, ChevronRight
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { RotatingText } from "../components/RotatingText";
@@ -54,6 +55,7 @@ export default function Portal() {
   const [showPass, setShowPass] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const copyPix = () => {
     navigator.clipboard.writeText(PIX_KEY);
@@ -333,13 +335,30 @@ export default function Portal() {
             </div>
           </div>
         </section>
+
+        {activeTab === "configuracoes" && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 pb-32">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold tracking-tight mb-2">Configurações</h2>
+              <p className="text-sm text-white/40 max-w-xl">Gerencie as preferências da sua conta e configurações do sistema.</p>
+            </div>
+            <div className="flex flex-col gap-2 max-w-xs">
+              {["Perfil", "Segurança", "Notificações", "Aparência", "Faturamento", "API Keys"].map((item) => (
+                <button key={item} className="w-full flex items-center justify-between p-4 bg-[#0a0a0a] border border-white/5 rounded-xl hover:border-white/10 hover:bg-white/[0.02] transition-colors text-left group">
+                  <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">{item}</span>
+                  <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </main>
 
       {/* FOOTER */}
       <footer className="border-t border-white/[0.05] px-8 py-12">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
-            <p className="font-bold text-sm mb-1">Thomas Eduardo</p>
+            <p className="font-bold text-sm mb-1"><RotatingText /></p>
             <p className="text-white/30 text-xs">Desenvolvedor Frontend & Full Stack</p>
           </div>
           <div className="flex items-center gap-6 text-xs text-white/30">

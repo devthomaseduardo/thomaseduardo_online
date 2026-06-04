@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import paymentBg from "../assets/payment-hero.webp";
 import { RotatingText } from "../components/RotatingText";
+import { useSVGL } from "../hooks/useSVGL";
+
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
 const NAV = [
@@ -136,6 +138,31 @@ const Sidebar = ({ active }: { active: string }) => (
 export default function PropostaPage() {
   const navigate = useNavigate();
   const [activeSection] = useState("01");
+  const [projectData, setProjectData] = useState<any>(null);
+  const { getIcon } = useSVGL();
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("clientToken");
+    if (!token) return;
+
+    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        if (!res.ok) throw new Error("Falha ao carregar cliente");
+        return res.json();
+      })
+      .then((data) => {
+        const project = data.projects?.[0];
+        if (project) {
+          setProjectData(project);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem("clientToken");
+        localStorage.removeItem("clientId");
+      });
+  }, []);
+
+  const amount = projectData ? (projectData.invoices?.find((i: any) => i.status === 'pending')?.amount || projectData.value) : 0;
 
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -245,12 +272,18 @@ export default function PropostaPage() {
                 className="p-6 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
                 <span className={`text-[10px] font-mono uppercase tracking-[0.2em] ${a.color} block mb-4`}>{a.layer}</span>
                 <div className="space-y-2">
-                  {a.items.map((item, j) => (
+                  {a.items.map((item, j) => {
+                    const iconUrl = getIcon(item);
+                    return (
                     <div key={j} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                      {iconUrl ? (
+                        <img src={iconUrl} alt={item} className="w-3.5 h-3.5 opacity-70" loading="lazy" />
+                      ) : (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                      )}
                       <span className="text-[13px] text-white/70 font-mono">{item}</span>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </motion.div>
             ))}
@@ -261,9 +294,11 @@ export default function PropostaPage() {
         <Section id="s05" num="05" tag="Investimento" headline="Investimento do Projeto.">
           <div className="max-w-lg border border-white/[0.1] bg-[#0a0a0a] rounded-2xl overflow-hidden">
             <div className="px-8 py-8 border-b border-white/[0.06]">
-              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">Pagamento único</span>
-              <span className="text-[56px] font-bold tracking-tighter leading-none block">R$ 4.900</span>
-              <span className="text-white/25 font-mono text-sm mt-1 block">,00</span>
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">
+                {projectData?.paymentTerms || "Pagamento único"}
+              </span>
+              <span className="text-[56px] font-bold tracking-tighter leading-none block">R$ {amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+
             </div>
             <div className="divide-y divide-white/[0.04]">
               {[

@@ -1,13 +1,13 @@
-
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Loader2, ShieldCheck, ArrowRight, MessageCircle } from "lucide-react";
+import { RotatingText } from "../components/RotatingText";
 
 const RedirectPage = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState("checking"); // checking, ready, redirecting
-  const target = searchParams.get("to") || "https://wa.me/5511977070209?text=Olá Thomas, vi seu portfólio e gostaria de solicitar um orçamento.";
+  const target = searchParams.get("to") || "https://wa.me/5511977070209?text=Olá <RotatingText />, vi seu portfólio e gostaria de solicitar um orçamento.";
   const isWhatsApp = target.includes("wa.me") || target.includes("whatsapp.com");
 
   useEffect(() => {
@@ -71,7 +71,7 @@ const RedirectPage = () => {
                 {isWhatsApp ? "Iniciando Conversa" : "Ambiente Seguro"}
               </h1>
               <p className="text-gray-400 font-medium italic mb-8">
-                {isWhatsApp ? "Preparando chat com Thomas Eduardo..." : "Você será redirecionado em instantes."}
+                {isWhatsApp ? "Preparando chat com " : "Você será redirecionado em instantes."}{isWhatsApp && <RotatingText />}
               </p>
               
               <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
@@ -107,7 +107,7 @@ const RedirectPage = () => {
         >
           <div className="flex items-center justify-center gap-2 text-gray-600 font-mono text-[9px] uppercase tracking-widest">
             <span>Powering By</span>
-            <span className="text-white font-black italic">Thomas Eduardo</span>
+            <span className="text-white font-black italic"><RotatingText /></span>
           </div>
         </motion.div>
       </div>

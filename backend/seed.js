@@ -116,6 +116,7 @@ async function main() {
           phase: proj.status,
           financial: proj.status === 'Finalizado' ? 'Pago (100%)' : 'Pendente',
           domainHostingValue: proj.domainHostingValue,
+          paymentTerms: proj.status === 'Aguardando Análise' ? 'Pagamento sob consulta' : 'Pagamento único',
           clientId: client.id
         }
       });

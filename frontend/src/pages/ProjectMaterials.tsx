@@ -7,6 +7,7 @@ import {
   MoreVertical, File as FileIcon, Image as ImageIcon,
   Video, FileCode, Check, X, Shield, Lock, Eye
 } from "lucide-react";
+import { RotatingText } from "../components/RotatingText";
 
 // --- TYPES ---
 type Role = "ADMIN" | "CLIENT";
@@ -177,7 +178,7 @@ export default function ProjectMaterials() {
             <img src="/avatar.webp" alt="Thomas Eduardo" className="w-full h-full object-cover" />
           </div>
           <div>
-            <h2 className="text-[13px] font-semibold text-white tracking-tight">Thomas Eduardo</h2>
+            <h2 className="text-[13px] font-semibold text-white tracking-tight"><RotatingText /></h2>
             <p className="text-[11px] text-white/50 font-mono">Software Engineer</p>
           </div>
         </div>

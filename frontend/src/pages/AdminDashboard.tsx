@@ -40,11 +40,12 @@ const FEED = [
 ];
 
 const PROJECTS = [
-  { name:"Sleep House Campinas", stage:"Development", progress:72, status:"Active",   color:"bg-emerald-400", rev:"R$4.9k", due:"Jun 20" },
-  { name:"Homma Design System",  stage:"Review",      progress:91, status:"Review",   color:"bg-amber-400",   rev:"R$7.2k", due:"Jun 10" },
-  { name:"Portal Nexio",         stage:"Dev",         progress:38, status:"Dev",      color:"bg-sky-400",     rev:"R$12k",  due:"Jul 15" },
-  { name:"Pixel Labs Platform",  stage:"Planning",    progress:15, status:"Planning", color:"bg-violet-400",  rev:"R$9.5k", due:"Aug 1"  },
+  { name:"Sleep House Campinas", stage:"Development", progress:72, status:"Active",   color:"bg-emerald-400", rev:"R$4.9k", due:"Jun 20", techs: ["React", "TypeScript", "Vite"] },
+  { name:"Homma Design System",  stage:"Review",      progress:91, status:"Review",   color:"bg-amber-400",   rev:"R$7.2k", due:"Jun 10", techs: ["Figma", "React", "Tailwind CSS"] },
+  { name:"Portal Nexio",         stage:"Dev",         progress:38, status:"Dev",      color:"bg-sky-400",     rev:"R$12k",  due:"Jul 15", techs: ["Next.js", "Node.js", "PostgreSQL"] },
+  { name:"Pixel Labs Platform",  stage:"Planning",    progress:15, status:"Planning", color:"bg-violet-400",  rev:"R$9.5k", due:"Aug 1",  techs: ["Vue", "Docker", "AWS"] },
 ];
+
 
 const DEADLINES = [
   { project:"Homma Design System",  due:"Jun 10", days:6,  urgent:true  },
@@ -56,9 +57,11 @@ const MONTHS = ["J","F","M","A","M","J"];
 const BARS   = [38, 52, 47, 68, 72, 90];
 
 import { RotatingText } from "../components/RotatingText";
+import { useSVGL } from "../hooks/useSVGL";
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("overview");
+  const { getIcon } = useSVGL();
 
   return (
     <div className="h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
@@ -211,6 +214,16 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-2 mb-1.5">
                           <span className="text-[13px] font-semibold truncate">{p.name}</span>
                           <span className="text-[9px] font-mono text-white/30 shrink-0">{p.stage}</span>
+                          <div className="flex items-center gap-1.5 ml-2">
+                            {p.techs.map(tech => {
+                              const iconUrl = getIcon(tech);
+                              return iconUrl ? (
+                                <img key={tech} src={iconUrl} alt={tech} title={tech} className="w-3.5 h-3.5 opacity-80 hover:opacity-100 transition-opacity" loading="lazy" />
+                              ) : (
+                                <span key={tech} className="text-[9px] font-mono text-white/30 bg-white/[0.05] px-1 rounded-sm">{tech}</span>
+                              );
+                            })}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-0.5 bg-white/[0.05] rounded-full overflow-hidden">

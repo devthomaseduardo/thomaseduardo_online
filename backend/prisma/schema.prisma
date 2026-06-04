@@ -62,6 +62,7 @@ model Project {
   internalNotes      String?
   repoUrl            String?
   productionUrl      String?
+  paymentTerms       String?
 
   clientId           String
   client             Client   @relation(fields: [clientId], references: [id])

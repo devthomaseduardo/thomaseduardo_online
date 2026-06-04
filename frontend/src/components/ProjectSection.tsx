@@ -4,35 +4,12 @@ import { ArrowRight, ExternalLink } from 'lucide-react';
 import { useLang } from '../contexts/LangContext';
 import { FADE_UP, SMOOTH_TRANSITION } from '../constants/animations';
 import projectsData from '../data/projects.json';
+import { useSVGL } from '../hooks/useSVGL';
+import { DeviceMockup } from './DeviceMockup';
 
 export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const phoneRef = React.useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = React.useState(0);
-  const [phoneWidth, setPhoneWidth] = React.useState(0);
+  const { getIcon } = useSVGL();
   const [showDetails, setShowDetails] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        setContainerWidth(entry.contentRect.width);
-      }
-    });
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  React.useEffect(() => {
-    if (!phoneRef.current) return;
-    const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        setPhoneWidth(entry.contentRect.width);
-      }
-    });
-    observer.observe(phoneRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   const isLiveLink = project.link && !project.link.includes('github.com');
 
@@ -50,7 +27,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               : (lang === "pt" ? "SITES & LANDING PAGES" : "SITES & LANDING PAGES")}
             
             {project.publishedAt && new Date(project.publishedAt).getTime() > new Date().getTime() - 30 * 24 * 60 * 60 * 1000 && (
-              <span className="bg-blue-500/10 text-blue-400 text-[9px] font-mono px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-widest">
+              <span className="bg-blue-500/10 text-blue-400 text-[9px] font-mono px-2 py-0.5 rounded uppercase tracking-widest">
                 {lang === "pt" ? "Novo" : "New"}
               </span>
             )}
@@ -119,35 +96,37 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
           </div>
           
           <div className="flex flex-wrap gap-2 mt-8">
-            {project.technologies.map((tech: string) => (
-              <span key={tech} className="px-3 py-1.5 rounded-md border border-white/10 bg-white/[0.02] text-[10px] font-mono text-white/60 uppercase tracking-widest backdrop-blur-md">
-                {tech}
-              </span>
-            ))}
+            {project.technologies.map((tech: string) => {
+              const iconUrl = getIcon(tech);
+              return (
+                <span key={tech} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/[0.05] text-[10px] font-mono text-white/80 uppercase tracking-widest backdrop-blur-md">
+                  {iconUrl && (
+                    <img src={iconUrl} alt={tech} className="w-3.5 h-3.5 object-contain" loading="lazy" />
+                  )}
+                  {tech}
+                </span>
+              );
+            })}
           </div>
         </div>
 
-        {/* Action Links — desktop only */}
-        <div className="hidden md:flex items-center gap-6 mt-2 pt-8 w-full">
+        {/* Action Links */}
+        <div className="flex flex-wrap items-center gap-6 mt-4 pt-8 w-full">
           {project.link && (
             <a
               href={project.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:scale-105 active:scale-95 text-[10px] font-mono font-bold tracking-widest text-emerald-400 uppercase transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.1)] group"
+              className="relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 hover:bg-white text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-all duration-300 group"
             >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
               <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
-              <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Eyes.webp" alt="Eyes" width="25" height="25" className="group-hover:scale-110 transition-transform" />
             </a>
           )}
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className={`inline-flex items-center gap-2 text-xs font-mono transition-colors uppercase tracking-widest cursor-pointer ${
-              showDetails ? 'text-white' : 'text-white/40 hover:text-white'
+            className={`relative group inline-flex items-center gap-3 text-[10px] font-mono transition-all duration-300 uppercase tracking-widest cursor-pointer border-b pb-1 ${
+              showDetails ? 'border-white text-white' : 'border-white/20 text-white/50 hover:text-white hover:border-white/50'
             }`}
           >
             {lang === "pt" 
@@ -158,122 +137,17 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
         </div>
       </div>
 
-      {/* The Visuals (Right/Bottom) - Dual Mockups (Notebook & iPhone) with Live Scroll-on-Hover or Interactive Iframes */}
-      <div className="lg:col-span-8 w-full relative order-1 lg:order-2 mb-12 lg:mb-0 flex items-center justify-center">
-        <div className="relative w-full aspect-[16/11.5] sm:aspect-[16/11] lg:aspect-[16/10] flex items-center justify-start p-4 md:p-6 overflow-hidden select-none">
-          {/* Blinking Live Indicator */}
-          <div className="absolute top-2 left-2 md:top-4 md:left-4 z-30 flex items-center gap-2 px-3 py-1.5 bg-black/60 border border-white/10 backdrop-blur-md rounded-full shadow-lg">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest font-semibold">
-              {isLiveLink 
-                ? (lang === "pt" ? "INTERATIVO / AO VIVO" : "INTERACTIVE / LIVE")
-                : (lang === "pt" ? "PROJETO AO VIVO" : "LIVE OPERATION")}
-            </span>
-          </div>
-
-          {/* 1. NOTEBOOK (MacBook-style CSS Mockup) - occupies progressive safe widths */}
-          <div className="w-[82%] sm:w-[84%] lg:w-[86%] relative transition-all duration-500 group-hover:translate-x-[-1%] group-hover:scale-[1.01]">
-            {/* MacBook Top Bezel */}
-            <div className="w-full bg-neutral-900 border-[8px] md:border-[12px] border-neutral-950 rounded-t-2xl shadow-2xl relative overflow-hidden flex flex-col justify-start">
-              {/* Web Camera dot */}
-              <div className="absolute top-1 md:top-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-neutral-800 rounded-full z-30" />
-              
-              {/* Browser Window Header Chrome */}
-              <div className="w-full h-5 md:h-7 bg-neutral-900/90 border-b border-neutral-950/80 flex items-center justify-between px-3 md:px-4 select-none shrink-0 z-20 relative pt-1 md:pt-1.5">
-                {/* 3 macOS Traffic Light Dots */}
-                <div className="flex gap-1 md:gap-1.5 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF5F56]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FFBD2E]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#27C93F]" />
-                </div>
-                {/* URL Address Bar */}
-                <div className="w-[60%] h-3.5 md:h-4.5 bg-black/40 rounded border border-white/5 flex items-center justify-center px-2">
-                  <span className="text-[6px] md:text-[8px] font-mono text-white/30 truncate tracking-tight">
-                    {project.link ? (project.link as string).replace(/^https?:\/\//, '').replace(/\/$/, '') : 'localhost:3000'}
-                  </span>
-                </div>
-                <div className="w-8" />
-              </div>
-
-              {/* Screen Viewport */}
-              <div ref={containerRef} className="w-full aspect-[16/10] bg-neutral-950 overflow-hidden relative">
-                {isLiveLink ? (
-                  <iframe 
-                    src={project.link} 
-                    title={`${project.title} Live Desktop View`}
-                    className="absolute top-0 left-0 border-none bg-neutral-950 opacity-90 group-hover:opacity-100 transition-opacity duration-300 origin-top-left pointer-events-none lg:group-hover:pointer-events-auto"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      transform: 'scale(1)',
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                    }}
-                    loading="lazy"
-                    sandbox="allow-scripts allow-same-origin allow-forms"
-                  />
-                ) : (
-                  <img 
-                    src={project.image} 
-                    alt={`${project.title} Desktop View`}
-                    className="w-full h-auto absolute top-0 left-0 opacity-85 group-hover:opacity-100 transition-transform duration-[6000ms] ease-in-out group-hover:-translate-y-[60%]"
-                  />
-                )}
-                {/* Glass Reflections overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.03] to-white/[0.08] pointer-events-none z-10 animate-pulse duration-[3000ms]" />
-              </div>
-            </div>
-            {/* MacBook Keyboard Base */}
-            <div className="h-2 md:h-3 bg-neutral-800 rounded-b-xl relative w-[104%] left-[-2%] shadow-lg border-t border-neutral-700/30">
-              {/* Trackpad opening indentation */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 md:w-24 h-1 bg-neutral-900 rounded-b-md" />
-            </div>
-          </div>
-
-          {/* 2. IPHONE (iPhone-style CSS Mockup) - overlays MacBook safely inside progressive bounds */}
-          {project.image_mobile && (
-            <div className="absolute right-0 bottom-1 sm:right-1 sm:bottom-2 lg:right-2 lg:bottom-3 w-[24%] sm:w-[25%] lg:w-[26%] aspect-[9/19.5] z-20 transition-all duration-500 group-hover:translate-y-[-2%] group-hover:scale-[1.03]">
-              {/* Outer Frame with bezel */}
-              <div className="w-full h-full bg-neutral-950 border-[3px] sm:border-[5px] lg:border-[6px] border-neutral-900 rounded-[14px] sm:rounded-[22px] lg:rounded-[32px] shadow-2xl relative overflow-hidden flex flex-col items-center justify-center">
-                {/* Dynamic Island Notch */}
-                <div className="absolute top-1 sm:top-1.5 lg:top-2 left-1/2 -translate-x-1/2 w-[30%] h-1 sm:h-1.5 lg:h-2 bg-black rounded-full z-20" />
-                
-                {/* Viewport Screen */}
-                <div ref={phoneRef} className="w-full h-full overflow-hidden bg-neutral-900 relative rounded-[10px] sm:rounded-[18px] lg:rounded-[26px]">
-                  {isLiveLink ? (
-                    <iframe 
-                      src={project.link} 
-                      title={`${project.title} Live Mobile View`}
-                      className="absolute top-0 left-0 border-none bg-neutral-950 opacity-90 group-hover:opacity-100 transition-opacity duration-300 origin-top-left pointer-events-none lg:group-hover:pointer-events-auto"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        transform: 'scale(1)',
-                        maxWidth: '100%',
-                        maxHeight: '100%',
-                      }}
-                      loading="lazy"
-                      sandbox="allow-scripts allow-same-origin allow-forms"
-                    />
-                  ) : (
-                    <img 
-                      src={project.image_mobile} 
-                      alt={`${project.title} Mobile View`}
-                      className="w-full h-auto absolute top-0 left-0 opacity-85 group-hover:opacity-100 transition-transform duration-[6000ms] ease-in-out group-hover:-translate-y-[70%]"
-                    />
-                  )}
-                  {/* Glass Reflection overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/[0.02] to-white/[0.06] pointer-events-none z-10" />
-                  
-                  {/* iOS Home Indicator Bar */}
-                  <div className="absolute bottom-1 md:bottom-1.5 left-1/2 -translate-x-1/2 w-1/3 h-0.5 md:h-1 bg-white/40 rounded-full z-20" />
-                </div>
-              </div>
-            </div>
-          )}
+      {/* The Visuals (Right/Bottom) */}
+      <div className="lg:col-span-8 w-full relative order-1 lg:order-2 mb-12 lg:mb-0 flex flex-col items-center justify-center mt-8">
+        
+        <div className="relative w-full flex flex-col md:block items-center justify-center select-none mt-4 md:mt-10 lg:mt-6">
+          <DeviceMockup 
+            desktopImg={project.image}
+            tabletImg={project.image}
+            mobileImg={project.image_mobile || project.image}
+            altText={project.title}
+            iframeUrl={isLiveLink ? project.link : undefined}
+          />
         </div>
       </div>
     </motion.div>
@@ -317,17 +191,22 @@ export const ProjectSection = () => {
             <span className="text-white/40">{t.projects.h2b}</span>
           </h2>
         </div>
-        <div className="hidden md:block pb-2">
+        <div className="pb-2">
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
+            className="relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-500 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
             </svg>
-                    <span>Discutir Projeto</span>
+            <span>Discutir Projeto</span>
+            
+            {/* Tooltip */}
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/90 border border-white/20 rounded-md text-[9px] font-mono text-white/90 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 shadow-xl hidden md:block">
+              {lang === 'pt' ? 'Iniciar conversa no WhatsApp' : 'Start conversation on WhatsApp'}
+            </div>
           </a>
         </div>
       </motion.div>
@@ -349,12 +228,17 @@ export const ProjectSection = () => {
                 <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/[0.02] backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)]">
                   <button
                     onClick={() => setActiveIndex(prev => prev === 0 ? featuredProjects.length - 1 : prev - 1)}
-                    className="w-12 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
+                    className="relative group w-12 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
                     aria-label="Previous Project"
                   >
                     <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
+                    
+                    {/* Tooltip */}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black border border-white/10 rounded-md text-[9px] font-mono text-white/80 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 shadow-lg hidden md:block">
+                      {lang === 'pt' ? 'Projeto Anterior' : 'Previous Project'}
+                    </div>
                   </button>
                   
                   <div className="flex items-center justify-center px-6 font-mono text-[11px] tracking-[0.2em] text-white/30 h-6 select-none">
@@ -365,34 +249,49 @@ export const ProjectSection = () => {
 
                   <button
                     onClick={() => setActiveIndex(prev => prev === featuredProjects.length - 1 ? 0 : prev + 1)}
-                    className="w-12 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
+                    className="relative group w-12 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
                     aria-label="Next Project"
                   >
                     <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
+                    
+                    {/* Tooltip */}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black border border-white/10 rounded-md text-[9px] font-mono text-white/80 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 shadow-lg hidden md:block">
+                      {lang === 'pt' ? 'Próximo Projeto' : 'Next Project'}
+                    </div>
                   </button>
                 </div>
 
-                {/* CTAs — desktop only */}
-                <div className="hidden md:flex flex-row items-center gap-4">
+                {/* CTAs */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                   <a
                     href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto.")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
+                    className="relative inline-flex justify-center w-full sm:w-auto items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-500 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
                     </svg>
-                            <span>Discutir Projeto</span>
+                    <span>Discutir Projeto</span>
+                    
+                    {/* Tooltip */}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/90 border border-white/20 rounded-md text-[9px] font-mono text-white/90 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 shadow-xl hidden md:block">
+                      {lang === 'pt' ? 'Iniciar conversa no WhatsApp' : 'Start conversation on WhatsApp'}
+                    </div>
                   </a>
                   <a
                     href="/cases"
-                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.08] hover:border-white/20 hover:scale-105 active:scale-95 text-[10px] sm:text-xs font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-[0_0_30px_rgba(16,185,129,0.05)] group"
+                    className="relative inline-flex justify-center w-full sm:w-auto items-center gap-3 px-8 py-4 rounded-full bg-white/5 hover:bg-white hover:scale-105 active:scale-95 text-[10px] sm:text-xs font-mono font-bold tracking-widest text-white hover:text-black uppercase transition-all duration-300 shadow-xl group"
                   >
                     <span>{lang === 'pt' ? 'Explorar Todos os Cases' : 'Explore All Cases'}</span>
                     <ArrowRight className="w-4 h-4 text-emerald-400 transition-transform duration-300 group-hover:translate-x-1" />
+                    
+                    {/* Tooltip */}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/90 border border-emerald-500/20 rounded-md text-[9px] font-mono text-emerald-400/90 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 scale-95 group-hover:scale-100 shadow-xl hidden md:block">
+                      {lang === 'pt' ? 'Ver portfólio completo' : 'View complete portfolio'}
+                    </div>
                   </a>
                 </div>
               </div>
