@@ -220,13 +220,19 @@ export default function ClientDashboard() {
   const [clientData, setClient] = useState<any>(null);
   const [loading, setLoading]   = useState(true);
 
+  const handleLogout = () => {
+    localStorage.removeItem("clientToken");
+    localStorage.removeItem("clientId");
+    navigate("/portal");
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("clientToken");
     if (!token) { navigate("/portal"); return; }
     fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => { setClient(d); setLoading(false); })
-      .catch(() => { localStorage.removeItem("clientToken"); navigate("/portal"); });
+      .catch(() => { localStorage.removeItem("clientToken"); localStorage.removeItem("clientId"); navigate("/portal"); });
   }, [navigate]);
 
   if (loading) return (

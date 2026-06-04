@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare,
   Upload, Check, Clock, Eye, Shield, ArrowRight, ArrowLeft,
@@ -197,6 +198,7 @@ const UploadCard = ({
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function MaterialPage() {
+  const navigate = useNavigate();
   const [activeNav] = useState<NavId>("materiais");
   const [statuses, setStatuses] = useState<Record<string, Status>>({
     briefing: "received",
@@ -432,10 +434,16 @@ export default function MaterialPage() {
 
         {/* ── BOTTOM ACTIONS ────────────────────────────────────────────── */}
         <div className="px-10 pb-12 flex items-center justify-between">
-          <button className="flex items-center gap-2 text-[12px] font-mono uppercase tracking-widest text-white/30 hover:text-white transition-colors">
+          <button
+            onClick={() => navigate("/portal/dashboard")}
+            className="flex items-center gap-2 text-[12px] font-mono uppercase tracking-widest text-white/30 hover:text-white transition-colors"
+          >
             <ArrowLeft className="w-4 h-4" />Voltar ao Dashboard
           </button>
-          <button className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.18em] px-7 py-3.5 rounded-xl transition-all duration-200 group">
+          <button
+            onClick={() => navigate("/payment")}
+            className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.18em] px-7 py-3.5 rounded-xl transition-all duration-200 group"
+          >
             Continuar para Pagamento
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>

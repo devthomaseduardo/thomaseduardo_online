@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   ArrowRight, ArrowLeft, Check, Shield, Zap, TrendingUp,
@@ -132,6 +133,7 @@ const Sidebar = ({ active }: { active: string }) => (
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function PropostaPage() {
+  const navigate = useNavigate();
   const [activeSection] = useState("01");
 
   React.useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -332,7 +334,10 @@ export default function PropostaPage() {
 
         {/* Bottom actions */}
         <div className="px-10 pb-12 flex items-center justify-between pt-8">
-          <button className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
+          <button
+            onClick={() => navigate("/material")}
+            className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors"
+          >
             <ArrowLeft className="w-4 h-4" />Voltar
           </button>
           <a href="/material" className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">

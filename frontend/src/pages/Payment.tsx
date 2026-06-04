@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   Shield, Check, ArrowRight, ArrowLeft, QrCode, Copy,
@@ -176,9 +177,62 @@ const PanelCard = () => (
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function PaymentPage() {
+  const navigate = useNavigate();
   const [method, setMethod] = useState<Method>("pix");
+  const [clientProjectId, setClientProjectId] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
 
-  React.useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("clientToken");
+    if (!token) return;
+
+    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => {
+        if (!res.ok) throw new Error("Falha ao carregar cliente");
+        return res.json();
+      })
+      .then((data) => {
+        const project = data.projects?.[0];
+        if (project?.id) setClientProjectId(project.id);
+      })
+      .catch(() => {
+        localStorage.removeItem("clientToken");
+        localStorage.removeItem("clientId");
+      });
+  }, []);
+
+  const handleConfirmPayment = async () => {
+    setStatusMessage(null);
+    if (!clientProjectId) {
+      setStatusMessage("Acesse o portal para vincular o pagamento ao seu projeto.");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const response = await fetch("/api/payments/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: clientProjectId,
+          amount: AMOUNT,
+          description: method === "pix" ? "Pagamento via PIX" : "Pagamento via cartão",
+          type: "service",
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Falha ao registrar pagamento.");
+      setStatusMessage(`Pagamento registrado com sucesso. Invoice ID: ${data.invoiceId}`);
+    } catch (error: any) {
+      setStatusMessage(error?.message || "Erro inesperado ao processar pagamento.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
@@ -366,12 +420,19 @@ export default function PaymentPage() {
 
               {/* CTA */}
               <div className="px-6 pb-6 pt-2">
-                <button className="w-full flex items-center justify-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.2em] py-4 rounded-xl transition-all duration-200 group mt-4">
-                  {method === "pix" ? "Já realizei o pagamento" : "Pagar com Cartão"}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              </div>
+                <button
+                onClick={handleConfirmPayment}
+                disabled={processing}
+                className="w-full flex items-center justify-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 text-black font-bold text-[11px] uppercase tracking-[0.2em] py-4 rounded-xl transition-all duration-200 group mt-4"
+              >
+                {processing ? "Processando..." : method === "pix" ? "Já realizei o pagamento" : "Pagar com Cartão"}
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+              {statusMessage && (
+                <p className="mt-4 text-[13px] text-white/60">{statusMessage}</p>
+              )}
             </div>
+          </div>
 
             {/* Trust banner */}
             <div className="flex items-center gap-4 px-5 py-4 border border-white/[0.06] bg-[#0a0a0a] rounded-xl">
@@ -386,11 +447,18 @@ export default function PaymentPage() {
 
         {/* ── BOTTOM ACTIONS ────────────────────────────────────────────── */}
         <div className="px-10 pb-12 flex items-center justify-between border-t border-white/[0.05] pt-8 mt-2">
-          <button className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors">
+          <button
+            onClick={() => navigate("/material")}
+            className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors"
+          >
             <ArrowLeft className="w-4 h-4" />Voltar para Materiais
           </button>
-          <button className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] text-black font-bold text-[11px] uppercase tracking-[0.2em] px-7 py-3.5 rounded-xl transition-all duration-200 group">
-            Confirmar Pagamento
+          <button
+            onClick={handleConfirmPayment}
+            disabled={processing}
+            className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 text-black font-bold text-[11px] uppercase tracking-[0.2em] px-7 py-3.5 rounded-xl transition-all duration-200 group"
+          >
+            {processing ? "Processando..." : "Confirmar Pagamento"}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
