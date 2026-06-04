@@ -11,6 +11,7 @@ import portalRouter from './routes/portal.ts';
 import paymentsRouter from './routes/payments.ts';
 import authRouter from './routes/auth.ts';
 import projectsRouter from './routes/projects.ts';
+import apiRouter from './routes/api.ts';
 
 // ─── Security bootstrap (must be first) ─────────────────────────────────────
 import './lib/env.js';  // validates and crashes if env is missing
@@ -134,6 +135,7 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Mount newly extracted routers (non-destructive mount alongside existing handlers)
 app.use('/api', authRouter);
+app.use('/api/v2', apiRouter);
 app.use('/api/projects', projectsRouter(upload));
 
 

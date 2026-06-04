@@ -1,14 +1,12 @@
 import React from 'react';
-import { Search, Filter, MoreHorizontal, MessageSquare, Star, Reply } from 'lucide-react';
-
-const mockMessages = [
-  { id: '1', sender: 'Carlos Mendes', subject: 'Dúvida sobre a proposta T3RN-004', snippet: 'Olá Thomas, lendo a proposta me surgiu uma dúvida sobre o prazo...', status: 'Unread', time: '10:45 AM', isStarred: true },
-  { id: '2', sender: 'Ana Silva', subject: 'Revisão do Layout aprovada', snippet: 'Podemos prosseguir com o desenvolvimento da interface...', status: 'Read', time: 'Ontem', isStarred: false },
-  { id: '3', sender: 'Sistema de Deploy', subject: 'Deploy falhou: Indústria BR', snippet: 'Ocorreu um erro ao rodar as migrations de banco de dados...', status: 'Unread', time: '15 Mai', isStarred: true },
-  { id: '4', sender: 'LogisTech Suporte', subject: 'Acesso liberado aos servidores', snippet: 'Segue em anexo as credenciais temporárias para o ambiente de...', status: 'Read', time: '12 Mai', isStarred: false },
-];
+import { Search, MoreHorizontal, MessageSquare, Star, Reply } from 'lucide-react';
+import { useAdminFetch } from '../../components/admin/useAdminFetch';
 
 export function Messages() {
+  const { data: messages, loading, error } = useAdminFetch<any[]>('/messages');
+  const rows = Array.isArray(messages) ? messages : [];
+  const firstMessage = rows[0] || null;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -19,8 +17,6 @@ export function Messages() {
       </div>
 
       <div className="bg-[#0B0B0B] border border-[#222] rounded-lg overflow-hidden flex flex-col md:flex-row h-[70vh]">
-        
-        {/* Sidebar Mensagens */}
         <div className="w-full md:w-1/3 border-r border-[#222] flex flex-col">
           <div className="p-4 border-b border-[#222]">
             <div className="relative">
@@ -28,29 +24,42 @@ export function Messages() {
               <input type="text" placeholder="Buscar mensagens..." className="w-full bg-[#111] border border-[#222] rounded-md py-2 pl-9 pr-4 text-sm text-zinc-300 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none" />
             </div>
           </div>
+
+          {loading && <div className="p-4 text-sm text-zinc-400">Carregando mensagens...</div>}
+          {error && <div className="p-4 text-sm text-red-500">Erro ao carregar mensagens: {error}</div>}
+
           <div className="overflow-y-auto flex-1">
-            {mockMessages.map((m, i) => (
-              <div key={m.id} className={`p-4 border-b border-[#222] cursor-pointer hover:bg-[#111] transition-colors ${i === 0 ? 'bg-[#111]' : ''}`}>
-                <div className="flex justify-between items-start mb-1">
-                  <span className={`text-sm font-medium ${m.status === 'Unread' ? 'text-white' : 'text-zinc-400'}`}>{m.sender}</span>
-                  <span className="text-xs text-zinc-500">{m.time}</span>
+            {rows.map((message, i) => {
+              const time = message.createdAt ? new Date(message.createdAt).toLocaleString('pt-BR') : '-';
+              const subject = message.subject || message.content?.slice(0, 40) || 'Sem assunto';
+              const snippet = message.content?.slice(0, 80) || '-';
+              const isUnread = !message.read;
+
+              return (
+                <div key={message.id} className={`p-4 border-b border-[#222] cursor-pointer hover:bg-[#111] transition-colors ${i === 0 ? 'bg-[#111]' : ''}`}>
+                  <div className="flex justify-between items-start mb-1">
+                    <span className={`text-sm font-medium ${isUnread ? 'text-white' : 'text-zinc-400'}`}>{message.senderName || message.client?.name || message.project?.name || 'Sistema'}</span>
+                    <span className="text-xs text-zinc-500">{time}</span>
+                  </div>
+                  <h4 className={`text-xs mb-1 ${isUnread ? 'text-white font-semibold' : 'text-zinc-400'}`}>{subject}</h4>
+                  <p className="text-xs text-zinc-500 truncate">{snippet}</p>
                 </div>
-                <h4 className={`text-xs mb-1 ${m.status === 'Unread' ? 'text-white font-semibold' : 'text-zinc-400'}`}>{m.subject}</h4>
-                <p className="text-xs text-zinc-500 truncate">{m.snippet}</p>
-              </div>
-            ))}
+              );
+            })}
+            {!loading && rows.length === 0 && (
+              <div className="p-4 text-sm text-zinc-500">Nenhuma mensagem disponível.</div>
+            )}
           </div>
         </div>
 
-        {/* View Mensagem */}
         <div className="hidden md:flex flex-1 flex-col bg-[#050505]">
           <div className="p-6 border-b border-[#222] flex justify-between items-start">
             <div>
-              <h2 className="text-xl font-bold text-white mb-2">{mockMessages[0].subject}</h2>
+              <h2 className="text-xl font-bold text-white mb-2">{firstMessage?.subject || 'Selecionar mensagem'}</h2>
               <div className="flex items-center gap-3 text-sm text-zinc-400">
-                <span className="text-white font-medium">{mockMessages[0].sender}</span>
+                <span className="text-white font-medium">{firstMessage?.senderName || firstMessage?.client?.name || 'Sistema'}</span>
                 <span>•</span>
-                <span>{mockMessages[0].time}</span>
+                <span>{firstMessage?.createdAt ? new Date(firstMessage.createdAt).toLocaleString('pt-BR') : '-'}</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -58,19 +67,16 @@ export function Messages() {
               <button className="text-zinc-500 hover:text-white transition-colors"><MoreHorizontal className="w-5 h-5" /></button>
             </div>
           </div>
-          
+
           <div className="p-6 flex-1 text-sm text-zinc-300 leading-relaxed space-y-4">
-            <p>Olá Thomas,</p>
-            <p>Lendo a proposta me surgiu uma dúvida sobre o prazo de entrega da fase 2. Se anteciparmos a aprovação do design, conseguimos adiantar o deploy em 1 semana?</p>
-            <p>Aguardo retorno para seguirmos com a assinatura.</p>
-            <p>Abraço,<br/>Carlos Mendes</p>
+            <p>{firstMessage?.content || 'Selecione uma mensagem à esquerda para ver o conteúdo detalhado.'}</p>
           </div>
 
           <div className="p-6 border-t border-[#222]">
             <div className="bg-[#111] border border-[#222] rounded-lg p-4">
-              <textarea 
-                className="w-full bg-transparent text-sm text-zinc-300 placeholder:text-zinc-600 resize-none focus:outline-none mb-4" 
-                rows={3} 
+              <textarea
+                className="w-full bg-transparent text-sm text-zinc-300 placeholder:text-zinc-600 resize-none focus:outline-none mb-4"
+                rows={3}
                 placeholder="Escreva sua resposta..."
               ></textarea>
               <div className="flex justify-between items-center">
@@ -82,7 +88,6 @@ export function Messages() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

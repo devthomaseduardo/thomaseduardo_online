@@ -1,14 +1,11 @@
 import React from 'react';
 import { Plus, Search, Filter, MoreHorizontal } from 'lucide-react';
-
-const mockProjects = [
-  { id: '1', name: 'ERP Interno', client: 'Acme Corp', status: 'Active', progress: 75, deadline: '2026-07-15', value: 25000 },
-  { id: '2', name: 'App de Logística', client: 'LogisTech', status: 'Active', progress: 30, deadline: '2026-08-30', value: 40000 },
-  { id: '3', name: 'Portal B2B', client: 'Indústria BR', status: 'Completed', progress: 100, deadline: '2026-05-20', value: 15000 },
-  { id: '4', name: 'E-commerce', client: 'Retail Plus', status: 'On Hold', progress: 45, deadline: '2026-09-10', value: 55000 },
-];
+import { useAdminFetch } from '../../components/admin/useAdminFetch';
 
 export function Projects() {
+  const { data: projects, loading, error } = useAdminFetch<any[]>('/projects');
+  const rows = Array.isArray(projects) ? projects : [];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -31,6 +28,10 @@ export function Projects() {
             <Filter className="w-4 h-4" /> Filtros
           </button>
         </div>
+
+        {loading && <div className="p-4 text-sm text-zinc-400">Carregando projetos...</div>}
+        {error && <div className="p-4 text-sm text-red-500">Erro ao carregar projetos: {error}</div>}
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -45,28 +46,40 @@ export function Projects() {
               </tr>
             </thead>
             <tbody className="text-sm">
-              {mockProjects.map(p => (
-                <tr key={p.id} className="border-b border-[#222] hover:bg-[#111] transition-colors">
-                  <td className="p-4 font-medium text-zinc-200">{p.name}</td>
-                  <td className="p-4 text-zinc-400">{p.client}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${p.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500' : p.status === 'Completed' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-full bg-zinc-800 rounded-full h-1.5 max-w-[80px]">
-                        <div className="bg-white h-1.5 rounded-full" style={{ width: `${p.progress}%` }}></div>
+              {rows.map((project) => {
+                const status = project.status || project.phase || 'Ativo';
+                const progress = project.progresso ?? project.progress ?? 0;
+                const deadline = project.dataEntregaPrevista
+                  ? new Date(project.dataEntregaPrevista).toLocaleDateString('pt-BR')
+                  : project.deadline || '-';
+                return (
+                  <tr key={project.id} className="border-b border-[#222] hover:bg-[#111] transition-colors">
+                    <td className="p-4 font-medium text-zinc-200">{project.name}</td>
+                    <td className="p-4 text-zinc-400">{project.client?.name ?? project.client}</td>
+                    <td className="p-4">
+                      <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${status === 'Active' || status === 'Ativo' ? 'bg-emerald-500/10 text-emerald-500' : status === 'Completed' || status === 'concluido' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-500'}`}>
+                        {status}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-full bg-zinc-800 rounded-full h-1.5 max-w-[80px]">
+                          <div className="bg-white h-1.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                        </div>
+                        <span className="text-xs text-zinc-500">{progress}%</span>
                       </div>
-                      <span className="text-xs text-zinc-500">{p.progress}%</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-zinc-400">{p.deadline}</td>
-                  <td className="p-4 text-zinc-200 text-right font-medium">R$ {(p.value / 1000).toFixed(1)}k</td>
-                  <td className="p-4 text-zinc-500 hover:text-white cursor-pointer"><MoreHorizontal className="w-5 h-5" /></td>
+                    </td>
+                    <td className="p-4 text-zinc-400">{deadline}</td>
+                    <td className="p-4 text-zinc-200 text-right font-medium">{project.value ? `R$ ${project.value.toLocaleString('pt-BR')}` : '-'}</td>
+                    <td className="p-4 text-zinc-500 hover:text-white cursor-pointer"><MoreHorizontal className="w-5 h-5" /></td>
+                  </tr>
+                );
+              })}
+              {!loading && rows.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="p-4 text-sm text-zinc-500 text-center">Nenhum projeto encontrado.</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

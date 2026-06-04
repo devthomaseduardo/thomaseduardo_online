@@ -65,8 +65,8 @@ export default function AdminDashboard() {
       <aside className="w-[220px] shrink-0 border-r border-white/[0.05] flex flex-col bg-[#060606]">
         {/* Logo */}
         <div className="h-16 flex items-center gap-3 px-5 border-b border-white/[0.05] shrink-0">
-          <div className="w-7 h-7 bg-white flex items-center justify-center rounded-sm shrink-0">
-            <span className="text-black text-[11px] font-black">TE</span>
+          <div className="w-7 h-7 flex items-center justify-center rounded-sm shrink-0">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <span className="block text-[12px] font-semibold leading-none">Thomas Eduardo</span>
@@ -107,7 +107,9 @@ export default function AdminDashboard() {
         {/* Profile */}
         <div className="p-3 border-t border-white/[0.05] shrink-0">
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/[0.03] cursor-pointer transition-all">
-            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold shrink-0">TE</div>
+            <div className="w-7 h-7 flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
+            </div>
             <div className="min-w-0 flex-1">
               <span className="block text-[11px] font-medium truncate">Thomas Eduardo</span>
               <span className="block text-[9px] text-white/25 font-mono">Admin</span>

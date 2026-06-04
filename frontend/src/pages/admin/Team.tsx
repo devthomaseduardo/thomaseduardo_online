@@ -1,14 +1,11 @@
 import React from 'react';
 import { Plus, Search, Filter, MoreHorizontal, Shield, Mail } from 'lucide-react';
-
-const mockTeam = [
-  { id: '1', name: 'Thomas Eduardo', role: 'Lead Developer', status: 'Active', email: 'thomas@t3rn.com', lastActive: 'Agora', isAdmin: true },
-  { id: '2', name: 'Sarah Lima', role: 'UI/UX Designer', status: 'Active', email: 'sarah@t3rn.com', lastActive: 'Há 5 min', isAdmin: false },
-  { id: '3', name: 'Marcos Silva', role: 'Backend Dev', status: 'Away', email: 'marcos@t3rn.com', lastActive: 'Há 2 horas', isAdmin: false },
-  { id: '4', name: 'Julia Costa', role: 'Project Manager', status: 'Offline', email: 'julia@t3rn.com', lastActive: 'Ontem', isAdmin: true },
-];
+import { useAdminFetch } from '../../components/admin/useAdminFetch';
 
 export function Team() {
+  const { data: team, loading, error } = useAdminFetch<any[]>('/team-members');
+  const rows = Array.isArray(team) ? team : [];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -31,6 +28,10 @@ export function Team() {
             <Filter className="w-4 h-4" /> Filtros
           </button>
         </div>
+
+        {loading && <div className="p-4 text-sm text-zinc-400">Carregando membros da equipe...</div>}
+        {error && <div className="p-4 text-sm text-red-500">Erro ao carregar equipe: {error}</div>}
+
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -39,39 +40,47 @@ export function Team() {
                 <th className="p-4 font-medium">Papel</th>
                 <th className="p-4 font-medium">Email</th>
                 <th className="p-4 font-medium">Status</th>
-                <th className="p-4 font-medium text-right">Último Acesso</th>
+                <th className="p-4 font-medium text-right">Ativo</th>
                 <th className="p-4 font-medium w-10"></th>
               </tr>
             </thead>
             <tbody className="text-sm">
-              {mockTeam.map(m => (
-                <tr key={m.id} className="border-b border-[#222] hover:bg-[#111] transition-colors">
-                  <td className="p-4 font-medium text-zinc-200 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#1A1A1A] flex items-center justify-center text-xs text-zinc-400 font-bold">
-                      {m.name.substring(0,2).toUpperCase()}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        {m.name}
-                        {m.isAdmin && <Shield className="w-3 h-3 text-amber-500" />}
+              {rows.map((member) => {
+                const status = member.active ? 'Active' : 'Inactive';
+                return (
+                  <tr key={member.id} className="border-b border-[#222] hover:bg-[#111] transition-colors">
+                    <td className="p-4 font-medium text-zinc-200 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#1A1A1A] flex items-center justify-center text-xs text-zinc-400 font-bold">
+                        {(member.name || '??').substring(0, 2).toUpperCase()}
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4 text-zinc-400">{m.role}</td>
-                  <td className="p-4 text-zinc-400 flex items-center gap-2">
-                    <Mail className="w-3 h-3" />
-                    {m.email}
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${m.status === 'Active' ? 'bg-emerald-500' : m.status === 'Away' ? 'bg-amber-500' : 'bg-zinc-600'}`}></div>
-                      <span className="text-xs text-zinc-400">{m.status}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-zinc-500 text-right text-xs">{m.lastActive}</td>
-                  <td className="p-4 text-zinc-500 hover:text-white cursor-pointer"><MoreHorizontal className="w-5 h-5" /></td>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          {member.name}
+                          {member.role === 'admin' && <Shield className="w-3 h-3 text-amber-500" />}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 text-zinc-400">{member.role ?? '-'}</td>
+                    <td className="p-4 text-zinc-400 flex items-center gap-2">
+                      <Mail className="w-3 h-3" />
+                      {member.email ?? '-'}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${status === 'Active' ? 'bg-emerald-500' : 'bg-zinc-600'}`}></div>
+                        <span className="text-xs text-zinc-400">{status}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-zinc-500 text-right text-xs">{member.active ? 'Sim' : 'Não'}</td>
+                    <td className="p-4 text-zinc-500 hover:text-white cursor-pointer"><MoreHorizontal className="w-5 h-5" /></td>
+                  </tr>
+                );
+              })}
+              {!loading && rows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-4 text-sm text-zinc-500 text-center">Nenhum membro encontrado.</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

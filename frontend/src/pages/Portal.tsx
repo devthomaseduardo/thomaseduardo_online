@@ -88,8 +88,8 @@ export default function Portal() {
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.05] bg-[#050505]/80 backdrop-blur-xl px-8 py-4 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
-            <div className="w-2 h-2 rounded-sm bg-black" />
+          <div className="w-8 h-8 flex items-center justify-center">
+            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-sm font-bold tracking-tight">Thomas Eduardo</span>
         </a>
@@ -138,9 +138,14 @@ export default function Portal() {
 
         {/* ── COMO FUNCIONA ── */}
         <section id="como-funciona" className="px-8 py-32 max-w-7xl mx-auto">
-          <div className="mb-16">
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/25 block mb-5">Como funciona</span>
-            <h2 className="text-5xl font-bold tracking-tight">Do briefing ao deploy.</h2>
+          <div className="mb-16 flex items-start justify-between">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/25 block mb-5">Como funciona</span>
+              <h2 className="text-5xl font-bold tracking-tight">Do briefing ao deploy.</h2>
+            </div>
+            <div className="hidden md:flex w-20 h-20 items-center justify-center opacity-60">
+              <img src="/logo.png" alt="T3RN Logo" className="w-full h-full object-contain" />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {steps.map((s, i) => (

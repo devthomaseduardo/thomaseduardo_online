@@ -444,6 +444,18 @@ router.get('/projects/:id/invoices', adminAuth, async (req, res) => {
   }
 });
 
+router.get('/invoices', adminAuth, async (req, res) => {
+  try {
+    const invoices = await prisma.invoice.findMany({
+      include: { project: { include: { client: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(invoices);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar invoices.' });
+  }
+});
+
 router.post('/projects/:id/invoices', adminAuth, async (req, res) => {
   try {
     const { description, amount, vencimento, metodoPagamento, pixCopiaCola, mercadoPagoUrl } = req.body;
@@ -516,6 +528,18 @@ router.get('/projects/:id/contracts', adminAuth, async (req, res) => {
   }
 });
 
+router.get('/contracts', adminAuth, async (req, res) => {
+  try {
+    const contracts = await (prisma as any).contract.findMany({
+      include: { project: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(contracts);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar contratos.' });
+  }
+});
+
 router.post('/projects/:id/contracts', adminAuth, async (req, res) => {
   try {
     const { titulo, status, versao, fileUrl, visivelCliente } = req.body;
@@ -575,6 +599,18 @@ router.get('/projects/:id/deploys', adminAuth, async (req, res) => {
   try {
     const deploys = await (prisma as any).deploy.findMany({
       where: { projectId: req.params.id },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(deploys);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar deploys.' });
+  }
+});
+
+router.get('/deploys', adminAuth, async (req, res) => {
+  try {
+    const deploys = await (prisma as any).deploy.findMany({
+      include: { project: true },
       orderBy: { createdAt: 'desc' }
     });
     res.json(deploys);
@@ -931,6 +967,18 @@ router.get('/projects/:id/messages', adminAuth, async (req, res) => {
     const messages = await prisma.message.findMany({
       where: { projectId: req.params.id },
       orderBy: { createdAt: 'asc' }
+    });
+    res.json(messages);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/messages', adminAuth, async (req, res) => {
+  try {
+    const messages = await prisma.message.findMany({
+      include: { project: true, client: true },
+      orderBy: { createdAt: 'desc' }
     });
     res.json(messages);
   } catch (err: any) {
