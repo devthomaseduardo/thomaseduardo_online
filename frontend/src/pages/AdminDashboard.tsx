@@ -55,6 +55,8 @@ const DEADLINES = [
 const MONTHS = ["J","F","M","A","M","J"];
 const BARS   = [38, 52, 47, 68, 72, 90];
 
+import { RotatingText } from "../components/RotatingText";
+
 export default function AdminDashboard() {
   const [active, setActive] = useState("overview");
 
@@ -69,7 +71,7 @@ export default function AdminDashboard() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <span className="block text-[12px] font-semibold leading-none">Thomas Eduardo</span>
+            <span className="block text-[12px] font-semibold leading-none"><RotatingText /></span>
             <span className="block text-[9px] font-mono text-white/20 uppercase tracking-wider mt-0.5">Dev de Software</span>
           </div>
         </div>
@@ -111,7 +113,7 @@ export default function AdminDashboard() {
               <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="block text-[11px] font-medium truncate">Thomas Eduardo</span>
+              <span className="block text-[11px] font-medium truncate"><RotatingText /></span>
               <span className="block text-[9px] text-white/25 font-mono">Admin</span>
             </div>
             <ChevronRight className="w-3 h-3 text-white/20" />

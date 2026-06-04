@@ -7,6 +7,7 @@ import {
   Search, Server, Tag, CheckCircle2, QrCode, User, Eye, EyeOff
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { RotatingText } from "../components/RotatingText";
 
 const steps = [
   { n: "01", title: "Briefing & Organização", desc: "Entendimento do projeto, objetivos, referências e estrutura inicial do escopo." },
@@ -91,7 +92,7 @@ export default function Portal() {
           <div className="w-8 h-8 flex items-center justify-center">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-sm font-bold tracking-tight">Thomas Eduardo</span>
+          <span className="text-sm font-bold tracking-tight"><RotatingText /></span>
         </a>
         <a href="#login" className="flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white transition-colors border border-white/10 rounded-full px-4 py-2 hover:border-white/30">
           <Lock className="w-3 h-3" /> Área do Cliente

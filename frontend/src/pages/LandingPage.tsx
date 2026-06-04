@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import adminHero from "../assets/admin-hero.png";
 import brutalistLogo from "../assets/brutalist-logo.png";
+import { RotatingText } from "../components/RotatingText";
 
 /* ─── DATA ─────────────────────────────────────────────── */
 const BENEFITS = [
@@ -376,7 +377,7 @@ function Footer() {
         </div>
         
         <span className="text-[12px] font-mono text-white/30">
-          © {new Date().getFullYear()} Thomas Eduardo. Todos os direitos reservados.
+          © {new Date().getFullYear()} <RotatingText />. Todos os direitos reservados.
         </span>
       </div>
     </footer>
@@ -384,6 +385,7 @@ function Footer() {
 }
 
 /* ─── PAGE ─────────────────────────────────────────────── */
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#060606] text-white font-sans overflow-x-hidden selection:bg-white/20 selection:text-white">

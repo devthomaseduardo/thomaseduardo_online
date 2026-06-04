@@ -13,6 +13,7 @@ import {
   UsersRound, 
   Settings 
 } from 'lucide-react';
+import { RotatingText } from '../../RotatingText';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
@@ -38,7 +39,7 @@ export function AdminSidebar() {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
-            <div className="font-semibold text-sm">Thomas Eduardo</div>
+            <div className="font-semibold text-sm"><RotatingText /></div>
             <div className="text-xs text-zinc-500">Centro de Operações</div>
           </div>
         </div>
@@ -89,7 +90,7 @@ export function AdminSidebar() {
             <img src="https://github.com/thomas-lnx.png" alt="Profile" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-200 truncate">Thomas Eduardo</p>
+            <p className="text-sm font-medium text-zinc-200 truncate"><RotatingText /></p>
             <p className="text-xs text-zinc-500 truncate">Software Engineer</p>
           </div>
         </div>

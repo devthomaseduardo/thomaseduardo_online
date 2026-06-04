@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
-import adminHero from "../assets/admin-hero.png";
+import heroWeb from "../assets/hero-web.webp";
 
 const Hero = () => {
   const { t, lang } = useLang();
@@ -12,7 +12,7 @@ const Hero = () => {
     <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-[#060606]">
       {/* Background Image Setup from LandingPage */}
       <div className="absolute inset-0 z-0">
-        <img src={adminHero} alt="" className="absolute right-0 top-0 w-1/2 h-full object-cover object-left opacity-30" />
+        <img src={heroWeb} alt="" className="absolute right-0 top-0 w-1/2 h-full object-cover object-left opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#060606] via-[#060606]/85 to-[#060606]/20" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#060606]" />
         {/* vertical light beam */}

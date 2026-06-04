@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useLocation } from "react-router-dom";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
+import { RotatingText } from "./RotatingText";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -54,7 +55,7 @@ const Navbar = () => {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <span style={{ fontSize: 15, fontWeight: 600, color: "#F5F5F7", letterSpacing: "-0.01em" }}>
-            Thomas Eduardo
+            <RotatingText />
           </span>
         </a>
 
