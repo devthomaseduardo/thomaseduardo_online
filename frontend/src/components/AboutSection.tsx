@@ -16,7 +16,7 @@ const AboutSection = () => {
 
   // Smooth parallax for desktop image
   const imageY = useTransform(scrollY, [0, 1000], [-50, 150]);
-  const mobileImageY = useTransform(scrollY, [0, 400], [-250, 0]);
+  const mobileImageY = useTransform(scrollY, [0, 300], [-250, 0]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -24,17 +24,17 @@ const AboutSection = () => {
   });
 
   // Animated balloons tied directly to scroll progress
-  const b1Opacity = useTransform(scrollYProgress, [0.2, 0.4], [0, 1]);
-  const b1Scale = useTransform(scrollYProgress, [0.2, 0.4], [0.5, 1]);
+  const b1Opacity = useTransform(scrollYProgress, [0.0, 0.2], [0, 1]);
+  const b1Scale = useTransform(scrollYProgress, [0.0, 0.2], [0.5, 1]);
   
-  const b2Opacity = useTransform(scrollYProgress, [0.4, 0.6], [0, 1]);
-  const b2Scale = useTransform(scrollYProgress, [0.4, 0.6], [0.5, 1]);
+  const b2Opacity = useTransform(scrollYProgress, [0.1, 0.3], [0, 1]);
+  const b2Scale = useTransform(scrollYProgress, [0.1, 0.3], [0.5, 1]);
   
-  const b3Opacity = useTransform(scrollYProgress, [0.6, 0.8], [0, 1]);
-  const b3Scale = useTransform(scrollYProgress, [0.6, 0.8], [0.5, 1]);
+  const b3Opacity = useTransform(scrollYProgress, [0.2, 0.4], [0, 1]);
+  const b3Scale = useTransform(scrollYProgress, [0.2, 0.4], [0.5, 1]);
   
-  const b4Opacity = useTransform(scrollYProgress, [0.8, 1.0], [0, 1]);
-  const b4Scale = useTransform(scrollYProgress, [0.8, 1.0], [0.5, 1]);
+  const b4Opacity = useTransform(scrollYProgress, [0.3, 0.5], [0, 1]);
+  const b4Scale = useTransform(scrollYProgress, [0.3, 0.5], [0.5, 1]);
 
   return (
     <section ref={sectionRef} id="sobre" className="relative section-padding px-6 md:px-16 lg:px-24 mx-auto flex items-center justify-center bg-(--pg-bg) text-white z-10">
