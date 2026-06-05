@@ -54,15 +54,15 @@ const Hero = () => {
             {...HERO_FADE_UP}
             className="mb-8"
           >
-            <div className="inline-flex items-center gap-3 px-2 py-2 pr-6 rounded-full bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300">
+            <div className="inline-flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-full bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 max-w-full overflow-hidden">
               <img 
                 src="/avatar.webp" 
                 alt="Thomas" 
-                className="w-8 h-8 rounded-full object-cover grayscale opacity-80"
+                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover grayscale opacity-80 shrink-0"
               />
-              <span className="flex items-center gap-2 text-[10px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.2em] uppercase">
+              <span className="flex items-center gap-1.5 sm:gap-2 text-[8px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase whitespace-nowrap truncate">
                 {greeting}
-                <AnimatedEmoji name="waving_hand" className="w-4 h-4 origin-bottom-right hover:animate-wave" />
+                <AnimatedEmoji name="waving_hand" className="w-3 h-3 sm:w-4 sm:h-4 origin-bottom-right hover:animate-wave shrink-0" />
               </span>
             </div>
           </motion.div>
@@ -88,14 +88,14 @@ const Hero = () => {
           <motion.div 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.25 }}
-            className="w-full max-w-[400px] mt-10 lg:hidden flex items-center justify-center relative order-2"
+            className="w-full max-w-[500px] mt-10 lg:hidden flex items-center justify-center relative order-2 scale-110"
           >
             <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full" />
             <motion.img 
               src={thomasHero} 
               alt="Thomas Eduardo" 
               className="w-full h-auto object-contain rounded-2xl relative z-10"
-              animate={{ scale: [1, 1.02, 1] }}
+              animate={{ y: [0, -15, 0], scale: [1.05, 1.12, 1.05] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             />
           </motion.div>
@@ -130,14 +130,14 @@ const Hero = () => {
           <motion.div 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.4 }}
-            className="w-full max-w-[800px] relative"
+            className="w-full max-w-[900px] relative scale-125 translate-x-4 lg:translate-x-8"
           >
             <div className="absolute inset-0 bg-white/5 blur-[100px] rounded-full" />
             <motion.img 
               src={thomasHero} 
               alt="Thomas Eduardo" 
               className="w-full h-auto object-contain relative z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.05)]"
-              animate={{ scale: [1, 1.03, 1] }}
+              animate={{ y: [0, -25, 0], scale: [1.05, 1.15, 1.05] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
           </motion.div>

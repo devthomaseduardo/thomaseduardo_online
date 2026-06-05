@@ -13,8 +13,8 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 const adminLoginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
+  windowMs: 1 * 60 * 1000,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
   handler: async (req, res) => {
