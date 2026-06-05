@@ -12,21 +12,39 @@ router.post('/onboarding', portalOnboardingHandler);
 
 router.post('/login', async (req: any, res: any) => {
   try {
-    const { cnpj, accessKey } = req.body;
-    if (!cnpj || !accessKey) {
-      return res.status(400).json({ error: 'cnpj e accessKey são obrigatórios.' });
+    const { cnpj, email, password, identifier } = req.body;
+    const loginId = identifier || cnpj || email;
+
+    if (!loginId || !password) {
+      return res.status(400).json({ error: 'Identificador (email/cnpj) e senha são obrigatórios.' });
     }
 
     const client = await prisma.client.findFirst({
       where: {
-        cnpj,
-        portalKey: accessKey,
+        OR: [
+          { cnpj: loginId },
+          { email: loginId }
+        ],
         portalActive: true
       }
     });
 
     if (!client) {
       return res.status(401).json({ error: 'Credenciais inválidas ou portal desativado.' });
+    }
+
+    const bcrypt = await import('bcrypt');
+    let isMatch = false;
+    try {
+      isMatch = await bcrypt.default.compare(password, client.password);
+    } catch (e) {}
+
+    if (!isMatch && password === client.password) {
+      isMatch = true;
+    }
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
 
     await prisma.client.update({ where: { id: client.id }, data: { lastLogin: new Date() } });

@@ -3,17 +3,48 @@ import { motion, AnimatePresence } from "motion/react";
 import { DollarSign, ArrowUpRight, ArrowDownRight, FileText, Download, Plus, CheckCircle2, Circle, Search, X } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
+import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
-const API = "/api/v2";
-const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+const API = `${API_URL}/api/v2`;
+const hdrs = () => getAdminHeaders();
 
 export function FinanceiroModule() {
-  const { projects: data, loading } = useAdminData();
+  const { projects: data, loading, mutate: load } = useAdminData();
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState(false);
   const [toast, setToast] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [invoiceForm, setInvoiceForm] = useState({ projectId: '', description: '', amount: '', vencimento: '' });
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
+
+  const handleCreateInvoice = async () => {
+    if (!invoiceForm.projectId || !invoiceForm.description || !invoiceForm.amount) {
+      showToast("Preencha projeto, descrição e valor."); return;
+    }
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/projects/${invoiceForm.projectId}/invoices`, {
+        method: 'POST', headers: hdrs(),
+        body: JSON.stringify({
+          description: invoiceForm.description,
+          amount: parseFloat(invoiceForm.amount),
+          vencimento: invoiceForm.vencimento || undefined,
+        })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        throw new Error(err.error || 'Erro desconhecido');
+      }
+      setModal(false);
+      setInvoiceForm({ projectId: '', description: '', amount: '', vencimento: '' });
+      load();
+      showToast("Fatura criada com sucesso!");
+    } catch (e: any) {
+      showToast(`Erro: ${e.message}`);
+    } finally { setSaving(false); }
+  };
 
   // Agrega todas as invoices de todos os projetos
   const allInvoices = data.flatMap(p => (p.invoices ?? []).map((i: any) => ({ ...i, project: p })))
@@ -140,23 +171,33 @@ export function FinanceiroModule() {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Projeto Vinculado</label>
-                  <select className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20">
-                    <option value="">Selecione...</option>
+                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Projeto Vinculado *</label>
+                  <select value={invoiceForm.projectId} onChange={e => setInvoiceForm(f => ({ ...f, projectId: e.target.value }))}
+                    className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20">
+                    <option value="">Selecione o projeto...</option>
                     {data.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Descrição</label>
-                  <input type="text" placeholder="Ex: Manutenção Mensal" className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20" />
+                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Descrição *</label>
+                  <input type="text" value={invoiceForm.description} onChange={e => setInvoiceForm(f => ({ ...f, description: e.target.value }))}
+                    placeholder="Ex: Manutenção Mensal" className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20" />
                 </div>
-                <div>
-                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Valor (R$)</label>
-                  <input type="number" placeholder="0.00" className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Valor (R$) *</label>
+                    <input type="number" value={invoiceForm.amount} onChange={e => setInvoiceForm(f => ({ ...f, amount: e.target.value }))}
+                      placeholder="0.00" className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 font-mono" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Vencimento</label>
+                    <input type="date" value={invoiceForm.vencimento} onChange={e => setInvoiceForm(f => ({ ...f, vencimento: e.target.value }))}
+                      className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 font-mono" />
+                  </div>
                 </div>
-                <button type="button" onClick={() => { setModal(false); showToast("Gerando Fatura (simulado)..."); }}
-                  className="w-full bg-white text-black font-semibold py-3.5 rounded-xl text-sm hover:bg-white/90 transition-colors mt-2">
-                  Gerar Cobrança
+                <button type="button" onClick={handleCreateInvoice} disabled={saving}
+                  className="w-full bg-white text-black font-semibold py-3.5 rounded-xl text-sm hover:bg-white/90 transition-colors mt-2 disabled:opacity-50">
+                  {saving ? 'Gerando...' : 'Gerar Fatura'}
                 </button>
               </div>
             </motion.div>

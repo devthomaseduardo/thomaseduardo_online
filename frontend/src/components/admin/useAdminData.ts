@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-// Read JWT from localStorage \u2014 key is adminToken (never stores the password)
-const hdrs = () => {
-  const token = localStorage.getItem("adminToken") ?? "";
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-  };
-};
+// Usa helper centralizado que inclui sempre x-admin-key
+const hdrs = () => getAdminHeaders();
 
 let cacheProjects: any[] | null = null;
 let cacheClients: any[] | null = null;

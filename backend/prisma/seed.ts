@@ -6,13 +6,23 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...\n');
 
+  // ─── CLEAR DATABASE ────────────────────────────────────────────────────────
+  await prisma.invoice.deleteMany();
+  await prisma.project.deleteMany();
+  await prisma.client.deleteMany();
+
   // ─── Cliente de teste ───────────────────────────────────────────────────────
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash('thomas123', salt);
+  const hashedPassword = await bcrypt.hash('123456', salt);
 
   const client = await prisma.client.upsert({
     where: { email: 'thomas@teste.com' },
-    update: {},
+    update: {
+      password: hashedPassword,
+      name: 'Thomas Eduardo (Teste)',
+      cnpj: '12.345.678/0001-99',
+      clientType: 'ativo',
+    },
     create: {
       name: 'Thomas Eduardo (Teste)',
       email: 'thomas@teste.com',
@@ -24,7 +34,7 @@ async function main() {
 
   console.log(`✅ Cliente criado: ${client.name} (${client.email})`);
   console.log(`   CNPJ: ${client.cnpj}`);
-  console.log(`   Senha: thomas123`);
+  console.log(`   Senha: 123456`);
 
   // ─── Projeto de teste ────────────────────────────────────────────────────────
   const project = await prisma.project.upsert({
@@ -89,7 +99,7 @@ async function main() {
   console.log('🎉 Seed completo! Para logar no portal:');
   console.log('   URL:   http://localhost:3000/portal');
   console.log('   Login: thomas@teste.com  ou  12.345.678/0001-99');
-  console.log('   Senha: thomas123');
+  console.log('   Senha: 123456');
   console.log('────────────────────────────────────────────\n');
 }
 

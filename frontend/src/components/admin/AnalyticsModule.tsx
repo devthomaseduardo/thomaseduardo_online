@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BarChart3, PieChart, TrendingUp, Users, Eye } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+const hdrs = () => getAdminHeaders();
 
 export function AnalyticsModule() {
   const { projects: data, loading } = useAdminData();
+  const [kpis, setKpis] = useState<any[]>([]);
+  const [kpiLoading, setKpiLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/analytics/kpis`, { headers: hdrs() })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setKpis(data);
+      })
+      .catch(err => console.error("Error fetching KPIs:", err))
+      .finally(() => setKpiLoading(false));
+  }, []);
 
   const allIntegrations = data.flatMap(p => (p.integrations ?? []).map((i: any) => ({ ...i, project: p })))
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -22,18 +35,27 @@ export function AnalyticsModule() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        {[
-          { label: "Sessões Totais", val: "124K", icon: Users },
-          { label: "Taxa de Conversão", val: "3.2%", icon: TrendingUp },
-          { label: "Tempo Médio", val: "2m 14s", icon: Eye },
-          { label: "Eventos Disparados", val: "840K", icon: BarChart3 }
-        ].map((k, i) => (
-          <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
-            <k.icon className="w-5 h-5 text-white/20 mb-3" />
-            <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1">{k.label}</p>
-            <p className="text-2xl font-bold text-white">{k.val}</p>
-          </div>
-        ))}
+        {kpiLoading ? (
+          [1,2,3,4].map(i => (
+            <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden animate-pulse">
+              <div className="w-5 h-5 bg-white/10 rounded-full mb-3" />
+              <div className="h-3 w-1/2 bg-white/10 rounded mb-2" />
+              <div className="h-6 w-3/4 bg-white/10 rounded" />
+            </div>
+          ))
+        ) : (
+          kpis.map((k, i) => {
+            const IconMap: Record<string, any> = { Users, TrendingUp, Eye, BarChart3 };
+            const Icon = k.icon && IconMap[k.icon] ? IconMap[k.icon] : BarChart3;
+            return (
+              <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+                <Icon className="w-5 h-5 text-white/20 mb-3" />
+                <p className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1">{k.label}</p>
+                <p className="text-2xl font-bold text-white">{k.val}</p>
+              </div>
+            );
+          })
+        )}
       </div>
 
       <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden">

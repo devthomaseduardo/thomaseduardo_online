@@ -50,6 +50,7 @@ export function AdminDashboard() {
 
   const handleSeedRealData = async () => {
     try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth') || '';
       const clients = [
         {
           clientName: "Sleep House",
@@ -92,14 +93,28 @@ export function AdminDashboard() {
       for (const c of clients) {
         const res = await fetch(`${API_URL}/api/projects`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'x-admin-key': 'antigravity-admin-dev'
+          },
           body: JSON.stringify(c)
         });
+        
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Erro criando projeto ${c.projectName}: ${errText}`);
+        }
+        
         const project = await res.json();
         
-        await fetch(`${API_URL}/api/payments/intent`, {
+        const invoiceRes = await fetch(`${API_URL}/api/payments/intent`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'x-admin-key': 'antigravity-admin-dev'
+          },
           body: JSON.stringify({
             projectId: project.id,
             amount: c.projectValue / 2,
@@ -107,13 +122,37 @@ export function AdminDashboard() {
             type: "service"
           })
         });
+
+        if (!invoiceRes.ok) {
+          const errText = await invoiceRes.text();
+          throw new Error(`Erro criando fatura do projeto ${c.projectName}: ${errText}`);
+        }
       }
       alert('Dados reais adicionados com sucesso! Por favor, recarregue a página.');
-    } catch (e) {
-      alert('Erro ao adicionar dados reais. Verifique o console.');
+    } catch (e: any) {
+      alert(`Erro: ${e.message}`);
       console.error(e);
     }
   };
+
+      const handleClearDB = async () => {
+        try {
+          const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth') || '';
+          const res = await fetch(`${API_URL}/api/dev/wipe`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'x-admin-key': 'antigravity-admin-dev'
+            }
+          });
+          if (!res.ok) {
+            throw new Error('Falha ao limpar banco');
+          }
+          alert('Banco de dados limpo com sucesso! Recarregue a página.');
+        } catch (e: any) {
+          alert(`Erro ao limpar banco: ${e.message}`);
+          console.error(e);
+        }
+      };
 
   return (
     <div className="space-y-6">
@@ -122,12 +161,20 @@ export function AdminDashboard() {
           <h1 className="text-3xl font-bold text-white tracking-tight">Centro de Operações</h1>
           <p className="text-zinc-500 text-sm">Visão geral do sistema e indicadores chave.</p>
         </div>
-        <button 
-          onClick={handleSeedRealData}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
-        >
-          Popular Banco (Dados Reais)
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleClearDB}
+            className="px-4 py-2 bg-red-600/20 hover:bg-red-500/30 text-red-500 border border-red-500/20 text-sm font-medium rounded-lg transition-colors"
+          >
+            Limpar Banco
+          </button>
+          <button 
+            onClick={handleSeedRealData}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            Popular Banco (Dados Reais)
+          </button>
+        </div>
       </div>
 
       {(loading || error) && (

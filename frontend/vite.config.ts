@@ -27,14 +27,14 @@ export default defineConfig(({mode}) => {
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com",
           "font-src 'self' https://fonts.gstatic.com https://api.fontshare.com https://cdn.fontshare.com",
           "img-src 'self' data: blob: https:",
-          "connect-src 'self' http://localhost:3001 ws://localhost:* https://www.google-analytics.com https://analytics.google.com https://api.fontshare.com",
+          "connect-src 'self' http://localhost:3002 ws://localhost:* https://www.google-analytics.com https://analytics.google.com https://api.fontshare.com",
           "frame-src 'self' https://www.googletagmanager.com",
           "worker-src 'self' blob:",
         ].join('; '),
       },
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: 'http://localhost:3002',
           changeOrigin: true,
         },
       },

@@ -6,9 +6,10 @@ import { ProjectDrawer } from './ProjectDrawer';
 import { TableSkeleton } from './Loaders';
 import { Modal } from '../ui/Modal';
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-const hdrs = () => ({ 'Content-Type': 'application/json', 'x-admin-key': localStorage.getItem('adminAuth') ?? '' });
+const hdrs = () => getAdminHeaders();
 
 const STATUS_MAP: Record<string, { label: string, color: string, border: string }> = {
   'briefing': { label: 'Briefing', color: 'text-white/70 bg-white/5', border: 'border-white/10' },

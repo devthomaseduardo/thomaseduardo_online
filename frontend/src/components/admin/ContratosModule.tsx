@@ -5,9 +5,10 @@ import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+const hdrs = () => getAdminHeaders();
 
 export function ContratosModule() {
   const { projects: data, loading, mutate: load } = useAdminData();

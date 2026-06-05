@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react';
+import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
-const API_BASE = '/api/v2';
-
-const getHeaders = () => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth');
-  if (token) headers.Authorization = `Bearer ${token}`;
-  const legacyKey = localStorage.getItem('adminKey');
-  if (legacyKey) headers['x-admin-key'] = legacyKey;
-  return headers;
-};
+const API_BASE = `${API_URL}/api/v2`;
 
 export function useAdminFetch<T = any>(path: string) {
   const [data, setData] = useState<T | null>(null);
@@ -23,7 +14,7 @@ export function useAdminFetch<T = any>(path: string) {
     setLoading(true);
     setError(null);
 
-    fetch(`${API_BASE}${path}`, { headers: getHeaders() })
+    fetch(`${API_BASE}${path}`, { headers: getAdminHeaders() })
       .then(async (res) => {
         const payload = await res.json().catch(() => null);
         if (!res.ok) {

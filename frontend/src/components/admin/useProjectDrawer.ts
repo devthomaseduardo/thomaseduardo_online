@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const BASE = `${API_URL}/api/v2`;
 
 function getHeaders() {
-  const token = localStorage.getItem('adminAuth') ?? '';
-  return { 'Content-Type': 'application/json', 'x-admin-key': token };
+  return getAdminHeaders();
 }
 
 async function apiFetch(url: string, opts?: RequestInit) {

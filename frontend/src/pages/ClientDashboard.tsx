@@ -24,29 +24,7 @@ const NAV: NavItem[] = [
   { id: "settings",     label: "Configurações",icon: Settings   },
 ];
 
-const ACTIVITY = [
-  { time: "Agora",    msg: "Deploy frontend publicado em produção",     type: "deploy"   },
-  { time: "2h atrás", msg: "Arquivo logo-final.svg recebido",           type: "file"     },
-  { time: "5h atrás", msg: "Pagamento da parcela 2/3 confirmado",       type: "payment"  },
-  { time: "Ontem",    msg: "Revisão de design aprovada pelo cliente",   type: "check"    },
-  { time: "2 dias",   msg: "Repositório privado criado no GitHub",      type: "git"      },
-  { time: "3 dias",   msg: "Contrato assinado digitalmente",            type: "contract" },
-];
-
-const TIMELINE = [
-  { id: "kickoff",  label: "Kickoff",      status: "done"   },
-  { id: "design",   label: "Design & UX",  status: "done"   },
-  { id: "dev",      label: "Development",  status: "active" },
-  { id: "review",   label: "Review",       status: "pending"},
-  { id: "launch",   label: "Launch",       status: "pending"},
-];
-
-const METRICS = [
-  { label: "Projetos Ativos",   value: "3",    sub: "+1 este mês",      color: "#fff"        },
-  { label: "Tarefas Pendentes", value: "7",    sub: "2 com prazo hoje",  color: "#f59e0b"     },
-  { label: "Faturas",           value: "R$12k", sub: "2/3 pagas",        color: "#10b981"     },
-  { label: "Deploy Status",     value: "Live",  sub: "99.9% uptime",     color: "#3b82f6"     },
-];
+// Dynamic data logic is now handled in the components
 
 // ─── Subcomponents ────────────────────────────────────────────────────────────
 const StatusDot = ({ status }: { status: string }) => {
@@ -72,146 +50,160 @@ const ActivityIcon = ({ type }: { type: string }) => {
 };
 
 // ─── Panels ──────────────────────────────────────────────────────────────────
-const PanelOverview = ({ projects }: { projects: any[] }) => (
-  <div className="space-y-10">
-    {/* Metrics */}
-    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-      {METRICS.map((m, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.07, duration: 0.4 }}
-          className="bg-[#0c0c0c] border border-white/[0.06] rounded-2xl p-5 flex flex-col gap-3 hover:border-white/[0.12] transition-colors"
-        >
-          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30">{m.label}</span>
-          <span className="text-2xl font-semibold tracking-tight" style={{ color: m.color }}>{m.value}</span>
-          <span className="text-[11px] text-white/30">{m.sub}</span>
-        </motion.div>
-      ))}
-    </div>
+const PanelOverview = ({ clientData }: { clientData: any }) => {
+  const projects = clientData.projects || [];
+  
+  const activeProjects = projects.filter((p: any) => p.status !== 'concluido' && p.phase !== 'concluido').length;
+  const allTasks = projects.flatMap((p: any) => p.tasks || []);
+  const pendingTasks = allTasks.filter((t: any) => t.status === 'pendente').length;
+  const allInvoices = projects.flatMap((p: any) => p.invoices || []);
+  const paidInvoices = allInvoices.filter((i: any) => i.status === 'paid').length;
+  const pendingInvoicesAmount = allInvoices.filter((i: any) => i.status === 'pending' || i.status === 'partial').reduce((acc: number, cur: any) => acc + (cur.saldo || cur.amount), 0);
+  const allDeploys = projects.flatMap((p: any) => p.deploys || []);
+  const lastDeploy = allDeploys[0];
 
-    {/* Timeline */}
-    <div className="bg-[#0c0c0c] border border-white/[0.06] rounded-2xl p-6">
-      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-6">Timeline do Projeto</span>
-      <div className="flex items-center gap-0 overflow-x-auto">
-        {TIMELINE.map((step, i) => (
-          <React.Fragment key={step.id}>
-            <div className="flex flex-col items-center gap-2 min-w-[90px]">
-              <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
-                step.status === "done"    ? "border-emerald-500 bg-emerald-500/10" :
-                step.status === "active" ? "border-blue-500   bg-blue-500/10 ring-2 ring-blue-500/20" :
-                                           "border-white/10   bg-white/[0.02]"
-              }`}>
-                {step.status === "done"   ? <Check   className="w-3.5 h-3.5 text-emerald-400" /> :
-                 step.status === "active" ? <Hourglass className="w-3.5 h-3.5 text-blue-400" /> :
-                                            <Circle  className="w-2 h-2 text-white/10 fill-current" />}
-              </div>
-              <span className={`text-[10px] font-mono text-center whitespace-nowrap ${
-                step.status === "done" ? "text-white/40" : step.status === "active" ? "text-white" : "text-white/20"
-              }`}>{step.label}</span>
-            </div>
-            {i < TIMELINE.length - 1 && (
-              <div className={`h-[1px] flex-1 mx-1 ${i < TIMELINE.findIndex(s => s.status === "active") ? "bg-emerald-500/40" : "bg-white/[0.06]"}`} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
+  const metrics = [
+    { label: "Projetos Ativos",   value: activeProjects.toString(),    sub: "em andamento",      color: "#fff"        },
+    { label: "Tarefas Pendentes", value: pendingTasks.toString(),    sub: "aguardando ação",  color: "#f59e0b"     },
+    { label: "Faturas a Pagar",   value: `R$${pendingInvoicesAmount.toLocaleString('pt-BR')}`, sub: `${paidInvoices}/${allInvoices.length} pagas`,        color: "#10b981"     },
+    { label: "Último Deploy",     value: lastDeploy ? (lastDeploy.status === 'success' ? 'Sucesso' : 'Falhou') : "N/A",  sub: "status atual",     color: "#3b82f6"     },
+  ];
 
-    {/* Projects grid */}
-    <div>
-      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-4">Projetos Ativos</span>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {(projects.length > 0 ? projects : [
-          { id: 1, name: "Portal Operacional", phase: "Development" },
-          { id: 2, name: "Landing Page",       phase: "Review"      },
-        ]).map((p: any) => (
+  return (
+    <div className="space-y-10">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        {metrics.map((m, i) => (
           <motion.div
-            key={p.id}
-            whileHover={{ scale: 1.01 }}
-            className="bg-[#0c0c0c] border border-white/[0.06] hover:border-white/[0.14] rounded-2xl p-6 cursor-pointer group transition-all"
+            key={i}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.07, duration: 0.4 }}
+            className="relative mt-4"
           >
-            <div className="flex justify-between items-start mb-8">
-              <h3 className="font-semibold text-base tracking-tight">{p.name}</h3>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 border border-white/[0.08] px-2 py-1 rounded-lg">{p.phase}</span>
-            </div>
-            <div className="flex justify-between items-center border-t border-white/[0.05] pt-4">
-              <span className="flex items-center gap-1.5 text-xs text-emerald-500">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Operação Ativa
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors" />
+            <div className="absolute -top-4 left-0 w-16 h-4 bg-[#0c0c0c] rounded-t-lg" />
+            <div className="bg-[#0c0c0c] rounded-2xl rounded-tl-none p-5 flex flex-col gap-3 hover:bg-[#0f0f0f] transition-colors h-full">
+              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30">{m.label}</span>
+              <span className="text-2xl font-semibold tracking-tight" style={{ color: m.color }}>{m.value}</span>
+              <span className="text-[11px] text-white/30">{m.sub}</span>
             </div>
           </motion.div>
         ))}
       </div>
+
+      {/* Projects grid */}
+      <div>
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-4">Projetos</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {projects.length === 0 ? (
+            <div className="text-white/40 text-sm">Nenhum projeto encontrado.</div>
+          ) : projects.map((p: any) => (
+            <motion.div
+              key={p.id}
+              whileHover={{ scale: 1.01 }}
+              className="bg-[#0c0c0c] rounded-2xl rounded-tl-none p-6 cursor-pointer group transition-all relative mt-4"
+            >
+              <div className="absolute -top-4 left-0 w-20 h-4 bg-[#0c0c0c] rounded-t-lg" />
+              <div className="flex justify-between items-start mb-8">
+                <h3 className="font-semibold text-base tracking-tight">{p.name}</h3>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 border border-white/[0.08] px-2 py-1 rounded-lg">{p.phase || p.status}</span>
+              </div>
+              <div className="flex justify-between items-center pt-4">
+                <span className="flex items-center gap-1.5 text-xs text-emerald-500">
+                  <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'concluido' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`} />
+                  {p.status === 'concluido' ? 'Concluído' : 'Operação Ativa'}
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-const PanelDeployments = () => (
-  <div className="space-y-4">
-    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-6">Infraestrutura Operacional</span>
-    {[
-      { label: "Domínio",           value: "thomaseduardo.online", status: "Conectado",  icon: Globe,     color: "emerald" },
-      { label: "Deploy",            value: "Vercel Pro",           status: "Live",       icon: Zap,       color: "emerald" },
-      { label: "Repositório",       value: "GitHub Privado",       status: "Seguro",     icon: GitBranch, color: "blue"    },
-      { label: "Google Analytics",  value: "GA4 Integrado",        status: "Coletando",  icon: Activity,  color: "emerald" },
-      { label: "Meta Pixel",        value: "Pixel Ativo",          status: "Ativo",      icon: Shield,    color: "emerald" },
-      { label: "Servidor",          value: "99.9% Uptime",         status: "Estável",    icon: Server,    color: "emerald" },
-    ].map((item, i) => (
-      <motion.div
-        key={i}
-        initial={{ opacity: 0, x: -8 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: i * 0.06 }}
-        className="flex items-center justify-between px-5 py-4 bg-[#0c0c0c] border border-white/[0.06] rounded-xl hover:border-white/[0.12] transition-colors"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-            <item.icon className="w-3.5 h-3.5 text-white/40" />
+const PanelDeployments = ({ clientData }: { clientData: any }) => {
+  const allDeploys = (clientData.projects || []).flatMap((p: any) => p.deploys || []);
+  return (
+    <div className="space-y-4">
+      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-6">Infraestrutura Operacional</span>
+      {allDeploys.length === 0 && <div className="text-white/40 text-sm">Nenhum deploy disponível.</div>}
+      {allDeploys.map((item: any, i: number) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: i * 0.06 }}
+          className="flex items-center justify-between px-5 py-4 bg-[#0c0c0c] rounded-2xl rounded-tl-none transition-colors relative mt-4"
+        >
+          <div className="absolute -top-3 left-0 w-16 h-3 bg-[#0c0c0c] rounded-t-lg" />
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-lg bg-white/[0.04] flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 text-white/40" />
+            </div>
+            <div>
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-white/25">{item.ambiente || 'production'}</span>
+              <span className="text-sm font-medium text-white/80">{item.url || 'URL não disponível'}</span>
+            </div>
           </div>
-          <div>
-            <span className="block text-[10px] font-mono uppercase tracking-wider text-white/25">{item.label}</span>
-            <span className="text-sm font-medium text-white/80">{item.value}</span>
-          </div>
-        </div>
-        <span className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-lg ${
-          item.color === "emerald" ? "text-emerald-400 bg-emerald-400/10 border border-emerald-400/20" :
-                                     "text-blue-400   bg-blue-400/10   border border-blue-400/20"
-        }`}>{item.status}</span>
-      </motion.div>
-    ))}
-  </div>
-);
-
-const PanelFiles = () => (
-  <div className="space-y-6">
-    <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/[0.08] hover:border-white/20 rounded-2xl cursor-pointer group transition-colors">
-      <UploadCloud className="w-7 h-7 text-white/20 group-hover:text-white/50 mb-2 transition-colors" />
-      <span className="text-sm text-white/50">Solte seus arquivos aqui</span>
-      <span className="text-[11px] text-white/25 mt-1">Logo, fotos, textos, referências</span>
-      <input type="file" multiple className="hidden" />
-    </label>
-    <div className="space-y-2">
-      {["logo-final.svg","referencias.pdf","fotos-produto.zip","brief-aprovado.docx"].map((f, i) => (
-        <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#0c0c0c] border border-white/[0.06] rounded-xl group hover:border-white/[0.12] transition-colors">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500/60" />
-            <span className="text-sm text-white/60">{f}</span>
-          </div>
-          <Download className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors cursor-pointer" />
-        </div>
+          <span className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-lg ${
+            item.status === "success" ? "text-emerald-400 bg-emerald-400/10 border border-emerald-400/20" :
+                                       "text-blue-400   bg-blue-400/10   border border-blue-400/20"
+          }`}>{item.status}</span>
+        </motion.div>
       ))}
     </div>
-  </div>
-);
+  );
+};
 
-const PanelPlaceholder = ({ label }: { label: string }) => (
-  <div className="flex flex-col items-center justify-center h-64 border border-dashed border-white/[0.06] rounded-2xl">
-    <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/20">{label}</span>
-    <span className="text-white/10 text-xs mt-2">Em breve</span>
+const PanelFiles = ({ clientData }: { clientData: any }) => {
+  const allFiles = (clientData.projects || []).flatMap((p: any) => p.files || []);
+  return (
+    <div className="space-y-6">
+      <label className="flex flex-col items-center justify-center w-full h-40 bg-[#0c0c0c] rounded-2xl rounded-tl-none cursor-pointer group transition-colors relative mt-4">
+        <div className="absolute -top-4 left-0 w-24 h-4 bg-[#0c0c0c] rounded-t-lg" />
+        <UploadCloud className="w-7 h-7 text-white/20 group-hover:text-white/50 mb-2 transition-colors" />
+        <span className="text-sm text-white/50">Solte seus arquivos aqui</span>
+        <span className="text-[11px] text-white/25 mt-1">Logo, fotos, textos, referências</span>
+        <input type="file" multiple className="hidden" />
+      </label>
+      <div className="space-y-2">
+        {allFiles.length === 0 && <div className="text-white/40 text-sm">Nenhum arquivo encontrado.</div>}
+        {allFiles.map((f: any, i: number) => (
+          <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#0c0c0c] rounded-2xl rounded-tl-none group transition-colors relative mt-3">
+            <div className="absolute -top-3 left-0 w-12 h-3 bg-[#0c0c0c] rounded-t-lg" />
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500/60" />
+              <span className="text-sm text-white/60">{f.originalName || f.fileName}</span>
+            </div>
+            <a href={`${API_URL}${f.path}`} target="_blank" rel="noreferrer">
+              <Download className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors cursor-pointer" />
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PanelPlaceholder = ({ label, items = [] }: { label: string, items?: any[] }) => (
+  <div className="flex flex-col space-y-4">
+    <h2 className="text-xl font-semibold mb-4">{label}</h2>
+    {items.length === 0 ? (
+      <div className="flex flex-col items-center justify-center h-64 bg-[#0c0c0c] rounded-2xl rounded-tl-none relative mt-4">
+        <div className="absolute -top-4 left-0 w-20 h-4 bg-[#0c0c0c] rounded-t-lg" />
+        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/20">Nenhum dado</span>
+      </div>
+    ) : (
+      <div className="space-y-2">
+         {items.map((it, i) => (
+             <div key={i} className="p-4 bg-[#0c0c0c] rounded-2xl rounded-tl-none text-sm relative mt-4">
+               <div className="absolute -top-3 left-0 w-16 h-3 bg-[#0c0c0c] rounded-t-lg" />
+               {JSON.stringify(it)}
+             </div>
+         ))}
+      </div>
+    )}
   </div>
 );
 
@@ -223,7 +215,8 @@ const PanelSettings = () => (
     </div>
     <div className="flex flex-col gap-2 max-w-sm">
       {["Perfil", "Segurança", "Notificações", "Aparência", "Faturamento", "API Keys"].map((item) => (
-        <button key={item} className="w-full flex items-center justify-between p-4 bg-[#0c0c0c] border border-white/[0.06] rounded-xl hover:border-white/[0.12] transition-colors text-left group">
+        <button key={item} className="w-full flex items-center justify-between p-4 bg-[#0c0c0c] rounded-2xl rounded-tl-none transition-colors text-left group relative mt-3">
+          <div className="absolute -top-3 left-0 w-16 h-3 bg-[#0c0c0c] rounded-t-lg" />
           <span className="text-sm font-medium text-white/70 group-hover:text-white transition-colors">{item}</span>
           <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-white/40 transition-colors" />
         </button>
@@ -265,12 +258,12 @@ export default function ClientDashboard() {
   const initials = clientData.name?.substring(0, 2).toUpperCase() ?? "TE";
 
   const panels: Record<NavId, React.ReactNode> = {
-    overview:    <PanelOverview projects={projects} />,
-    deployments: <PanelDeployments />,
-    files:       <PanelFiles />,
-    contracts:   <PanelPlaceholder label="Contratos" />,
-    payments:    <PanelPlaceholder label="Pagamentos" />,
-    analytics:   <PanelPlaceholder label="Analytics" />,
+    overview:    <PanelOverview clientData={clientData} />,
+    deployments: <PanelDeployments clientData={clientData} />,
+    files:       <PanelFiles clientData={clientData} />,
+    contracts:   <PanelPlaceholder label="Contratos" items={(clientData.projects || []).flatMap((p:any) => p.contracts || [])} />,
+    payments:    <PanelPlaceholder label="Pagamentos" items={(clientData.projects || []).flatMap((p:any) => p.invoices || [])} />,
+    analytics:   <PanelPlaceholder label="Analytics" items={(clientData.projects || []).flatMap((p:any) => p.integrations || [])} />,
     settings:    <PanelSettings />,
   };
 
@@ -278,9 +271,9 @@ export default function ClientDashboard() {
     <div className="min-h-screen bg-[#060606] text-[#e8e8e8] font-sans flex">
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
-      <aside className="w-[220px] shrink-0 border-r border-white/[0.05] flex flex-col sticky top-0 h-screen bg-[#060606]">
+      <aside className="w-[220px] shrink-0 flex flex-col sticky top-0 h-screen bg-[#060606]">
         {/* Logo */}
-        <div className="px-5 h-14 flex items-center border-b border-white/[0.05]">
+        <div className="px-5 h-14 flex items-center">
           <div className="w-6 h-6 flex items-center justify-center mr-3">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
@@ -310,7 +303,7 @@ export default function ClientDashboard() {
         </nav>
 
         {/* User footer */}
-        <div className="px-3 pb-4 border-t border-white/[0.05] pt-4">
+        <div className="px-3 pb-4 pt-4">
           <div className="flex items-center gap-2.5 px-3 py-2">
             <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-bold text-white/70 shrink-0">{initials}</div>
             <div className="flex-1 min-w-0">
@@ -328,7 +321,7 @@ export default function ClientDashboard() {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Topbar */}
-        <header className="h-14 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40">
+        <header className="h-14 flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40">
           <div className="flex items-center gap-3">
             <h1 className="text-[22px] font-bold tracking-tight">
               {active === "overview" ? "Bem-vindo à sua operação." : NAV.find(n => n.id === active)?.label}
@@ -366,10 +359,10 @@ export default function ClientDashboard() {
           </main>
 
           {/* Activity Feed */}
-          <aside className="w-[260px] shrink-0 border-l border-white/[0.05] overflow-y-auto p-5 hidden xl:block">
+          <aside className="w-[260px] shrink-0 overflow-y-auto p-5 hidden xl:block">
             <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-5">Atividade Recente</span>
             <div className="space-y-4">
-              {ACTIVITY.map((a, i) => (
+              {clientData.projects?.flatMap((p: any) => p.timeline || []).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 10).map((a: any, i: number) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, x: 8 }}
@@ -377,13 +370,16 @@ export default function ClientDashboard() {
                   transition={{ delay: i * 0.06 }}
                   className="flex gap-3 items-start"
                 >
-                  <ActivityIcon type={a.type} />
+                  <ActivityIcon type={a.tipo} />
                   <div>
-                    <p className="text-[12px] text-white/60 leading-snug">{a.msg}</p>
-                    <span className="text-[10px] text-white/20 font-mono mt-1 block">{a.time}</span>
+                    <p className="text-[12px] text-white/60 leading-snug">{a.descricao}</p>
+                    <span className="text-[10px] text-white/20 font-mono mt-1 block">{new Date(a.createdAt).toLocaleString('pt-BR')}</span>
                   </div>
                 </motion.div>
               ))}
+              {(!clientData.projects || clientData.projects.flatMap((p: any) => p.timeline || []).length === 0) && (
+                <div className="text-white/40 text-sm">Nenhuma atividade recente.</div>
+              )}
             </div>
           </aside>
 

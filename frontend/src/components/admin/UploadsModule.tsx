@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { UploadCloud, Folder, File, Download, Image as ImageIcon, FileText, Search, Database, HardDrive, Share2 } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
+const hdrs = () => getAdminHeaders();
 
 export function UploadsModule() {
   const { projects: data, loading } = useAdminData();

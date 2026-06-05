@@ -149,6 +149,10 @@
     user-drag: none;
     pointer-events: none; /* Helps prevent long-press context menu on mobile on images, though it disables clicks on images */
   }
+
+  button, a, [role="button"] {
+    cursor: pointer;
+  }
 }
 
 /* ─── APPLE-STYLE SECTION SEPARATORS ───────────────────── */
