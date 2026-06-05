@@ -17,8 +17,8 @@ const Navbar = () => {
   const navLinks = [
     { label: t.nav.about, id: "sobre" },
     { label: t.nav.methodology, id: "metodologia" },
-    { label: t.nav.cases, id: "cases" },
-    { label: t.nav.lab, id: "lab" },
+    { label: t.nav.cases, id: "casos" },
+    { label: t.nav.contact, id: "contato" },
   ];
 
   const activeSection = useActiveSection(navLinks.map(l => l.id));
