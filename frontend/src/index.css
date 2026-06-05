@@ -82,6 +82,10 @@
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   h1 {
@@ -123,6 +127,15 @@
   }
   ::-webkit-scrollbar-thumb:hover { background-color: rgba(120,120,120,0.4); }
   * { scrollbar-width: thin; scrollbar-color: var(--pg-scrollthumb) transparent; }
+
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none; /* Helps prevent long-press context menu on mobile on images, though it disables clicks on images */
+  }
 }
 
 /* ─── APPLE-STYLE SECTION SEPARATORS ───────────────────── */
