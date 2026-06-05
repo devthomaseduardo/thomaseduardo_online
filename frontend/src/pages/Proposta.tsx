@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   ArrowRight, ArrowLeft, Check, Shield, Zap, TrendingUp,
@@ -145,7 +146,7 @@ export default function PropostaPage() {
     const token = localStorage.getItem("clientToken");
     if (!token) return;
 
-    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         if (!res.ok) throw new Error("Falha ao carregar cliente");
         return res.json();

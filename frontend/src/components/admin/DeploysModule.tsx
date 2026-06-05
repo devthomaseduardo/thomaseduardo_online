@@ -3,8 +3,9 @@ import { Rocket, Server, Activity, ExternalLink, ShieldCheck, Plus, Search, GitB
 import { useAdminData } from "./useAdminData";
 import { DeployTerminalLoader, TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
+import { API_URL } from '@/config';
 
-const API = "/api/v2";
+const API = `${API_URL}/api/v2`;
 const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
 
 export function DeploysModule() {

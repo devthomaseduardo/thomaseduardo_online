@@ -8,6 +8,7 @@ import {
   Settings as SettingsIcon, ChevronRight
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
 
 const steps = [
@@ -68,7 +69,7 @@ export default function Portal() {
     setLoginError("");
     setLoginLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, password }),

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 import { useLang } from '../contexts/LangContext';
+import { API_URL } from '../config';
 
 // Inicialize com a sua PUBLIC_KEY
 // Idealmente coloque no seu .env: VITE_MP_PUBLIC_KEY
@@ -35,7 +36,7 @@ const MercadoPagoCheckout: React.FC<MercadoPagoCheckoutProps> = ({ amount }) => 
 
   const onSubmit = async ({ selectedPaymentMethod, formData }: any) => {
     return new Promise((resolve, reject) => {
-      fetch("/api/process_payment", {
+      fetch(`${API_URL}/api/process_payment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
+import { API_URL } from '@/config';
 
-const BASE = '/api/v2';
+const BASE = `${API_URL}/api/v2`;
 
 function getHeaders() {
   const token = localStorage.getItem('adminAuth') ?? '';

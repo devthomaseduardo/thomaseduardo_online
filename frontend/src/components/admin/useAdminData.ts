@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { API_URL } from '@/config';
 
-const API = "/api/v2";
+const API = `${API_URL}/api/v2`;
 // Read JWT from localStorage \u2014 key is adminToken (never stores the password)
 const hdrs = () => {
   const token = localStorage.getItem("adminToken") ?? "";

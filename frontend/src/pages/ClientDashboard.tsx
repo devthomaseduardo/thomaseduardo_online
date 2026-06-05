@@ -7,6 +7,7 @@ import {
   Check, Hourglass, AlertCircle, Bell, Search, Command, Settings
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "settings";
@@ -247,7 +248,7 @@ export default function ClientDashboard() {
   useEffect(() => {
     const token = localStorage.getItem("clientToken");
     if (!token) { navigate("/portal"); return; }
-    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(d => { setClient(d); setLoading(false); })
       .catch(() => { localStorage.removeItem("clientToken"); localStorage.removeItem("clientId"); navigate("/portal"); });

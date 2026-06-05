@@ -4,8 +4,9 @@ import { FileText, Shield, Download, Plus, Search, Eye, PenTool, CheckCircle2, A
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
+import { API_URL } from '@/config';
 
-const API = "/api/v2";
+const API = `${API_URL}/api/v2`;
 const hdrs = () => ({ "Content-Type": "application/json", "x-admin-key": localStorage.getItem("adminAuth") ?? "" });
 
 export function ContratosModule() {

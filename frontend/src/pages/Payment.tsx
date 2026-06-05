@@ -6,6 +6,7 @@ import {
   Shield, Check, ArrowRight, ArrowLeft, QrCode, Copy,
   Clock, Package, Zap, Lock, Star
 } from "lucide-react";
+import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
 import fundoBg from "../assets/payment-hero.webp";
 
@@ -189,7 +190,7 @@ export default function PaymentPage() {
     const token = localStorage.getItem("clientToken");
     if (!token) return;
 
-    fetch("/api/clients/me", { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         if (!res.ok) throw new Error("Falha ao carregar cliente");
         return res.json();
@@ -217,7 +218,7 @@ export default function PaymentPage() {
 
     setProcessing(true);
     try {
-      const response = await fetch("/api/payments/intent", {
+      const response = await fetch(`${API_URL}/api/payments/intent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,4 +1,5 @@
 import React from 'react';
+import { API_URL } from '@/config';
 import { 
   Briefcase, 
   DollarSign, 
@@ -89,14 +90,14 @@ export function AdminDashboard() {
       ];
 
       for (const c of clients) {
-        const res = await fetch('http://localhost:3001/api/projects', {
+        const res = await fetch(`${API_URL}/api/projects`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(c)
         });
         const project = await res.json();
         
-        await fetch('http://localhost:3001/api/payments/intent', {
+        await fetch(`${API_URL}/api/payments/intent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
