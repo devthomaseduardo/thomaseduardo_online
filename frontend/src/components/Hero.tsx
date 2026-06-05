@@ -82,8 +82,15 @@ const Hero = () => {
         <motion.div
           {...HERO_FADE_UP}
           transition={{ ...SMOOTH_TRANSITION, delay: 0.3 }}
-          className="flex flex-col items-start justify-center gap-6 mt-16 w-full sm:w-auto"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-6 mt-16 w-full sm:w-auto"
         >
+          <a
+            href="#casos"
+            onClick={(e) => handleSmoothScroll(e as any, "#casos")}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white hover:scale-[1.02] active:scale-95 text-sm font-semibold transition-all duration-300 w-full sm:w-auto backdrop-blur-sm"
+          >
+            {t.hero.ctaProjects}
+          </a>
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto e resolver meus gargalos.")}`}
             target="_blank"

@@ -14,14 +14,17 @@ const AboutSection = () => {
   // Use global scroll so it starts moving as soon as the user scrolls down the hero
   const { scrollY } = useScroll();
 
-  // Smooth parallax for desktop image
-  const imageY = useTransform(scrollY, [0, 1000], [-50, 150]);
+  // Smooth parallax for mobile image
   const mobileImageY = useTransform(scrollY, [0, 300], [-250, 0]);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "center center"]
   });
+
+  // Desktop image animations tied to scroll - delayed to appear when leaving hero
+  const desktopImageOpacity = useTransform(scrollYProgress, [0.4, 0.7], [0, 1]);
+  const desktopImageY = useTransform(scrollYProgress, [0.2, 0.9], [300, -50]);
 
   // Animated balloons tied directly to scroll progress
   const b1Opacity = useTransform(scrollYProgress, [0.0, 0.2], [0, 1]);
@@ -129,7 +132,7 @@ const AboutSection = () => {
               Meu foco não é apenas escrever código. É criar previsibilidade, eficiência e crescimento através da tecnologia.
             </p>
 
-            <button className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-black font-mono font-bold text-xs tracking-widest uppercase hover:bg-emerald-400 hover:text-black transition-colors duration-500 overflow-hidden">
+            <button className="w-full md:w-auto justify-center group relative inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-white text-black font-mono font-bold text-xs tracking-widest uppercase hover:bg-emerald-400 hover:text-black transition-colors duration-500 overflow-hidden">
               <span className="relative z-10">Minha Jornada</span>
               <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -138,7 +141,7 @@ const AboutSection = () => {
           {/* DESKTOP IMAGE (Parallax) */}
           <div className="hidden lg:flex lg:col-span-5 relative justify-center items-center pointer-events-none overflow-visible">
             {/* Smooth parallax without aggressive absolute positioning */}
-            <motion.div style={{ y: imageY }} className="w-full max-w-[700px] z-[-1] opacity-100">
+            <motion.div style={{ y: desktopImageY, opacity: desktopImageOpacity }} className="w-full max-w-[700px] z-[-1]">
               <img 
                 src={thomasAbout} 
                 alt="Thomas Eduardo" 

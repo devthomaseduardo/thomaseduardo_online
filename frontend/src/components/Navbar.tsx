@@ -93,7 +93,7 @@ const Navbar = () => {
               color: "#F5F5F7",
               background: "rgba(255,255,255,0.1)",
               border: "1px solid rgba(255,255,255,0.2)",
-              borderRadius: 980,
+              borderRadius: 8,
               padding: "7px 16px",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}
@@ -165,17 +165,18 @@ const Navbar = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.3 }}
-              className="flex flex-col items-center gap-6 mt-12"
+              className="flex flex-col items-center gap-6 mt-12 w-full px-6"
             >
               <a
                 href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
+                className="w-full text-center"
                 style={{
                   fontSize: 15,
                   fontWeight: 600,
                   color: "#F5F5F7",
                   background: "rgba(255,255,255,0.1)",
                   border: "1px solid rgba(255,255,255,0.2)",
-                  borderRadius: 980,
+                  borderRadius: 8,
                   padding: "10px 28px",
                 }}
               >

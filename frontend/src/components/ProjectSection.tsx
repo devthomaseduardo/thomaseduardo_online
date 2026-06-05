@@ -32,9 +32,20 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               </span>
             )}
           </span>
-          <h3 className="text-2xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-3 uppercase leading-tight">
-            {project.title}
-          </h3>
+          <div className="flex items-center gap-4 mb-2 md:mb-3">
+            <img 
+              src={project.client_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`} 
+              alt={`${project.title} logo`} 
+              className="w-10 h-10 md:w-14 md:h-14 object-contain rounded-lg bg-white/5 p-2 border border-white/10 shrink-0" 
+              onError={(e) => {
+                // Se a logo do clearbit ou original falhar, usa o fallback
+                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`;
+              }}
+            />
+            <h3 className="text-2xl md:text-5xl font-bold tracking-tight text-white uppercase leading-tight">
+              {project.title}
+            </h3>
+          </div>
           <p className="hidden md:block text-lg text-white/50 font-light leading-relaxed tracking-tight">
             {project.metric_sub}
           </p>
@@ -73,7 +84,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto.")}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative inline-flex justify-center w-full sm:w-auto items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
+                className="relative inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 rounded-lg bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-500 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
@@ -82,7 +93,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               </a>
               <a
                 href="/cases"
-                className="relative inline-flex justify-center w-full sm:w-auto items-center gap-3 px-6 py-3 rounded-full bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-95 text-[10px] font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-xl group border border-white/10 hover:border-white/20"
+                className="relative inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-95 text-[10px] font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-xl group border border-white/10 hover:border-white/20"
               >
                 <span>{lang === 'pt' ? 'Explorar Todos os Cases' : 'Explore All Cases'}</span>
                 <ArrowRight className="w-4 h-4 text-emerald-400 transition-transform duration-300 group-hover:translate-x-1" />
@@ -154,7 +165,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             viewport={{ once: true }}
             whileHover={{ y: -5 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="absolute z-50 bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 inline-flex flex-row flex-nowrap whitespace-nowrap items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 rounded-full bg-black/80 backdrop-blur-md border border-white/10 hover:bg-white text-[9px] md:text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-colors duration-300 group shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
+            className="absolute w-[calc(100%-2rem)] md:w-auto justify-center z-50 bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 inline-flex flex-row flex-nowrap whitespace-nowrap items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 hover:bg-white text-[9px] md:text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-colors duration-300 group shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
           >
             <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
             <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Eyes.webp" alt="Eyes" width="20" height="20" className="md:w-[25px] md:h-[25px] group-hover:scale-110 transition-transform shrink-0" />
@@ -178,9 +189,6 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
 export const ProjectSection = () => {
   const { t, lang } = useLang();
 
-  // Client projects that exist in projects.json — same links as /cases page
-  const HOMEPAGE_PROJECTS = ['sleep-house', 'lp-yazigi', 'bras-service-ass', 'hazap-vendas'];
-  
   const [activeIndex, setActiveIndex] = useState(0);
 
   const projects = projectsData.map(p => ({
@@ -190,7 +198,6 @@ export const ProjectSection = () => {
   }));
 
   const featuredProjects = projects
-    .filter(p => HOMEPAGE_PROJECTS.includes(p.id))
     .sort((a, b) => {
       const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
       const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
@@ -201,7 +208,7 @@ export const ProjectSection = () => {
     <section id="casos" className="section-padding w-full px-4 md:px-16 lg:px-24 mx-auto overflow-hidden bg-(--pg-bg)">
       <motion.div
         {...FADE_UP}
-        className="mb-0 md:mt-32 lg:mt-56 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8"
+        className="mb-8 md:mb-12 md:mt-32 lg:mt-56 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8"
       >
         <div>
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-2 md:mb-4">
@@ -214,29 +221,29 @@ export const ProjectSection = () => {
         </div>
         <div className="flex items-center gap-4 pb-0 md:pb-2 mt-4 md:mt-0">
           {/* Carousel Navigation Capsule */}
-          <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/[0.02] backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] border border-white/5">
+          <div className="flex items-center gap-0 p-[2px] rounded-full bg-white/[0.02] backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] border border-white/5">
             <button
               onClick={() => setActiveIndex(prev => prev === 0 ? featuredProjects.length - 1 : prev - 1)}
-              className="relative group w-10 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
+              className="relative group w-8 h-5 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
               aria-label="Previous Project"
             >
-              <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+              <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-2.5 h-2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
               </svg>
             </button>
             
-            <div className="flex items-center justify-center px-4 font-mono text-[11px] tracking-[0.2em] text-white/30 h-6 select-none">
-              <span className="text-white font-bold">{(activeIndex + 1).toString().padStart(2, '0')}</span>
-              <span className="mx-2">/</span>
+            <div className="flex items-center justify-center px-1.5 font-mono text-[9px] tracking-[0.2em] text-white/30 h-5 select-none">
+              <span className="text-white font-medium">{(activeIndex + 1).toString().padStart(2, '0')}</span>
+              <span className="mx-0.5 opacity-40">/</span>
               <span>{featuredProjects.length.toString().padStart(2, '0')}</span>
             </div>
 
             <button
               onClick={() => setActiveIndex(prev => prev === featuredProjects.length - 1 ? 0 : prev + 1)}
-              className="relative group w-10 h-10 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
+              className="relative group w-8 h-5 flex items-center justify-center rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
               aria-label="Next Project"
             >
-              <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+              <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-2.5 h-2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </button>

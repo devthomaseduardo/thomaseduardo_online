@@ -13,12 +13,18 @@ const translations = {
       cta: "Iniciar Projeto",
     },
     hero: {
-      badge: "Engenharia de software para operações digitais",
-      h1a: "Software que",
-      h1b: "escala.",
-      desc: "Desenvolvimento de ecossistemas operacionais privados para seus projetos. Organização, previsibilidade e retenção como diferencial técnico e estratégico.",
-      ctaProjects: "VER IMPACTO",
-      ctaContact: "RESOLVER GARGALOS",
+      badge: "ARQUITETO DE SISTEMAS • FULL STACK DEVELOPER",
+      h1a: "Transformo operações",
+      h1b: "em vantagem competitiva.",
+      desc: "Projeto sistemas, automações e plataformas privadas para empresas que precisam crescer com organização, previsibilidade e escala.",
+      ctaProjects: "EXPLORAR CASES",
+      ctaContact: "INICIAR PROJETO",
+      stats: {
+        projects: "Projetos Entregues",
+        code: "Código Proprietário",
+        manual: "Processos Manuais",
+        clients: "Clientes Atendidos",
+      }
     },
     socialProof: {
       eyebrow: "Empresas que confiaram na operação",
@@ -100,12 +106,18 @@ const translations = {
       cta: "Start Project",
     },
     hero: {
-      badge: "Software engineering for digital operations",
-      h1a: "Software that",
-      h1b: "scales.",
-      desc: "Development of private operational ecosystems for your projects. Organization, predictability, and retention as a technical and strategic differentiator.",
-      ctaProjects: "VIEW IMPACT",
-      ctaContact: "SOLVE BOTTLENECKS",
+      badge: "SYSTEMS ARCHITECT • FULL STACK DEVELOPER",
+      h1a: "I turn operations",
+      h1b: "into competitive advantage.",
+      desc: "I design systems, automations, and private platforms for companies that need to grow with organization, predictability, and scale.",
+      ctaProjects: "EXPLORE CASES",
+      ctaContact: "START PROJECT",
+      stats: {
+        projects: "Projects Delivered",
+        code: "Proprietary Code",
+        manual: "Manual Processes",
+        clients: "Clients Served",
+      }
     },
     socialProof: {
       eyebrow: "Companies that trusted the operation",
