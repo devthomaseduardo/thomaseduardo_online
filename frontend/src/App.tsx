@@ -9,7 +9,6 @@ import FloatingSocial from "./components/FloatingSocial";
 
 // ─── Below-the-fold: lazy-loaded as user scrolls ────────────────────────────
 const AboutSection       = lazy(() => import("./components/AboutSection"));
-const SocialProof        = lazy(() => import("./components/SocialProof"));
 const BentoGrid          = lazy(() => import("./components/BentoGrid"));
 const ProjectSection     = lazy(() => import("./components/ProjectSection").then(m => ({ default: m.ProjectSection })));
 const EngineeringLab      = lazy(() => import("./components/EngineeringLab").then(m => ({ default: m.EngineeringLab })));
@@ -51,16 +50,15 @@ const PageFallback = () => (
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
+    <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden relative">
       <Navbar />
       <FloatingSocial />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <Suspense fallback={null}>
           <AboutSection />
-          <SocialProof />
-          <BentoGrid />
           <ProjectSection />
+          <BentoGrid />
           <EngineeringLab />
           <ProcessSection />
           <ContactSection />

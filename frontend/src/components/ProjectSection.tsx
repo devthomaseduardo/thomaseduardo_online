@@ -16,11 +16,11 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
   return (
     <motion.div
       {...FADE_UP}
-      className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center group"
+      className="grid lg:grid-cols-12 gap-4 md:gap-8 lg:gap-16 items-center group"
     >
       {/* The Metric & Content (Left/Top) */}
       <div className="lg:col-span-4 flex flex-col items-start order-2 lg:order-1">
-        <div className="mb-4 md:mb-8">
+        <div className="mb-2 md:mb-8">
           <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-3 font-semibold">
             {project.category === 'operational' 
               ? (lang === "pt" ? "SISTEMA OPERACIONAL" : "OPERATIONAL SYSTEM")
@@ -32,7 +32,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               </span>
             )}
           </span>
-          <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 uppercase leading-tight">
+          <h3 className="text-2xl md:text-5xl font-bold tracking-tight text-white mb-2 md:mb-3 uppercase leading-tight">
             {project.title}
           </h3>
           <p className="hidden md:block text-lg text-white/50 font-light leading-relaxed tracking-tight">
@@ -40,7 +40,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
           </p>
         </div>
 
-        <div className="w-full mb-6 md:mb-10">
+        <div className="w-full mb-2 md:mb-10">
           <p className="text-sm md:text-lg text-white/70 leading-relaxed font-light">
             {project.description}
           </p>
@@ -56,7 +56,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 marginBottom: showDetails ? 12 : 0,
               }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-6 pt-6"
+              className="space-y-4 md:space-y-6 pt-4 md:pt-6"
             >
               {/* Challenge (Desafio) */}
               <div className="space-y-1.5">
@@ -95,52 +95,55 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             </motion.div>
           </div>
           
-          <div className="flex flex-wrap gap-2 mt-8">
-            {project.technologies.map((tech: string) => {
-              const iconUrl = getIcon(tech);
-              return (
-                <span key={tech} className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/[0.05] text-[10px] font-mono text-white/80 uppercase tracking-widest backdrop-blur-md">
-                  {iconUrl && (
-                    <img src={iconUrl} alt={tech} className="w-3.5 h-3.5 object-contain" loading="lazy" />
-                  )}
-                  {tech}
-                </span>
-              );
-            })}
-          </div>
+
         </div>
 
         {/* Action Links */}
-        <div className="flex flex-wrap items-center gap-6 mt-4 pt-8 w-full">
-          {project.link && (
-            <a
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 hover:bg-white text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-all duration-300 group"
-            >
-              <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
-              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Eyes.webp" alt="Eyes" width="25" height="25" className="group-hover:scale-110 transition-transform" />
-            </a>
-          )}
+        <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-2 pt-2 md:mt-4 md:pt-8 w-full">
           <button
             onClick={() => setShowDetails(!showDetails)}
             className={`relative group inline-flex items-center gap-3 text-[10px] font-mono transition-all duration-300 uppercase tracking-widest cursor-pointer border-b pb-1 ${
               showDetails ? 'border-white text-white' : 'border-white/20 text-white/50 hover:text-white hover:border-white/50'
             }`}
           >
+            <img 
+              src={showDetails 
+                ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Backhand%20Index%20Pointing%20Up.webp"
+                : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Backhand%20Index%20Pointing%20Right.webp"
+              }
+              alt={showDetails ? "Backhand Index Pointing Up" : "Backhand Index Pointing Right"}
+              width="25" 
+              height="25" 
+            />
             {lang === "pt" 
               ? (showDetails ? "Recolher Detalhes" : "Detalhes do Projeto") 
               : (showDetails ? "Hide Details" : "Project Details")}
-            <ArrowRight className={`w-3.5 h-3.5 transition-transform duration-300 ${showDetails ? 'rotate-90 text-white' : ''}`} />
           </button>
         </div>
       </div>
 
       {/* The Visuals (Right/Bottom) */}
-      <div className="lg:col-span-8 w-full relative order-1 lg:order-2 mb-12 lg:mb-0 flex flex-col items-center justify-center mt-8">
+      <div className="lg:col-span-8 w-full relative order-1 lg:order-2 mb-6 lg:mb-0 flex flex-col items-center justify-center mt-2 md:mt-8">
         
-        <div className="relative w-full flex flex-col md:block items-center justify-center select-none mt-4 md:mt-10 lg:mt-6">
+        {/* Floating Acessar ao Vivo Button */}
+        {project.link && (
+          <motion.a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -5 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="absolute z-50 bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 inline-flex flex-row flex-nowrap whitespace-nowrap items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 rounded-full bg-black/80 backdrop-blur-md border border-white/10 hover:bg-white text-[9px] md:text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-colors duration-300 group shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
+          >
+            <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
+            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Eyes.webp" alt="Eyes" width="20" height="20" className="md:w-[25px] md:h-[25px] group-hover:scale-110 transition-transform shrink-0" />
+          </motion.a>
+        )}
+
+        <div className="relative w-full flex flex-col md:block items-center justify-center select-none mt-2 md:mt-10 lg:mt-6">
           <DeviceMockup 
             desktopImg={project.image}
             tabletImg={project.image}
@@ -177,13 +180,13 @@ export const ProjectSection = () => {
     });
 
   return (
-    <section id="casos" className="section-padding w-full px-6 md:px-16 lg:px-24 mx-auto overflow-hidden bg-pg-bg">
+    <section id="casos" className="section-padding w-full px-4 md:px-16 lg:px-24 mx-auto overflow-hidden bg-(--pg-bg)">
       <motion.div
         {...FADE_UP}
-        className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        className="mb-8 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8"
       >
         <div>
-          <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">
+          <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-4 md:mb-8">
             {t.projects.eyebrow}
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-white">
@@ -191,12 +194,12 @@ export const ProjectSection = () => {
             <span className="text-white/40">{t.projects.h2b}</span>
           </h2>
         </div>
-        <div className="pb-2">
+        <div className="pb-0 md:pb-2 w-full md:w-auto mt-2 md:mt-0">
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de estruturar um projeto.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
+            className="relative flex md:inline-flex w-full md:w-auto justify-center items-center gap-3 px-6 py-4 md:py-3 rounded-xl md:rounded-full bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[11px] md:text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-emerald-500 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
@@ -212,8 +215,8 @@ export const ProjectSection = () => {
       </motion.div>
 
       {/* Client Projects Carousel */}
-      <div className="mb-20">
-        <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-16 block pb-4">
+      <div className="mb-10 md:mb-20">
+        <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4 md:mb-16 block pb-0 md:pb-4">
           {lang === 'pt' ? 'Projetos de Clientes' : 'Client Projects'}
         </span>
         <div className="flex flex-col space-y-8">
@@ -222,7 +225,7 @@ export const ProjectSection = () => {
               <ProjectCard project={featuredProjects[activeIndex]} lang={lang} t={t} FADE_UP={FADE_UP} />
               
               {/* Controls & CTA Container */}
-              <div className="flex flex-col md:flex-row items-center justify-between pt-12 gap-8 mt-8">
+              <div className="flex flex-col md:flex-row items-center justify-between pt-8 md:pt-12 gap-6 md:gap-8 mt-4 md:mt-8">
                 
                 {/* Carousel Navigation Capsule */}
                 <div className="flex items-center gap-1 p-1.5 rounded-full bg-white/[0.02] backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)]">

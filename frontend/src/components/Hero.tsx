@@ -1,15 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import heroWeb from "../assets/hero-web.webp";
 
+const getGreetingText = (lang: string) => {
+  const hour = new Date().getHours();
+  if (lang === 'pt') {
+    if (hour >= 5 && hour < 12) return 'Olá, bom dia, eu sou o Thomas';
+    if (hour >= 12 && hour < 18) return 'Olá, boa tarde, eu sou o Thomas';
+    if (hour >= 18 && hour < 24) return 'Olá, boa noite, eu sou o Thomas';
+    return 'Olá, vai dormir, eu sou o Thomas';
+  } else {
+    if (hour >= 5 && hour < 12) return 'Hi, good morning, I am Thomas';
+    if (hour >= 12 && hour < 18) return 'Hi, good afternoon, I am Thomas';
+    if (hour >= 18 && hour < 24) return 'Hi, good evening, I am Thomas';
+    return 'Hi, go to sleep, I am Thomas';
+  }
+};
+
 const Hero = () => {
   const { t, lang } = useLang();
+  const [greeting, setGreeting] = useState(() => getGreetingText(lang));
+
+  useEffect(() => {
+    setGreeting(getGreetingText(lang));
+    
+    const interval = setInterval(() => {
+      setGreeting(getGreetingText(lang));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [lang]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center py-28 md:py-36 px-6 overflow-hidden bg-[#060606]">
+    <section className="relative z-20 min-h-[60vh] flex items-center justify-center py-12 md:py-16 px-6 overflow-hidden bg-[#060606]">
       {/* Background Image Setup from LandingPage */}
       <div className="absolute inset-0 z-0">
         <img src={heroWeb} alt="" className="absolute right-0 top-0 w-[85%] md:w-3/4 h-full object-cover object-center md:object-left opacity-50" />
@@ -31,7 +56,7 @@ const Hero = () => {
               className="w-8 h-8 rounded-full object-cover"
             />
             <span className="flex items-center gap-2 text-[10px] sm:text-xs font-mono font-bold text-white/80 tracking-widest uppercase">
-              {lang === 'pt' ? 'Olá, eu sou o Thomas' : 'Hi, I am Thomas'} 
+              {greeting}
               <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Waving%20Hand.webp" alt="Waving Hand" className="w-5 h-5 inline-block origin-bottom-right hover:animate-wave" />
             </span>
           </div>

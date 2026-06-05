@@ -16,9 +16,9 @@ export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Proj
   const [device, setDevice] = useState<DeviceType>('desktop');
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-6">
+    <div className="w-full flex flex-col items-center justify-center gap-4 md:gap-6">
       {/* Device Selector */}
-      <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
+      <div className="hidden md:flex items-center gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
         <button
           onClick={() => setDevice('desktop')}
           className={`p-2 rounded-full transition-all duration-300 ${
@@ -74,7 +74,12 @@ export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Proj
 
                 <div className="flex-1 relative overflow-hidden bg-zinc-900">
                   {iframeUrl ? (
-                    <iframe src={iframeUrl} className="w-full h-full border-none" loading="lazy" title={altText} />
+                    <>
+                      {/* Iframe for desktop/tablet sizes */}
+                      <iframe src={iframeUrl} className="hidden md:block w-full h-full border-none" loading="lazy" title={altText} />
+                      {/* Image fallback for mobile to keep the desktop look ("pequeno e responsivo") */}
+                      <img src={desktopImg} className="block md:hidden w-full h-full object-cover object-top" alt={`${altText} Desktop`} />
+                    </>
                   ) : (
                     <img src={desktopImg} className="w-full h-full object-cover object-top" alt={`${altText} Desktop`} />
                   )}

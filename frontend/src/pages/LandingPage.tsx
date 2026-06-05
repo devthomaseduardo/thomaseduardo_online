@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import adminHero from "../assets/admin-hero.png";
 import brutalistLogo from "../assets/brutalist-logo.png";
-import thomasAbout from "../assets/thomas-about.svg";
+import thomasAbout from "../assets/thomas-about.png";
 import { RotatingText } from "../components/RotatingText";
 import { useSVGL } from "../hooks/useSVGL";
 import { DeviceMockup } from "../components/DeviceMockup";
