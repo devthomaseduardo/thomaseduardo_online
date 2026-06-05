@@ -252,7 +252,12 @@ app.get('/api/clients/me', authenticateToken, async (req: any, res: any) => {
         projects: {
           include: {
             invoices: { orderBy: { createdAt: 'desc' } },
-            files: { orderBy: { createdAt: 'desc' } }
+            files: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            timeline: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            tasks: { where: { visivelCliente: true }, orderBy: { ordem: 'asc' } },
+            contracts: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            deploys: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            integrations: { where: { visivelCliente: true } }
           }
         }
       }

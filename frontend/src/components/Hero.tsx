@@ -50,31 +50,33 @@ const Hero = () => {
         
         {/* Typography Column (Left) */}
         <div className="w-full col-span-1 lg:col-span-6 flex flex-col items-start justify-center text-left order-1">
+          <motion.h1 
+            {...HERO_FADE_UP}
+            transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.95] text-white pb-6 text-left mt-8 lg:mt-0"
+          >
+            {t.hero.h1a} <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">{t.hero.h1b}</span>
+          </motion.h1>
+
           <motion.div
             {...HERO_FADE_UP}
-            className="mb-8"
+            className="mb-8 w-full max-w-full"
           >
-            <div className="inline-flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-full bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 max-w-full overflow-hidden">
+            <div className="inline-flex items-start sm:items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-3xl bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 w-fit max-w-full overflow-hidden">
               <img 
                 src="/avatar.webp" 
                 alt="Thomas" 
                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover grayscale opacity-80 shrink-0"
               />
-              <span className="flex items-center gap-1.5 sm:gap-2 text-[8px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase whitespace-nowrap truncate">
+              <span className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[8px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase pt-1 sm:pt-0 leading-relaxed">
                 {greeting}
                 <AnimatedEmoji name="waving_hand" className="w-3 h-3 sm:w-4 sm:h-4 origin-bottom-right hover:animate-wave shrink-0" />
               </span>
             </div>
           </motion.div>
 
-          <motion.h1 
-            {...HERO_FADE_UP}
-            transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.95] text-white pb-6 text-left"
-          >
-            {t.hero.h1a} <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">{t.hero.h1b}</span>
-          </motion.h1>
+
 
           <motion.p
             {...HERO_FADE_UP}
@@ -104,7 +106,7 @@ const Hero = () => {
           <motion.div
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-start gap-4 mt-10 lg:mt-12 w-full order-3"
+            className="flex flex-col sm:flex-row items-center justify-start gap-2 mt-6 lg:mt-8 w-full order-3"
           >
             <a
               href="#casos"

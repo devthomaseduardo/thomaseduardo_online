@@ -6,6 +6,7 @@ import {
   Instagram
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import { RotatingText } from "../components/RotatingText";
 import { AnimatedEmoji } from "../components/AnimatedEmoji";
@@ -30,7 +31,7 @@ const SpeechText = () => {
   }, []);
 
   return (
-    <div className="relative w-[180px] sm:w-[240px] min-h-[20px] flex items-center">
+    <div className="relative w-[180px] sm:w-[240px] min-h-[40px] h-auto flex items-center">
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
@@ -48,16 +49,24 @@ const SpeechText = () => {
 };
 
 const LinkBio = () => {
+  const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(false);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768) {
-        window.location.href = "/";
+        setIsDesktop(true);
+        navigate("/", { replace: true });
+      } else {
+        setIsDesktop(false);
       }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [navigate]);
+
+  if (isDesktop) return null;
 
   const LINKS = [
     {

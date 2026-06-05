@@ -37,7 +37,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             <img 
               src={project.client_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`} 
               alt={`${project.title} logo`} 
-              className="w-10 h-10 md:w-14 md:h-14 object-contain rounded-lg bg-white/5 p-2 border border-white/10 shrink-0" 
+              className="w-10 h-10 md:w-14 md:h-14 object-contain rounded-full shrink-0" 
               onError={(e) => {
                 // Se a logo do clearbit ou original falhar, usa o fallback
                 (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`;

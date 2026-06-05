@@ -26,7 +26,17 @@ export const useSVGL = () => {
       "postgresql": "postgresql",
       "docker": "docker",
       "aws": "amazonaws",
-      "vercel": "vercel"
+      "vercel": "vercel",
+      "tailwindcss": "tailwindcss",
+      "framer motion": "framer",
+      "tanstack router": "reactrouter",
+      "typescript": "typescript",
+      "stripe": "stripe",
+      "canvas api": "html5",
+      "websockets": "socketdotio",
+      "performance": "lighthouse",
+      "seo": "google",
+      "ai integration": "openai"
     };
 
     const slug = iconMap[name.toLowerCase()] || name.toLowerCase().replace(/[^a-z0-9]/g, '');

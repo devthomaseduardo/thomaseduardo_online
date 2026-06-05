@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Monitor, Tablet, Smartphone } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -11,6 +11,48 @@ interface DeviceMockupProps {
 }
 
 type DeviceType = 'desktop' | 'tablet' | 'mobile';
+
+interface ResponsiveIframeProps {
+  src: string;
+  title: string;
+  targetWidth: number;
+  targetHeight: number;
+}
+
+function ResponsiveIframe({ src, title, targetWidth, targetHeight }: ResponsiveIframeProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setScale(entry.contentRect.width / targetWidth);
+      }
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [targetWidth]);
+
+  return (
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-zinc-900">
+      <iframe
+        src={src}
+        title={title}
+        loading="lazy"
+        className="absolute top-0 left-0 origin-top-left border-none"
+        style={{
+          width: `${targetWidth}px`,
+          height: `${targetHeight}px`,
+          transform: `scale(${scale})`,
+        }}
+      />
+    </div>
+  );
+}
 
 export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Project Mockup", iframeUrl }: DeviceMockupProps) {
   const [device, setDevice] = useState<DeviceType>(() => {
@@ -79,7 +121,7 @@ export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Proj
 
                 <div className="flex-1 relative overflow-hidden bg-zinc-900">
                   {iframeUrl ? (
-                    <iframe src={iframeUrl} className="w-full h-full border-none" loading="lazy" title={altText} />
+                    <ResponsiveIframe src={iframeUrl} title={altText} targetWidth={1280} targetHeight={720} />
                   ) : (
                     <img src={desktopImg} className="w-full h-full object-cover object-top" alt={`${altText} Desktop`} />
                   )}
@@ -111,7 +153,7 @@ export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Proj
                 
                 <div className="w-full h-full relative overflow-hidden bg-zinc-900 rounded-[1.25rem] md:rounded-[1.5rem]">
                   {iframeUrl ? (
-                    <iframe src={iframeUrl} className="w-full h-full border-none" loading="lazy" title={altText} />
+                    <ResponsiveIframe src={iframeUrl} title={altText} targetWidth={810} targetHeight={1080} />
                   ) : (
                     <img src={tabletImg || desktopImg} className="w-full h-full object-cover object-top" alt={`${altText} Tablet`} />
                   )}
@@ -141,7 +183,7 @@ export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Proj
                 
                 <div className="w-full h-full relative overflow-hidden bg-zinc-900 rounded-[1.75rem] md:rounded-[2.25rem]">
                   {iframeUrl ? (
-                    <iframe src={iframeUrl} className="w-full h-full border-none" loading="lazy" title={altText} />
+                    <ResponsiveIframe src={iframeUrl} title={altText} targetWidth={390} targetHeight={844} />
                   ) : (
                     <img src={mobileImg || desktopImg} className="w-full h-full object-cover object-top" alt={`${altText} Mobile`} />
                   )}

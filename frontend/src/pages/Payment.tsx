@@ -60,7 +60,7 @@ const POST_TIMELINE = [
   { icon: Package, label: "Entrega"              },
 ];
 
-const PIX_KEY = "th.eduardo210@gmail.com";
+const PIX_KEY = "devthomaseduardo@gmail.com";
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 const Sidebar = ({ amount, projectData }: { amount: number, projectData?: any }) => (

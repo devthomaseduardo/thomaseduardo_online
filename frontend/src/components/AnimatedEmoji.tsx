@@ -11,6 +11,13 @@ export const EMOJI_PATHS = {
   fire: 'Nature/Fire.webp',
   handshake: 'People/Handshake.webp',
   laptop: 'Objects/Laptop.webp',
+  sparkles: 'Nature/Sparkles.webp',
+  shield: 'Objects/Shield.webp',
+  money_bag: 'Objects/Money%20Bag.webp',
+  locked: 'Objects/Locked.webp',
+  folder: 'Objects/File%20Folder.webp',
+  gear: 'Objects/Gear.webp',
+  check: 'Symbols/Check%20Mark%20Button.webp'
 } as const;
 
 export type EmojiType = keyof typeof EMOJI_PATHS;

@@ -5,7 +5,7 @@ import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare,
   Upload, Check, Clock, Eye, Shield, ArrowRight, ArrowLeft,
   Palette, Image as ImageIcon, Type, Key, FileText, Layers,
-  Zap, Lock, Star, ChevronRight, X
+  Zap, Lock, Star, ChevronRight, X, Info
 } from "lucide-react";
 import fundoBg from "../assets/fundo-filosofia.webp";
 
@@ -70,6 +70,7 @@ interface MatCard {
   title:    string;
   desc:     string;
   formats:  string;
+  details:  string;
 }
 
 const MATERIALS: MatCard[] = [
@@ -77,31 +78,37 @@ const MATERIALS: MatCard[] = [
     id: "briefing",  icon: FileText,   title: "Briefing do Projeto",
     desc: "Documento de escopo, objetivos e expectativas do projeto.",
     formats: "PDF · DOCX · TXT",
+    details: "O briefing é a bússola do projeto. Nele, você descreve a visão da sua empresa, público-alvo, concorrentes de referência e os objetivos principais. Quanto mais detalhado for, mais preciso e assertivo será o resultado da interface final."
   },
   {
     id: "logo",      icon: Palette,    title: "Logo da Empresa",
     desc: "Versão principal da marca em alta resolução e variações.",
     formats: "SVG · AI · PNG · PDF",
+    details: "Precisamos do seu logotipo preferencialmente em formato vetorial (SVG, AI, EPS) para garantir máxima qualidade visual e nitidez em qualquer tamanho de tela e resolução de dispositivo."
   },
   {
     id: "brand",     icon: Layers,     title: "Manual da Marca",
     desc: "Guia de identidade visual, paleta de cores e tipografia.",
     formats: "PDF · AI · Figma",
+    details: "O manual contém as regras visuais da empresa. Ele nos diz quais códigos de cores institucionais usar, quais famílias tipográficas representam a marca e como aplicar o logo, mantendo a consistência visual em todas as páginas."
   },
   {
     id: "images",    icon: ImageIcon,  title: "Imagens e Fotos",
     desc: "Fotos institucionais, produtos ou referências visuais.",
     formats: "JPG · PNG · WebP",
+    details: "Imagens reais da sua equipe, do escritório ou do seu produto geram conexão extrema com o usuário. Envie arquivos originais de alta qualidade; faremos a otimização técnica (conversão para WebP) e compressão focada em performance na web."
   },
   {
     id: "texts",     icon: Type,       title: "Textos e Conteúdo",
     desc: "Textos institucionais, descrições e conteúdo editorial.",
     formats: "DOCX · PDF · TXT",
+    details: "O design atrai a atenção, mas é a copy (o texto) que converte. Precisamos dos seus textos institucionais, apresentação de diferenciais, depoimentos reais e descrições dos serviços para diagramar perfeitamente a sua nova interface."
   },
   {
     id: "access",    icon: Key,        title: "Acessos e Credenciais",
     desc: "Domínio, hospedagem, redes sociais ou painéis admin.",
     formats: "TXT · PDF · Planilha",
+    details: "Para realizar o deploy seguro (colocar o site no ar) e integrar plataformas analíticas (como Google Analytics, Meta Pixel, sistemas de hospedagem e domínio), precisaremos de acessos técnicos. Recomendamos gerar credenciais de acesso como convidado."
   },
 ];
 
@@ -124,6 +131,7 @@ const UploadCard = ({
   card, status, onUpload,
 }: { card: MatCard; status: Status; onUpload: (id: string) => void }) => {
   const [dragging, setDragging] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const Icon = card.icon;
 
@@ -146,7 +154,7 @@ const UploadCard = ({
       <input ref={inputRef} type="file" multiple className="hidden" onChange={() => onUpload(card.id)} />
 
       {/* Card header */}
-      <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3">
+      <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3 relative z-10">
         <div className="flex items-center gap-3">
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center border shrink-0 ${
             status === "received"
@@ -160,13 +168,41 @@ const UploadCard = ({
             <span className="block text-[11px] text-white/30 mt-0.5 leading-relaxed">{card.desc}</span>
           </div>
         </div>
-        <StatusBadge status={status} />
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <StatusBadge status={status} />
+          <button 
+            onClick={(e) => { e.stopPropagation(); setShowInfo(!showInfo); }} 
+            className="flex items-center gap-1.5 text-[9px] uppercase font-mono tracking-widest text-white/30 hover:text-white transition-colors mt-1 bg-white/[0.03] border border-white/5 hover:bg-white/[0.1] px-2 py-1 rounded"
+          >
+            <Info className="w-3 h-3" />
+            {showInfo ? "Ocultar Detalhes" : "Saber Mais"}
+          </button>
+        </div>
       </div>
+
+      {/* Info panel */}
+      <AnimatePresence>
+        {showInfo && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="px-6 pb-4 overflow-hidden relative z-10"
+          >
+            <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4 text-[12px] text-white/50 leading-relaxed shadow-inner">
+              <span className="block font-semibold text-white/70 mb-1 flex items-center gap-2">
+                <Info className="w-3.5 h-3.5" /> Por que precisamos disso?
+              </span>
+              {card.details}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Drop zone */}
       <div
         onClick={() => status !== "received" && inputRef.current?.click()}
-        className={`mx-6 mb-6 flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed py-8 transition-all duration-300 ${
+        className={`mx-6 mb-6 flex-1 flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed py-8 transition-all duration-300 relative z-10 ${
           status === "received"
             ? "border-emerald-500/15 bg-emerald-500/[0.03] cursor-default"
             : "border-white/[0.07] hover:border-white/20 cursor-pointer hover:bg-white/[0.02]"
@@ -337,8 +373,11 @@ export default function MaterialPage() {
               <h1 className="text-[clamp(36px,4.5vw,68px)] font-bold tracking-tighter leading-[1.0] mb-5">
                 Vamos estruturar<br />sua operação.
               </h1>
-              <p className="text-[15px] text-white/35 max-w-lg leading-relaxed">
-                Antes do desenvolvimento, precisamos reunir todas as informações e materiais que irão orientar o projeto e garantir o melhor resultado.
+              <p className="text-[15px] text-white/35 max-w-lg leading-relaxed mb-4">
+                Antes de iniciarmos o desenvolvimento, é fundamental reunir os artefatos visuais, as credenciais e o escopo exato do projeto. Nossa organização inicial é o que garante uma entrega sem atritos e de altíssima qualidade técnica.
+              </p>
+              <p className="text-[14px] text-white/25 max-w-lg leading-relaxed">
+                Neste painel interativo, você pode fazer o upload seguro dos seus arquivos, monitorar o progresso dos recebimentos e entender exatamente a finalidade de cada documento clicando no botão <strong>Saber mais</strong> em cada material abaixo.
               </p>
             </motion.div>
           </div>

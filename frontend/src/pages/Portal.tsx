@@ -10,12 +10,13 @@ import {
 import { useNavigate, Link } from "react-router-dom";
 import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
+import { AnimatedEmoji } from "../components/AnimatedEmoji";
 
 const steps = [
-  { n: "01", title: "Briefing & Organização", desc: "Entendimento do projeto, objetivos, referências e estrutura inicial do escopo." },
-  { n: "02", title: "Materiais & Conteúdo", desc: "Envio de logos, imagens, textos, referências e acessos importantes." },
-  { n: "03", title: "Desenvolvimento & Aprovação", desc: "Criação, acompanhamento, revisões e validações do projeto em tempo real." },
-  { n: "04", title: "Entrega & Infraestrutura", desc: "Deploy, domínio, repositórios, arquivos finais e documentação técnica." },
+  { n: "01", title: "Briefing & Organização", desc: "Entendimento do projeto, objetivos, referências e estrutura inicial do escopo.", emoji: "folder" },
+  { n: "02", title: "Materiais & Conteúdo", desc: "Envio de logos, imagens, textos, referências e acessos importantes.", emoji: "laptop" },
+  { n: "03", title: "Desenvolvimento & Aprovação", desc: "Criação, acompanhamento, revisões e validações do projeto em tempo real.", emoji: "gear" },
+  { n: "04", title: "Entrega & Infraestrutura", desc: "Deploy, domínio, repositórios, arquivos finais e documentação técnica.", emoji: "rocket" },
 ];
 
 const modules = [
@@ -44,7 +45,7 @@ const accordions = [
   { title: "Arquivos Extras", items: ["Google Drive compartilhado", "Documentos e PDFs", "Briefings anteriores", "Referências adicionais"] },
 ];
 
-const PIX_KEY = "th.eduardo210@gmail.com";
+const PIX_KEY = "devthomaseduardo@gmail.com";
 
 export default function Portal() {
   const navigate = useNavigate();
@@ -116,6 +117,7 @@ export default function Portal() {
             <h1 className="text-[clamp(48px,6vw,88px)] font-bold tracking-[-0.04em] leading-[1.03] mb-8">
               Tudo do seu projeto<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white/90 to-white/25">em um só lugar.</span>
+              <AnimatedEmoji name="sparkles" className="inline-block w-[clamp(32px,4vw,56px)] h-[clamp(32px,4vw,56px)] ml-4 -mt-4 align-middle" />
             </h1>
             <p className="text-white/45 text-xl font-light max-w-2xl leading-relaxed mb-12">
               Uma área criada para organizar materiais, pagamentos, contratos, arquivos e toda a estrutura técnica do seu projeto com clareza e previsibilidade.
@@ -124,7 +126,7 @@ export default function Portal() {
               <a href="#login" className="group relative inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-bold text-sm rounded-xl overflow-hidden">
                 <div className="absolute inset-0 bg-[#009EE3] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 <span className="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors duration-300">
-                  Acessar área do cliente <ArrowRight className="w-4 h-4" />
+                  Acessar área do cliente <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 </span>
               </a>
               <a href="#como-funciona" className="inline-flex items-center gap-2 px-8 py-4 border border-white/10 text-white/60 hover:text-white hover:border-white/30 font-medium text-sm rounded-xl transition-all">
@@ -151,31 +153,40 @@ export default function Portal() {
               <img src="/logo.png" alt="T3RN Logo" className="w-full h-full object-contain" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((s, i) => (
               <motion.div key={s.n} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-8 hover:border-white/[0.12] transition-all">
-                <span className="text-[10px] font-mono text-white/20 tracking-widest mb-6 block">{s.n}</span>
-                <h3 className="text-lg font-semibold mb-3">{s.title}</h3>
-                <p className="text-white/40 text-sm leading-relaxed">{s.desc}</p>
+                className="relative mt-6">
+                <div className="absolute -top-6 left-0 w-24 h-6 bg-[#0B0B0B] rounded-t-xl" />
+                <div className="bg-[#0B0B0B] rounded-2xl rounded-tl-none p-8 h-full hover:bg-[#0F0F0F] transition-all group">
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-[10px] font-mono text-white/20 tracking-widest block">{s.n}</span>
+                    <AnimatedEmoji name={s.emoji as any} className="w-8 h-8 opacity-80 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-3">{s.title}</h3>
+                  <p className="text-white/40 text-sm leading-relaxed">{s.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </section>
 
         {/* ── O QUE O CLIENTE ACESSA ── */}
-        <section className="px-8 py-32 border-y border-white/[0.05]">
+        <section className="px-8 py-32">
           <div className="max-w-7xl mx-auto">
             <div className="mb-16">
               <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/25 block mb-5">Área privada</span>
               <h2 className="text-5xl font-bold tracking-tight">O que você acessa.</h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-px bg-white/[0.05] border border-white/[0.05] rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
               {modules.map((m, i) => (
                 <motion.div key={m.label} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }}
-                  className="bg-[#0B0B0B] p-6 flex flex-col items-center gap-3 hover:bg-white/[0.03] transition-colors group">
-                  <m.icon className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-colors" />
-                  <span className="text-[11px] text-white/40 text-center font-medium group-hover:text-white/70 transition-colors">{m.label}</span>
+                  className="relative mt-4">
+                  <div className="absolute -top-4 left-0 w-[50%] max-w-[60px] h-4 bg-[#0B0B0B] rounded-t-lg" />
+                  <div className="bg-[#0B0B0B] p-6 rounded-xl rounded-tl-none flex flex-col items-center justify-center gap-3 hover:bg-[#0F0F0F] transition-colors group h-full">
+                    <m.icon className="w-5 h-5 text-white/30 group-hover:text-white/60 transition-colors" />
+                    <span className="text-[11px] text-white/40 text-center font-medium group-hover:text-white/70 transition-colors">{m.label}</span>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -194,7 +205,7 @@ export default function Portal() {
               {accordions.map((a, i) => {
                 const open = openAcc === i;
                 return (
-                  <div key={a.title} className={`border rounded-xl overflow-hidden transition-all ${open ? "bg-white/[0.03] border-white/[0.1]" : "bg-transparent border-white/[0.06] hover:border-white/[0.1]"}`}>
+                  <div key={a.title} className={`rounded-xl overflow-hidden transition-all ${open ? "bg-[#0F0F0F]" : "bg-[#0B0B0B] hover:bg-[#0F0F0F]"}`}>
                     <button onClick={() => setOpenAcc(open ? null : i)}
                       className="w-full flex items-center justify-between p-6 text-left">
                       <span className="font-semibold">{a.title}</span>
@@ -224,17 +235,19 @@ export default function Portal() {
         </section>
 
         {/* ── PAGAMENTOS ── */}
-        <section className="px-8 py-32 border-y border-white/[0.05]">
+        <section className="px-8 py-32">
           <div className="max-w-4xl mx-auto">
             <div className="mb-16 text-center">
               <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/25 block mb-5">Financeiro</span>
-              <h2 className="text-5xl font-bold tracking-tight mb-4">Formas de pagamento.</h2>
+              <h2 className="text-5xl font-bold tracking-tight mb-4 flex items-center justify-center gap-4">
+                Formas de pagamento. <AnimatedEmoji name="money_bag" className="w-12 h-12" />
+              </h2>
               <p className="text-white/40 text-lg font-light">50% no início + 50% na entrega. Simples e transparente.</p>
             </div>
             <div className="flex gap-2 justify-center mb-10">
               {[{ id: "pix", label: "PIX" }, { id: "card", label: "Cartão / Link" }].map(t => (
                 <button key={t.id} onClick={() => setActivePayment(t.id as any)}
-                  className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-all ${activePayment === t.id ? "bg-white text-black" : "text-white/50 border border-white/10 hover:text-white"}`}>
+                  className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-all ${activePayment === t.id ? "bg-white text-black" : "text-white/50 bg-transparent hover:bg-[#0B0B0B] hover:text-white"}`}>
                   {t.label}
                 </button>
               ))}
@@ -242,22 +255,25 @@ export default function Portal() {
             <AnimatePresence mode="wait">
               {activePayment === "pix" && (
                 <motion.div key="pix" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-8">
-                  <div className="flex flex-col sm:flex-row gap-8 items-center">
-                    <div className="w-36 h-36 bg-white/[0.04] border border-white/[0.08] rounded-2xl flex items-center justify-center shrink-0">
-                      <QrCode className="w-16 h-16 text-white/20" />
-                    </div>
-                    <div className="flex-1 w-full">
-                      <p className="text-white/40 text-sm mb-4">Chave PIX — pagamento instantâneo, sem taxas adicionais.</p>
-                      <div className="flex items-center gap-2 bg-black/40 border border-white/[0.08] rounded-xl p-2">
-                        <input readOnly value={PIX_KEY} className="bg-transparent text-white font-mono text-sm px-3 py-2 w-full outline-none" />
-                        <button onClick={copyPix} className="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-white/90 transition-colors shrink-0">
-                          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                          {copied ? "Copiado" : "Copiar"}
-                        </button>
+                  className="relative mt-6">
+                  <div className="absolute -top-6 left-0 w-32 h-6 bg-[#0B0B0B] rounded-t-xl" />
+                  <div className="bg-[#0B0B0B] rounded-2xl rounded-tl-none p-8">
+                    <div className="flex flex-col sm:flex-row gap-8 items-center">
+                      <div className="w-36 h-36 bg-black/40 rounded-2xl flex items-center justify-center shrink-0">
+                        <QrCode className="w-16 h-16 text-white/20" />
                       </div>
-                      <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400/70">
-                        <Zap className="w-3.5 h-3.5" /> Confirmação instantânea após o pagamento
+                      <div className="flex-1 w-full">
+                        <p className="text-white/40 text-sm mb-4">Chave PIX — pagamento instantâneo, sem taxas adicionais.</p>
+                        <div className="flex items-center gap-2 bg-black/40 rounded-xl p-2">
+                          <input readOnly value={PIX_KEY} className="bg-transparent text-white font-mono text-sm px-3 py-2 w-full outline-none" />
+                          <button onClick={copyPix} className="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-white/90 transition-colors shrink-0">
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                            {copied ? "Copiado" : "Copiar"}
+                          </button>
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 text-xs text-emerald-400/70">
+                          <Zap className="w-3.5 h-3.5" /> Confirmação instantânea após o pagamento
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -265,11 +281,14 @@ export default function Portal() {
               )}
               {activePayment === "card" && (
                 <motion.div key="card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-8 text-center space-y-4">
-                  <CreditCard className="w-12 h-12 text-white/20 mx-auto" />
-                  <p className="text-white/50 text-sm max-w-md mx-auto">O link de pagamento seguro é gerado após a aprovação do escopo e enviado por e-mail ou diretamente no seu portal.</p>
-                  <div className="inline-flex items-center gap-2 border border-white/10 rounded-full px-4 py-2 text-xs font-mono text-white/30">
-                    <Shield className="w-3.5 h-3.5" /> Checkout via Mercado Pago
+                  className="relative mt-6 max-w-md mx-auto">
+                  <div className="absolute -top-6 left-0 w-32 h-6 bg-[#0B0B0B] rounded-t-xl" />
+                  <div className="bg-[#0B0B0B] rounded-2xl rounded-tl-none p-8 text-center space-y-4">
+                    <CreditCard className="w-12 h-12 text-white/20 mx-auto" />
+                    <p className="text-white/50 text-sm max-w-md mx-auto">O link de pagamento seguro é gerado após a aprovação do escopo e enviado por e-mail ou diretamente no seu portal.</p>
+                    <div className="inline-flex items-center gap-2 bg-black/40 rounded-full px-4 py-2 text-xs font-mono text-white/30">
+                      <Shield className="w-3.5 h-3.5" /> Checkout via Mercado Pago
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -282,26 +301,30 @@ export default function Portal() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
               <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/25 block mb-5">Acesso restrito</span>
-              <h2 className="text-5xl font-bold tracking-tight mb-6">Área privada do cliente.</h2>
+              <h2 className="text-5xl font-bold tracking-tight mb-6 flex flex-wrap items-center gap-4">
+                Área privada <AnimatedEmoji name="locked" className="w-10 h-10 lg:w-12 lg:h-12" /><br className="hidden lg:block"/> do cliente.
+              </h2>
               <p className="text-white/40 text-lg font-light leading-relaxed">Acesse pagamentos, contratos, arquivos, materiais, deploys e informações técnicas do seu projeto.</p>
             </div>
-            <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-3xl p-8">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
-                  <Lock className="w-4 h-4 text-white/50" />
+            <div className="relative mt-6">
+              <div className="absolute -top-6 left-0 w-40 h-6 bg-[#0B0B0B] rounded-t-xl" />
+              <div className="bg-[#0B0B0B] rounded-3xl rounded-tl-none p-8">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center">
+                    <Lock className="w-4 h-4 text-white/50" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">Acesso Seguro</h3>
+                    <p className="text-white/30 text-xs">Credenciais enviadas por e-mail</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm">Acesso Seguro</h3>
-                  <p className="text-white/30 text-xs">Credenciais enviadas por e-mail</p>
-                </div>
-              </div>
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
                   <label className="block text-[10px] font-mono text-white/30 uppercase tracking-wider mb-2">CNPJ, CPF ou e-mail</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
                     <input type="text" value={identifier} onChange={e => setIdentifier(e.target.value)} placeholder="Seu identificador" required
-                      className="w-full bg-black/40 border border-white/[0.08] rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/20 outline-none focus:border-white/30 transition-all" />
+                      className="w-full bg-black/40 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white placeholder-white/20 outline-none focus:bg-white/[0.05] transition-all" />
                   </div>
                 </div>
                 <div>
@@ -309,7 +332,7 @@ export default function Portal() {
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
                     <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••••" required
-                      className="w-full bg-black/40 border border-white/[0.08] rounded-xl pl-11 pr-12 py-3.5 text-sm text-white placeholder-white/20 outline-none focus:border-white/30 transition-all" />
+                      className="w-full bg-black/40 rounded-xl pl-11 pr-12 py-3.5 text-sm text-white placeholder-white/20 outline-none focus:bg-white/[0.05] transition-all" />
                     <button type="button" onClick={() => setShowPass(v => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/60 transition-colors">
                       {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -318,7 +341,7 @@ export default function Portal() {
                 <AnimatePresence>
                   {loginError && (
                     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                      className="text-red-400 text-sm bg-red-500/[0.08] border border-red-500/20 rounded-xl px-4 py-3 flex items-center gap-2">
+                      className="text-red-400 text-sm bg-red-500/[0.08] rounded-xl px-4 py-3 flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" /> {loginError}
                     </motion.div>
                   )}
@@ -333,6 +356,7 @@ export default function Portal() {
                   </span>
                 </button>
               </form>
+              </div>
             </div>
           </div>
         </section>

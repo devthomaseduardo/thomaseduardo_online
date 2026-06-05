@@ -59,7 +59,7 @@ const Navbar = () => {
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <span style={{ fontSize: 15, fontWeight: 600, color: "#F5F5F7", letterSpacing: "-0.01em" }}>
-            <RotatingText />
+            Thomas Eduardo
           </span>
         </a>
 

@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { LangProvider } from "./contexts/LangContext";
+import { ClientProtectedRoute } from "./components/ClientProtectedRoute";
 
 // ─── Above-the-fold: loaded eagerly for instant FCP ─────────────────────────
 import Navbar from "./components/Navbar";
@@ -81,15 +82,19 @@ function App() {
             <Route path="/links"    element={<LinkBio />} />
             <Route path="/r"        element={<Redirect />} />
             <Route path="/shop"     element={<Shop />} />
-
             <Route path="/cases"    element={<Projects />} />
-            <Route path="/projetos" element={<Projects />} />
-            <Route path="/material"  element={<Material />} />
-            <Route path="/payment"   element={<Payment />} />
             <Route path="/portal"   element={<Portal />} />
-            <Route path="/portal/dashboard" element={<ClientDashboard />} />
-
             <Route path="/proposta" element={<Proposta />} />
+            <Route path="/landing"  element={<LandingPage />} />
+
+            {/* Rotas Protegidas do Cliente */}
+            <Route path="/projetos" element={<ClientProtectedRoute><Projects /></ClientProtectedRoute>} />
+            <Route path="/material"  element={<ClientProtectedRoute><Material /></ClientProtectedRoute>} />
+            <Route path="/payment"   element={<ClientProtectedRoute><Payment /></ClientProtectedRoute>} />
+            <Route path="/portal/dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />
+            <Route path="/materials" element={<ClientProtectedRoute><ProjectMaterials /></ClientProtectedRoute>} />
+
+            {/* Rotas de Admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
@@ -104,8 +109,6 @@ function App() {
               <Route path="team" element={<AdminTeam />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
-            <Route path="/landing"  element={<LandingPage />} />
-            <Route path="/materials" element={<ProjectMaterials />} />
           </Routes>
         </Suspense>
       </Router>
