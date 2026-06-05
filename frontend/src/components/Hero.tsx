@@ -36,7 +36,7 @@ const Hero = () => {
   }, [lang]);
 
   return (
-    <section className="relative z-20 min-h-[85vh] lg:min-h-screen flex items-center justify-center py-20 px-6 overflow-hidden bg-[#060606]">
+    <section className="relative z-20 min-h-[85vh] lg:min-h-screen flex items-center justify-center py-20 overflow-hidden bg-[#060606]">
       {/* Background Image Setup */}
       <div className="absolute inset-0 z-0">
         <img src={heroWeb} alt="" className="absolute right-0 top-0 w-[85%] md:w-3/4 h-full object-cover object-center md:object-left opacity-30 mix-blend-luminosity" />
@@ -46,7 +46,7 @@ const Hero = () => {
         <div className="absolute right-1/4 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-white/10 to-transparent" />
       </div>
 
-      <div className="w-full max-w-screen-2xl mx-auto px-4 md:px-16 lg:px-24 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mt-12 lg:mt-0">
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mt-12 lg:mt-0">
         
         {/* Typography Column (Left) */}
         <div className="w-full col-span-1 lg:col-span-6 flex flex-col items-start justify-center text-left order-1">

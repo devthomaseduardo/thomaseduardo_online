@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import { RotatingText } from "../components/RotatingText";
+import { AnimatedEmoji } from "../components/AnimatedEmoji";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -24,7 +25,7 @@ const LinkBio = () => {
       href: "https://wa.me/5511977070209",
       label: "Diagnóstico Grátis",
       sub: "Vamos escalar seu produto",
-      icon: <Mail className="w-5 h-5" />,
+      icon: <AnimatedEmoji name="rocket" className="w-5 h-5 shrink-0" />,
       primary: true
     },
     {

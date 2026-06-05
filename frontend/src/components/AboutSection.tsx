@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useLang } from "../contexts/LangContext";
-import { ArrowRight } from "lucide-react";
 import { FADE_UP } from "../constants/animations";
 import thomasAbout from "../assets/thomas-about.png";
 import { useSVGL } from "../hooks/useSVGL";
@@ -40,8 +39,8 @@ const AboutSection = () => {
   const b4Scale = useTransform(scrollYProgress, [0.3, 0.5], [0.5, 1]);
 
   return (
-    <section ref={sectionRef} id="sobre" className="relative section-padding px-6 md:px-16 lg:px-24 mx-auto flex items-center justify-center bg-(--pg-bg) text-white z-10">
-      <div className="w-full relative z-10">
+    <section ref={sectionRef} id="sobre" className="relative py-16 md:py-24 w-full flex items-center justify-center bg-pg-bg text-white overflow-hidden z-10">
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* MOBILE IMAGE (Parallax at the top) */}
@@ -131,11 +130,6 @@ const AboutSection = () => {
             <p className="text-base md:text-lg text-white/60 leading-relaxed font-light mb-6">
               Meu foco não é apenas escrever código. É criar previsibilidade, eficiência e crescimento através da tecnologia.
             </p>
-
-            <button className="w-full md:w-auto justify-center group relative inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-white text-black font-mono font-bold text-xs tracking-widest uppercase hover:bg-emerald-400 hover:text-black transition-colors duration-500 overflow-hidden">
-              <span className="relative z-10">Minha Jornada</span>
-              <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-            </button>
           </motion.div>
 
           {/* DESKTOP IMAGE (Parallax) */}
@@ -211,7 +205,7 @@ const AboutSection = () => {
 
             {/* Trusted Companies */}
             <div className="pt-2">
-              <div className="flex items-center">
+              <div className="flex flex-col items-start gap-3">
                 <div className="flex -space-x-3">
                   {[
                     "sleephouse.png", 
@@ -241,9 +235,9 @@ const AboutSection = () => {
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.4 }}
                   viewport={{ once: true }}
-                  className="ml-4 text-[11px] font-mono text-white/40 leading-tight"
+                  className="text-[11px] font-mono text-white/40 leading-tight uppercase tracking-widest"
                 >
-                  Marcas que <br />já confiam
+                  Marcas que já confiam
                 </motion.div>
               </div>
             </div>

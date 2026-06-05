@@ -89,8 +89,8 @@ const translations = {
       btnEmail: "ENVIAR E-MAIL",
     },
     footer: {
-      h2: "Seu software deve trabalhar para a sua operação.",
-      desc: "Software não é código. É alavanca de crescimento.",
+      h2: "Sistemas desenhados para escalar.",
+      desc: "Engenharia focada em eliminar fricção e acelerar o seu negócio.",
       nav: "Links Institucionais",
       contact: "Contato Direto",
       copy: "© 2026 Thomas Eduardo. Premium Digital Assets.",
@@ -182,8 +182,8 @@ const translations = {
       btnEmail: "SEND E-MAIL",
     },
     footer: {
-      h2: "Your software should work for your operation.",
-      desc: "Software is not code. It's a growth lever.",
+      h2: "Systems designed to scale.",
+      desc: "Engineering focused on eliminating friction and accelerating your business.",
       nav: "Institutional Links",
       contact: "Direct Contact",
       copy: "© 2026 Thomas Eduardo. Premium Digital Assets.",

@@ -15,9 +15,8 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section id="metodologia" className="relative section-padding px-6 bg-pg-bg overflow-hidden">
-      
-      <div className="w-full px-6 md:px-16 lg:px-24 mx-auto relative z-10">
+    <section id="metodologia" className="relative py-16 md:py-24 w-full overflow-hidden bg-pg-bg">
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10">
         <motion.div 
           {...FADE_UP}
           className="mb-8 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8"
@@ -48,7 +47,7 @@ const ServicesSection = () => {
         </motion.div>
     
         {/* Edge-to-edge mobile carousel wrapper with negative margins */}
-        <div className="mt-4 md:mt-16 flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-12 w-[calc(100%+3rem)] -mx-6 px-6 md:w-full md:mx-0 md:px-0 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 no-scrollbar scroll-px-6">
+        <div className="mt-4 md:mt-16 flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-12 w-[calc(100%+2rem)] -mx-4 px-4 md:w-full md:mx-0 md:px-0 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 no-scrollbar scroll-px-4">
           {TAB_CONTENT.map((tab: any, index: number) => (
             <motion.div
               key={index}

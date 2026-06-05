@@ -11,7 +11,7 @@ import FloatingSocial from "./components/FloatingSocial";
 const AboutSection       = lazy(() => import("./components/AboutSection"));
 const BentoGrid          = lazy(() => import("./components/BentoGrid"));
 const ProjectSection     = lazy(() => import("./components/ProjectSection").then(m => ({ default: m.ProjectSection })));
-const EngineeringLab      = lazy(() => import("./components/EngineeringLab").then(m => ({ default: m.EngineeringLab })));
+const SolutionsSection    = lazy(() => import("./components/SolutionsSection").then(m => ({ default: m.SolutionsSection })));
 const ProcessSection     = lazy(() => import("./components/ProcessSection").then(m => ({ default: m.ProcessSection })));
 const ContactSection     = lazy(() => import("./components/ContactSection").then(m => ({ default: m.ContactSection })));
 const Footer             = lazy(() => import("./components/Footer").then(m => ({ default: m.Footer })));
@@ -57,9 +57,9 @@ const Home = () => {
         <Hero />
         <Suspense fallback={null}>
           <AboutSection />
+          <SolutionsSection />
           <ProjectSection />
           <BentoGrid />
-          <EngineeringLab />
           <ProcessSection />
           <ContactSection />
         </Suspense>

@@ -5,6 +5,7 @@ import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { RotatingText } from "./RotatingText";
 import { useActiveSection } from "../hooks/useActiveSection";
+import { AnimatedEmoji } from "./AnimatedEmoji";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -94,7 +95,7 @@ const Navbar = () => {
 
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
-            className="hidden sm:flex items-center transition-all duration-200"
+            className="hidden sm:flex items-center gap-2 transition-all duration-200 group"
             style={{
               fontSize: 13,
               color: "#F5F5F7",
@@ -106,6 +107,7 @@ const Navbar = () => {
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.2)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
           >
+            <AnimatedEmoji name="rocket" className="w-4 h-4 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
             {t.nav.cta}
           </a>
           </>
@@ -176,7 +178,7 @@ const Navbar = () => {
             >
               <a
                 href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
-                className="w-full text-center"
+                className="w-full flex items-center justify-center gap-2 group"
                 style={{
                   fontSize: 15,
                   fontWeight: 600,
@@ -187,6 +189,7 @@ const Navbar = () => {
                   padding: "10px 28px",
                 }}
               >
+                <AnimatedEmoji name="rocket" className="w-4 h-4 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
                 {t.nav.cta}
               </a>
               <div className="flex items-center gap-4">

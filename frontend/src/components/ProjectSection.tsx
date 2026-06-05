@@ -201,11 +201,12 @@ export const ProjectSection = () => {
     });
 
   return (
-    <section id="casos" className="section-padding w-full px-4 md:px-16 lg:px-24 mx-auto overflow-hidden bg-(--pg-bg)">
-      <motion.div
-        {...FADE_UP}
-        className="mb-8 md:mb-12 md:mt-32 lg:mt-56 flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8"
-      >
+    <section id="casos" className="relative py-16 md:py-24 w-full overflow-hidden bg-(--pg-bg)">
+      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10">
+        <motion.div
+          {...FADE_UP}
+          className="mb-8 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        >
         <div>
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-2 md:mb-4">
             {t.projects.eyebrow}
@@ -259,6 +260,7 @@ export const ProjectSection = () => {
             </>
           )}
         </div>
+      </div>
       </div>
     </section>
   );
