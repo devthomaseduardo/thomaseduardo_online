@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { RotatingText } from "./RotatingText";
+import { useActiveSection } from "../hooks/useActiveSection";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -18,6 +19,8 @@ const Navbar = () => {
     { label: t.nav.cases, id: "cases" },
     { label: t.nav.lab, id: "lab" },
   ];
+
+  const activeSection = useActiveSection(navLinks.map(l => l.id));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -35,10 +38,10 @@ const Navbar = () => {
       <nav
         className="fixed top-0 left-0 right-0 z-[999] flex items-center h-[64px] px-6 md:px-12 transition-all duration-300 ease-in-out"
         style={{
-          background: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
-          backdropFilter: scrolled ? "saturate(180%) blur(25px)" : "none",
-          WebkitBackdropFilter: scrolled ? "saturate(180%) blur(25px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.12)" : "1px solid transparent",
+          background: scrolled ? "rgba(10, 10, 10, 0.65)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px) saturate(190%)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(12px) saturate(190%)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
         }}
       >
         <a
@@ -65,8 +68,12 @@ const Navbar = () => {
               key={link.id}
               href={`#${link.id}`}
               onClick={(e) => handleSmoothScroll(e, `#${link.id}`)}
-              style={{ fontSize: 13, color: "#F5F5F7" }}
-              className="px-3 py-1.5 opacity-80 hover:opacity-100 transition-opacity duration-200 whitespace-nowrap"
+              style={{ 
+                fontSize: 13, 
+                color: activeSection === link.id ? "#10b981" : "#F5F5F7",
+                background: activeSection === link.id ? "rgba(16, 185, 129, 0.1)" : "transparent"
+              }}
+              className={`px-3 py-1.5 rounded-md transition-all duration-200 whitespace-nowrap ${activeSection === link.id ? 'opacity-100 font-medium' : 'opacity-80 hover:opacity-100 hover:bg-white/5'}`}
             >
               {link.label}
             </a>

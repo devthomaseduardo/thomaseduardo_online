@@ -6,6 +6,7 @@ import { FADE_UP, SMOOTH_TRANSITION } from '../constants/animations';
 import projectsData from '../data/projects.json';
 import { useSVGL } from '../hooks/useSVGL';
 import { DeviceMockup } from './DeviceMockup';
+import { AnimatedEmoji } from './AnimatedEmoji';
 
 export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
   const { getIcon } = useSVGL();
@@ -67,14 +68,9 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
               {lang === "pt" 
                 ? (showDetails ? "Recolher Detalhes" : "Detalhes do Projeto") 
                 : (showDetails ? "Hide Details" : "Project Details")}
-              <img 
-                src={showDetails 
-                  ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Backhand%20Index%20Pointing%20Up.webp"
-                  : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Backhand%20Index%20Pointing%20Right.webp"
-                }
-                alt={showDetails ? "Backhand Index Pointing Up" : "Backhand Index Pointing Right"}
-                width="20" 
-                height="20" 
+              <AnimatedEmoji 
+                name={showDetails ? "pointing_up" : "pointing_right"} 
+                className="w-5 h-5" 
               />
             </button>
 
@@ -168,7 +164,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             className="absolute w-[calc(100%-2rem)] md:w-auto justify-center z-50 bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 inline-flex flex-row flex-nowrap whitespace-nowrap items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 hover:bg-white text-[9px] md:text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-colors duration-300 group shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
           >
             <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
-            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Telegram-Animated-Emojis/main/People/Eyes.webp" alt="Eyes" width="20" height="20" className="md:w-[25px] md:h-[25px] group-hover:scale-110 transition-transform shrink-0" />
+            <AnimatedEmoji name="eyes" className="w-5 h-5 md:w-[25px] md:h-[25px] group-hover:scale-110 transition-transform shrink-0" />
           </motion.a>
         )}
 
@@ -219,7 +215,7 @@ export const ProjectSection = () => {
             <span className="text-white/40">{t.projects.h2b}</span>
           </h2>
         </div>
-        <div className="flex items-center gap-4 pb-0 md:pb-2 mt-4 md:mt-0">
+        <div className="flex items-center gap-4 pb-0 md:pb-2 mt-8 md:mt-0">
           {/* Carousel Navigation Capsule */}
           <div className="flex items-center gap-0 p-[2px] rounded-full bg-white/[0.02] backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.02)] border border-white/5">
             <button
@@ -252,8 +248,8 @@ export const ProjectSection = () => {
       </motion.div>
 
       {/* Client Projects Carousel */}
-      <div className="mb-10 md:mb-20">
-        <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-1 md:mb-1 block pb-0">
+      <div className="mb-10 md:mb-20 mt-16 md:mt-0">
+        <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4 md:mb-1 block pb-0">
           {lang === 'pt' ? 'Projetos de Clientes' : 'Client Projects'}
         </span>
         <div className="flex flex-col space-y-8">
