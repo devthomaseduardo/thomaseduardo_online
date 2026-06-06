@@ -19,8 +19,49 @@ const STATUS_COLOR: Record<string, string> = {
 };
 
 const EMPTY = { 
-  title: "", description: "", status: "draft", stage: "draft", 
-  amount: 0, version: 1, clientId: ""
+  title: "", 
+  description: `CONTRATO DE PRESTAÇÃO DE SERVIÇO
+
+Pelo presente instrumento particular de CONTRATO DE PRESTAÇÃO DE SERVIÇOS TÉCNICOS, de um lado Thomas Eduardo dos Reis Nascimento, com sede/residência em São Paulo - SP, inscrito no CNPJ/CPF sob o nº 60.882.678/0001-77, doravante denominado CONTRATADO, e de outro lado [NOME DO CLIENTE], residente/sediado em [ENDEREÇO DO CLIENTE], inscrito no CNPJ/CPF sob o nº [CNPJ/CPF DO CLIENTE], doravante denominado CONTRANTE, celebram o presente contrato sob as cláusulas abaixo:
+
+1. OBJETO DO CONTRATO
+O objeto deste contrato é a prestação de serviços especializados em Desenvolvedor Fullstack Pleno, compreendendo as seguintes atividades:
+- Criação de Landing Pages e Sites Institucionais
+- Desenvolvimento de E-commerces e Sistemas Web
+- Otimização de SEO e Performance
+- Manutenção e Suporte Técnico
+- Design Responsivo
+- Integração API
+- Suporte 30 dias
+
+2. VALORES E FORMA DE PAGAMENTO
+Pelo serviço ora contratado, o CONTRATANTE pagará ao CONTRATADO o valor total bruto de R$ [VALOR TOTAL].
+O pagamento será efetuado da seguinte forma: 50% a título de sinal e princípio de pagamento para mobilização técnica, e o saldo remanescente de 50% na entrega final.
+O atraso em qualquer parcela sujeitará o Contratante à multa de 2% (dois por cento) sobre o valor da parcela devida, acrescida de juros de mora de 1% (um por cento) ao mês.
+
+3. PRAZO DE ENTREGA
+O prazo estimado para a entrega dos serviços é de [PRAZO EM DIAS] dias úteis, contados a partir da confirmação do pagamento do sinal e do envio de todos os ativos/informações necessários pelo Contratante.
+
+4. PROPRIEDADE INTELECTUAL
+Após a quitação integral dos valores, o Contratante detém os direitos de uso do produto final. O Contratado reserva-se o direito de mencionar o projeto em seu portfólio profissional e manter a autoria intelectual sobre frameworks e códigos base preexistentes.
+
+5. RESPONSABILIDADES
+Do Contratado: Prestar os serviços com diligência, observando as boas práticas de desenvolvimento e os prazos acordados.
+Do Contratante: Fornecer o suporte necessário, materiais básicos e efetuar os pagamentos nas datas aprazadas.
+
+6. FORO
+As partes elegem o Foro da Comarca de São Paulo para dirimir quaisquer litígios oriundos deste contrato, renunciando a qualquer outro, por mais privilegiado que seja.
+
+São Paulo, [DATA].
+
+Assinado digitalmente
+THOMAS EDUARDO DOS REIS NASCIMENTO
+CONTRATADO`,
+  status: "draft", 
+  stage: "draft", 
+  amount: 0, 
+  version: 1, 
+  clientId: ""
 };
 
 export function ProposalsModule() {
@@ -227,7 +268,7 @@ export function ProposalsModule() {
         onClose={() => setModal(null)}
         title={modal === "create" ? "Inicializar Compromisso" : "Configuração de Rascunho"}
         description="Configure valores comerciais e parâmetros de compromisso."
-        maxWidth="md"
+        maxWidth="2xl"
         footer={
           <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
             {modal === "edit" ? (
@@ -245,31 +286,12 @@ export function ProposalsModule() {
         }
       >
         <div className="space-y-8 py-4">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Título do Compromisso</label>
               <input type="text" value={form.title ?? ""} onChange={e => setForm((f: any) => ({ ...f, title: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Implementação de IA Estratégica" />
             </div>
-            
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Valor Proposto (BRL)</label>
-                <input type="number" step="0.01" value={form.amount ?? 0} onChange={e => setForm((f: any) => ({ ...f, amount: e.target.value }))}
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
-              </div>
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status do Ciclo</label>
-                <select value={form.status ?? "draft"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}
-                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                  <option value="draft">Rascunho Inicial</option>
-                  <option value="sent">Enviada</option>
-                  <option value="approved">Aprovada</option>
-                  <option value="rejected">Recusada</option>
-                </select>
-              </div>
-            </div>
-
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conta de Destino</label>
               <select value={form.clientId ?? ""} onChange={e => setForm((f: any) => ({ ...f, clientId: e.target.value }))}
@@ -278,12 +300,26 @@ export function ProposalsModule() {
                 {clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
-
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">URI de Aprovação (Opcional)</label>
-              <input type="text" value={form.approvalLink ?? ""} onChange={e => setForm((f: any) => ({ ...f, approvalLink: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" placeholder="https://..." />
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Valor Proposto (BRL)</label>
+              <input type="number" step="0.01" value={form.amount ?? 0} onChange={e => setForm((f: any) => ({ ...f, amount: e.target.value }))}
+                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
             </div>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status do Ciclo</label>
+              <select value={form.status ?? "draft"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}
+                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
+                <option value="draft">Rascunho Inicial</option>
+                <option value="sent">Enviada</option>
+                <option value="approved">Aprovada</option>
+                <option value="rejected">Recusada</option>
+              </select>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conteúdo do Contrato / Proposta</label>
+            <textarea value={form.description ?? ""} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} rows={12}
+              className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono whitespace-pre-wrap" placeholder="Texto do contrato..." />
           </div>
         </div>
       </Modal>
