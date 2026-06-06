@@ -34,6 +34,58 @@ async function addTimeline(projectId: string, titulo: string, descricao: string,
 }
 
 // ==========================================
+// PUBLIC ROUTES
+// ==========================================
+
+import { getLeadAutoReplyTemplate } from '../services/emailTemplates.js';
+
+router.post('/public/contact', async (req, res) => {
+  try {
+    const { name, email, phone, message, source } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Nome e e-mail são obrigatórios.' });
+    }
+
+    // 1. Create the lead
+    const lead = await prisma.lead.create({
+      data: {
+        name,
+        email,
+        phone,
+        notes: message,
+        source: source || 'site_contact_form',
+        status: 'new'
+      }
+    });
+
+    // 2. Send the automated premium reply
+    const replyHtml = getLeadAutoReplyTemplate(name);
+    emailService.sendEmail(
+      email,
+      `Recebi sua mensagem, ${name.split(' ')[0]}`,
+      replyHtml
+    ).catch(err => console.error('[PublicContact] Failed to send auto-reply:', err));
+
+    // 3. Notify the admin
+    emailService.sendEmail(
+      'devthomaseduardo@gmail.com',
+      `Novo Lead: ${name}`,
+      `<h1>Novo contato pelo site</h1>
+       <p><strong>Nome:</strong> ${name}</p>
+       <p><strong>E-mail:</strong> ${email}</p>
+       <p><strong>WhatsApp:</strong> ${phone || 'Não informado'}</p>
+       <p><strong>Mensagem:</strong> ${message || '(Sem mensagem)'}</p>`
+    ).catch(err => console.error('[PublicContact] Failed to notify admin:', err));
+
+    res.status(201).json({ success: true, leadId: lead.id });
+  } catch (error: any) {
+    console.error('[PublicContact] Error:', error);
+    res.status(500).json({ error: 'Erro ao processar contato. Tente novamente mais tarde.' });
+  }
+});
+
+// ==========================================
 // DEVELOPMENT TOOLS (Protected)
 // ==========================================
 

@@ -54,6 +54,32 @@ export function ClientDrawer({ clientId, onClose, onRefresh }: ClientDrawerProps
     acc + (p.invoices?.reduce((s: number, i: any) => s + (i.amount || 0), 0) || 0), 0
   ) || 0;
 
+  const getStatusLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      lead: "Prospecção",
+      proposal: "Orçamento",
+      contracting: "Contrato",
+      new: "Onboarding",
+      active: "Operacional",
+      inactive: "Inativo",
+      blocked: "Bloqueado"
+    };
+    return labels[type] || type;
+  };
+
+  const getStatusColor = (type: string) => {
+    const colors: Record<string, string> = {
+      lead: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      proposal: "bg-amber-500/10 text-amber-400 border-amber-400/20",
+      contracting: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+      new: "bg-[#009EE3]/10 text-[#009EE3] border-[#009EE3]/20",
+      active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      inactive: "bg-white/5 text-white/40 border-white/10",
+      blocked: "bg-rose-500/10 text-rose-400 border-rose-500/20"
+    };
+    return colors[type] || "bg-white/5 text-white/50 border-white/10";
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onClick={onClose} />
@@ -64,10 +90,8 @@ export function ClientDrawer({ clientId, onClose, onRefresh }: ClientDrawerProps
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h2 className="text-3xl font-bold text-white tracking-tight">{client.name}</h2>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${
-                client.clientType === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-[#009EE3]/10 text-[#009EE3] border-[#009EE3]/20'
-              }`}>
-                {client.clientType === 'active' ? 'Operacional' : 'Onboarding'}
+              <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase border ${getStatusColor(client.clientType)}`}>
+                {getStatusLabel(client.clientType)}
               </span>
             </div>
             <div className="flex items-center gap-4 text-white/40 text-xs font-mono">

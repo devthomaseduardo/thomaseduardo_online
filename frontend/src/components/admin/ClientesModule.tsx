@@ -13,10 +13,13 @@ const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
 
 const STATUS_COLOR: Record<string, string> = {
-  new: "text-[#009EE3] bg-[#009EE3]/10",
-  active: "text-emerald-400 bg-emerald-400/10",
-  inactive: "text-white/30 bg-white/5",
-  blocked: "text-rose-400 bg-rose-400/10",
+  lead: "text-purple-400 bg-purple-400/10 border-purple-400/20",
+  proposal: "text-amber-400 bg-amber-400/10 border-amber-400/20",
+  contracting: "text-indigo-400 bg-indigo-400/10 border-indigo-400/20",
+  new: "text-[#009EE3] bg-[#009EE3]/10 border-[#009EE3]/20",
+  active: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  inactive: "text-white/30 bg-white/5 border-white/10",
+  blocked: "text-rose-400 bg-rose-400/10 border-rose-400/20",
 };
 
 const EMPTY = { name: "", email: "", cnpj: "", clientType: "new", password: "", phone: "", obs: "" };
@@ -204,7 +207,11 @@ export function ClientesModule() {
                     </td>
                     <td className="px-6 py-6">
                       <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${STATUS_COLOR[c.clientType] ?? STATUS_COLOR.new}`}>
-                        {c.clientType === "new" ? "Onboarding" : c.clientType === "active" ? "Operacional" : "Inativo"}
+                        {c.clientType === "lead" ? "Prospecção" : 
+                         c.clientType === "proposal" ? "Orçamento" : 
+                         c.clientType === "contracting" ? "Contrato" : 
+                         c.clientType === "new" ? "Onboarding" : 
+                         c.clientType === "active" ? "Operacional" : "Inativo"}
                       </span>
                     </td>
                     <td className="px-6 py-6">
@@ -286,8 +293,11 @@ export function ClientesModule() {
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Estágio do Ciclo de Vida</label>
               <select value={form.clientType} onChange={e => setForm((f: any) => ({ ...f, clientType: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
+                <option value="lead">Prospecção (Lead)</option>
+                <option value="proposal">Aguardando Orçamento</option>
+                <option value="contracting">Fase de Contrato</option>
                 <option value="new">Onboarding Operacional</option>
-                <option value="active">Produção Total</option>
+                <option value="active">Produção Total / Ativo</option>
                 <option value="inactive">Projeto Suspenso</option>
                 <option value="blocked">Acesso Revogado</option>
               </select>

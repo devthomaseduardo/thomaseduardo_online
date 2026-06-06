@@ -11,6 +11,7 @@ import thomasAbout from "../assets/thomas-about.png";
 import { RotatingText } from "../components/RotatingText";
 import { useSVGL } from "../hooks/useSVGL";
 import { DeviceMockup } from "../components/DeviceMockup";
+import { ContactForm } from "../components/ContactForm";
 
 
 /* ─── DATA ─────────────────────────────────────────────── */
@@ -363,20 +364,27 @@ function Testimonials() {
 function CTA() {
   return (
     <section id="contato" className="px-8 py-40 border-t border-white/[0.05]">
-      <div className="w-full max-w-3xl mx-auto text-center">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}>
           <h2 className="text-[clamp(40px,5vw,72px)] font-bold tracking-tighter leading-[1.05] mb-10">
             Vamos falar sobre sua operação?
           </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="https://cal.com" target="_blank" className="flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold text-[14px] rounded-none hover:bg-white/90 transition-all">
-              Agendar Conversa
-            </a>
-            <a href="mailto:contato@thomaseduardo.dev" className="flex items-center justify-center w-full sm:w-auto px-8 py-4 border border-white/[0.15] text-white font-medium text-[14px] rounded-none hover:bg-white/5 transition-all">
-              Enviar E-mail
-            </a>
+          <p className="text-xl text-white/50 mb-12 max-w-lg leading-relaxed">
+            Preencha o formulário e receba uma análise inicial da sua arquitetura digital em até 24 horas.
+          </p>
+          <div className="flex items-center gap-6">
+            <div className="flex -space-x-3">
+              {[1,2,3].map(i => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800" />
+              ))}
+            </div>
+            <p className="text-xs text-white/40 font-mono uppercase tracking-widest">+18 empresas já escaladas</p>
           </div>
         </motion.div>
+
+        <div className="flex justify-center lg:justify-end">
+          <ContactForm />
+        </div>
       </div>
     </section>
   );
