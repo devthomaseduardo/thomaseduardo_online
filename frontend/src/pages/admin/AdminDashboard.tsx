@@ -4,7 +4,11 @@ import {
   DollarSign, 
   FileText, 
   Rocket, 
-  Users 
+  Users,
+  BarChart3,
+  TrendingUp,
+  Eye,
+  Activity
 } from 'lucide-react';
 import { KpiCard } from '../../components/admin/dashboard/KpiCard';
 import { ActivityFeed } from '../../components/admin/dashboard/ActivityFeed';
@@ -15,11 +19,13 @@ import { UpcomingDeadlines } from '../../components/admin/dashboard/UpcomingDead
 import { useAdminFetch } from '../../components/admin/useAdminFetch';
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API_V2 = `${API_URL}/api/v2`;
 
 export function AdminDashboard() {
   const { data, loading, error } = useAdminFetch<any>('/dashboard');
+  const { showToast } = useToast();
   const isProd = import.meta.env.PROD;
 
   const kpis = data?.kpis || [];
@@ -35,6 +41,7 @@ export function AdminDashboard() {
 
   const revenueData = data?.revenueChart || [];
   const activities = data?.activities || [];
+  const gaKPIs = data?.gaKPIs || [];
 
   const handleSeedRealData = async () => {
     if (!confirm('Deseja popular o banco com dados reais?')) return;
@@ -47,10 +54,10 @@ export function AdminDashboard() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.error || 'Erro ao popular banco');
       
-      alert('Dados reais adicionados com sucesso! Por favor, recarregue a página.');
-      window.location.reload();
+      showToast('Dados reais adicionados com sucesso!');
+      setTimeout(() => window.location.reload(), 1500);
     } catch (e: any) {
-      alert(`Erro: ${e.message}`);
+      showToast(e.message, 'error');
     }
   };
 
@@ -64,10 +71,10 @@ export function AdminDashboard() {
       const resData = await res.json();
       if (!res.ok) throw new Error(resData.error || 'Falha ao limpar banco');
       
-      alert('Banco de dados limpo com sucesso!');
-      window.location.reload();
+      showToast('Banco de dados limpo com sucesso!');
+      setTimeout(() => window.location.reload(), 1500);
     } catch (e: any) {
-      alert(`Erro ao limpar banco: ${e.message}`);
+      showToast(e.message, 'error');
     }
   };
 
@@ -113,6 +120,27 @@ export function AdminDashboard() {
           />
         ))}
       </div>
+
+      {gaKPIs.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] flex items-center gap-2">
+            <Activity className="w-3 h-3" /> Telemetria em Tempo Real (GA4)
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {gaKPIs.map((k: any, i: number) => {
+              const Icon = k.icon === 'Users' ? Users : k.icon === 'TrendingUp' ? TrendingUp : k.icon === 'Eye' ? Eye : BarChart3;
+              return (
+                <KpiCard 
+                  key={i}
+                  title={k.label} 
+                  value={k.val} 
+                  icon={Icon} 
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">

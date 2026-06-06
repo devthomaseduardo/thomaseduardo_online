@@ -7,6 +7,7 @@ import { TableSkeleton } from './Loaders';
 import { Modal } from '../ui/Modal';
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -33,6 +34,7 @@ const normalizeStatusKey = (p: any) => {
 
 export const ProjectsKanban = () => {
   const { projects, clients, loading, mutate: load } = useAdminData();
+  const { showToast } = useToast();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newModal, setNewModal] = useState(false);
   const [form, setForm] = useState({ name: '', clientId: '', tipo: 'website', value: '', proximaAcao: '', dataEntregaPrevista: '' });
@@ -50,10 +52,17 @@ export const ProjectsKanban = () => {
     if (e) e.preventDefault();
     setSaving(true);
     try {
-      await fetch(`${API}/projects`, { method: 'POST', headers: hdrs(), body: JSON.stringify({ ...form, value: parseFloat(form.value) || 0 }) });
+      const res = await fetch(`${API}/projects`, { method: 'POST', headers: hdrs(), body: JSON.stringify({ ...form, value: parseFloat(form.value) || 0 }) });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Erro ao criar projeto.");
+      }
       setNewModal(false); setForm({ name: '', clientId: '', tipo: 'website', value: '', proximaAcao: '', dataEntregaPrevista: '' });
       load();
-    } catch { } finally { setSaving(false); }
+      showToast("Projeto criado com sucesso!");
+    } catch (e: any) { 
+      showToast(e.message, 'error');
+    } finally { setSaving(false); }
   };
 
   let filteredProjects = projects.filter(p => {

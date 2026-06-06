@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { emailService } from '../server/services/email.ts';
 
 const prisma = new PrismaClient();
 
@@ -63,6 +64,17 @@ export default async function handler(req: any, res: any) {
     }
 
     res.json({ success: true, client: { id: client.id, email: client.email }, project, invoice });
+
+    // Notificação Assíncrona
+    emailService.sendEmail(
+      'devthomaseduardo@gmail.com',
+      `Novo Onboarding: ${clientName}`,
+      `<h1>Novo Onboarding Realizado</h1>
+       <p><strong>Cliente:</strong> ${clientName} (${clientEmail})</p>
+       <p><strong>Projeto:</strong> ${projectName}</p>
+       <p><strong>Valor:</strong> R$ ${projectValue}</p>`
+    ).catch(err => console.error('Failed to send onboarding notification', err));
+
   } catch (error) {
     console.error('[portal/onboarding]', error);
     res.status(500).json({ error: 'Failed to process onboarding' });

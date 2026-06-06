@@ -6,21 +6,20 @@ import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
 
-const EMPTY = { name: "", email: "", role: "Editor", permissions: ["read"], active: true };
+const EMPTY = { name: "", email: "", role: "", active: true, permissions: "" };
 
 export function TeamModule() {
   const { team, loading, mutate } = useAdminData();
+  const { showToast } = useToast();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
@@ -45,7 +44,7 @@ export function TeamModule() {
       }
 
       setModal(null); mutate('team'); showToast(isEdit ? "Membro atualizado." : "Membro adicionado.");
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -64,7 +63,7 @@ export function TeamModule() {
         throw new Error(data.error || "Erro ao remover membro da equipe.");
       }
       mutate('team'); showToast("Membro removido.");
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -72,15 +71,6 @@ export function TeamModule() {
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
-            <Activity className="w-4 h-4 animate-pulse" /> {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
           <h1 className="text-4xl font-extrabold text-white tracking-tight">Centro de Pessoal</h1>

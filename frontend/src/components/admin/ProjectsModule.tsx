@@ -232,19 +232,25 @@ export function ProjectsModule() {
       >
         <div className="space-y-8 py-4">
           <div className="grid grid-cols-2 gap-6">
-            <div className="col-span-2 md:col-span-1 space-y-2">
+            <div className="space-y-2">
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Identificador da Solução</label>
               <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Neural Engine V1" />
             </div>
-            <div className="col-span-2 md:col-span-1 space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conta Associada</label>
-              <select value={form.clientId ?? ""} onChange={e => setForm((f: any) => ({ ...f, clientId: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                <option value="" disabled>Selecione a entidade do cliente...</option>
-                {clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Valor do Projeto (BRL)</label>
+              <input type="number" value={form.value ?? 0} onChange={e => setForm((f: any) => ({ ...f, value: Number(e.target.value) }))}
+                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 space-y-2">
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conta Associada</label>
+            <select value={form.clientId ?? ""} onChange={e => setForm((f: any) => ({ ...f, clientId: e.target.value }))}
+              className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
+              <option value="" disabled>Selecione a entidade do cliente...</option>
+              {clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
 
           <div className="grid grid-cols-3 gap-6">

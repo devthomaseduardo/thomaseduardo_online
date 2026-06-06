@@ -146,6 +146,7 @@ router.post('/dev/seed', adminAuth, async (req, res) => {
 // ==========================================
 
 import { analyticsService } from '../services/analytics.js';
+import { emailService } from '../services/email.js';
 
 router.get('/analytics/kpis', adminAuth, async (req, res) => {
   try {
@@ -160,9 +161,10 @@ router.get('/analytics/kpis', adminAuth, async (req, res) => {
 router.get('/dashboard', adminAuth, async (req, res) => {
   try {
     const now = new Date();
+    const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
     const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [projects, clients, invoices, proposals, deploys, activities] = await Promise.all([
+    const [projects, clientsCount, invoices, proposalsCount, deploysCount, activities, allPayments, gaKPIs] = await Promise.all([
       prisma.project.findMany({ include: { client: true, invoices: true } }),
       prisma.client.count(),
       prisma.invoice.findMany({ include: { payments: true } }),
@@ -172,33 +174,36 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         orderBy: { createdAt: 'desc' },
         take: 10,
         include: { project: { select: { name: true } } }
-      })
+      }),
+      (prisma as any).payment.findMany({
+        where: { pagoEm: { gte: sixMonthsAgo } }
+      }),
+      analyticsService.getKPIs()
     ]);
 
     const activeProjects = projects.filter(p => !['concluido', 'cancelado'].includes(p.status ?? p.phase)).length;
     
-    // Receita Mensal (Soma de pagamentos efetuados este mês)
-    const monthlyPayments = await (prisma as any).payment.findMany({
-      where: { pagoEm: { gte: firstDayMonth } }
-    });
-    const monthlyRevenue = monthlyPayments.reduce((sum: number, p: any) => sum + p.valor, 0);
+    // Receita Mensal
+    const monthlyRevenue = allPayments
+      .filter((p: any) => p.pagoEm >= firstDayMonth)
+      .reduce((sum: number, p: any) => sum + p.valor, 0);
 
-    // A Receber (Saldo de faturas não pagas)
+    // A Receber
     const pendingRevenue = invoices
       .filter(i => ['pending', 'partial', 'overdue'].includes(i.status))
       .reduce((sum, i) => sum + (i.saldo ?? i.amount), 0);
 
-    // Dados para o Gráfico (Últimos 6 meses)
+    // Dados para o Gráfico (Últimos 6 meses) - Otimizado (sem queries em loop)
     const revenueChart = [];
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const nextM = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
       const monthName = d.toLocaleDateString('pt-BR', { month: 'short' });
-      const nextM = new Date(d.getFullYear(), d.getMonth() + 1, 1);
       
-      const monthPayments = await (prisma as any).payment.findMany({
-        where: { pagoEm: { gte: d, lt: nextM } }
-      });
-      const total = monthPayments.reduce((sum: number, p: any) => sum + p.valor, 0);
+      const total = allPayments
+        .filter((p: any) => p.pagoEm >= d && p.pagoEm < nextM)
+        .reduce((sum: number, p: any) => sum + p.valor, 0);
+        
       revenueChart.push({ month: monthName, revenue: total });
     }
 
@@ -230,11 +235,12 @@ router.get('/dashboard', adminAuth, async (req, res) => {
       kpis: [
         { label: 'Projetos ativos', value: activeProjects.toString() },
         { label: 'A Receber', value: `R$ ${pendingRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
-        { label: 'Clientes', value: clients.toString() },
-        { label: 'Propostas Ativas', value: proposals.toString() },
-        { label: 'Deploys Realizados', value: deploys.toString() },
+        { label: 'Clientes', value: clientsCount.toString() },
+        { label: 'Propostas Ativas', value: proposalsCount.toString() },
+        { label: 'Deploys Realizados', value: deploysCount.toString() },
         { label: 'Receita Mensal', value: `R$ ${monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
       ],
+      gaKPIs, // Novas métricas reais do Google Analytics
       pipeline,
       revenueChart,
       activities: recentActivities
@@ -624,6 +630,26 @@ router.delete('/invoices/:id', adminAuth, async (req, res) => {
     if (err.code === 'P2025') return res.status(404).json({ error: 'Fatura não encontrada.' });
     if (err.code === 'P2003') return res.status(400).json({ error: 'Não é possível excluir: existem pagamentos vinculados.' });
     res.status(500).json({ error: 'Erro ao excluir fatura.' });
+  }
+});
+
+router.put('/invoices/:id', adminAuth, async (req, res) => {
+  try {
+    const { description, amount, status, vencimento, valorPago, saldo } = req.body;
+    const result = await prisma.invoice.update({
+      where: { id: req.params.id },
+      data: {
+        ...(description !== undefined && { description }),
+        ...(amount !== undefined && { amount: Number(amount) }),
+        ...(status !== undefined && { status }),
+        ...(vencimento !== undefined && { vencimento: vencimento ? new Date(vencimento) : null }),
+        ...(valorPago !== undefined && { valorPago: Number(valorPago) }),
+        ...(saldo !== undefined && { saldo: Number(saldo) }),
+      }
+    });
+    res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -1160,6 +1186,14 @@ router.post('/leads/:id/convert', adminAuth, async (req, res) => {
       where: { id: lead.id },
       data: { converted: true, convertedAt: new Date(), convertedToId: client.id }
     });
+
+    // Notificação de Boas-vindas (Arquitetura Premium)
+    const welcomeHtml = emailService.generateWelcomeEmail(clientName, clientEmail, password);
+    emailService.sendEmail(
+      clientEmail,
+      `Acesso Liberado: Portal Thomas Eduardo`,
+      welcomeHtml
+    ).catch(err => console.error('Failed to send premium welcome email', err));
 
     res.json({ client, converted: true });
   } catch (err: any) {

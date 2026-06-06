@@ -4,13 +4,15 @@ import {
   LayoutGrid, FileText, CreditCard, FolderOpen, Zap, BarChart2,
   LogOut, CheckCircle2, Circle, Clock, ArrowUpRight, ChevronRight,
   Server, GitBranch, Globe, Activity, Shield, Download, UploadCloud,
-  Check, Hourglass, AlertCircle, Bell, Search, Command, Settings
+  Check, Hourglass, AlertCircle, Bell, Search, Command, Settings, MessageSquare,
+  X, DollarSign
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
+import { useToast } from "../contexts/ToastContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "settings";
+type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "support" | "settings";
 
 interface NavItem { id: NavId; label: string; icon: React.ElementType; }
 
@@ -19,6 +21,7 @@ const NAV: NavItem[] = [
   { id: "contracts",    label: "Contratos",    icon: FileText   },
   { id: "payments",     label: "Pagamentos",   icon: CreditCard },
   { id: "files",        label: "Arquivos",     icon: FolderOpen },
+  { id: "support",      label: "Suporte",      icon: MessageSquare },
   { id: "deployments",  label: "Deployments",  icon: Zap        },
   { id: "analytics",    label: "Analytics",    icon: BarChart2  },
   { id: "settings",     label: "Configurações",icon: Settings   },
@@ -52,6 +55,7 @@ const ActivityIcon = ({ type }: { type: string }) => {
 // ─── Panels ──────────────────────────────────────────────────────────────────
 const PanelOverview = ({ clientData }: { clientData: any }) => {
   const projects = clientData.projects || [];
+  const [selectedProject, setSelectedProject] = useState<any>(null);
   
   const activeProjects = projects.filter((p: any) => p.status !== 'concluido' && p.phase !== 'concluido').length;
   const allTasks = projects.flatMap((p: any) => p.tasks || []);
@@ -92,7 +96,7 @@ const PanelOverview = ({ clientData }: { clientData: any }) => {
 
       {/* Projects grid */}
       <div>
-        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-4">Projetos</span>
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-4">Seus Projetos</span>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {projects.length === 0 ? (
             <div className="text-white/40 text-sm">Nenhum projeto encontrado.</div>
@@ -100,24 +104,117 @@ const PanelOverview = ({ clientData }: { clientData: any }) => {
             <motion.div
               key={p.id}
               whileHover={{ scale: 1.01 }}
-              className="bg-[#0c0c0c] rounded-2xl rounded-tl-none p-6 cursor-pointer group transition-all relative mt-4"
+              onClick={() => setSelectedProject(p)}
+              className="bg-[#0c0c0c] rounded-2xl rounded-tl-none p-6 cursor-pointer group transition-all relative mt-4 border border-transparent hover:border-white/10"
             >
               <div className="absolute -top-4 left-0 w-20 h-4 bg-[#0c0c0c] rounded-t-lg" />
-              <div className="flex justify-between items-start mb-8">
-                <h3 className="font-semibold text-base tracking-tight">{p.name}</h3>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 border border-white/[0.08] px-2 py-1 rounded-lg">{p.phase || p.status}</span>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h3 className="font-semibold text-base tracking-tight mb-1">{p.name}</h3>
+                  <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{p.tipo || 'website'}</p>
+                </div>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-white/30 border border-white/[0.08] px-2 py-1 rounded-lg bg-white/5">{p.status || p.phase}</span>
               </div>
-              <div className="flex justify-between items-center pt-4">
-                <span className="flex items-center gap-1.5 text-xs text-emerald-500">
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-[10px] uppercase font-mono tracking-widest text-white/40">
+                  <span>Progresso</span>
+                  <span>{p.progresso || 0}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${p.progresso || 0}%` }}
+                    className="h-full bg-blue-500" 
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-6 border-t border-white/[0.03] mt-6">
+                <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
                   <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'concluido' ? 'bg-emerald-500' : 'bg-blue-500 animate-pulse'}`} />
                   {p.status === 'concluido' ? 'Concluído' : 'Operação Ativa'}
                 </span>
-                <ArrowUpRight className="w-4 h-4 text-white/20 group-hover:text-white/60 transition-colors" />
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20 group-hover:text-white/60 transition-colors">
+                  Detalhes <ArrowUpRight className="w-3 h-3" />
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Project Details Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-end p-4 md:p-6 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedProject(null)}>
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="w-full max-w-2xl h-full bg-[#080808] border-l border-white/10 shadow-2xl flex flex-col overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="p-8 border-b border-white/5 flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h2 className="text-2xl font-bold text-white tracking-tight">{selectedProject.name}</h2>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-blue-500/10 text-blue-400 border border-blue-500/20">{selectedProject.status}</span>
+                  </div>
+                  <p className="text-sm text-white/40">Visão detalhada da execução técnica.</p>
+                </div>
+                <button onClick={() => setSelectedProject(null)} className="p-2 hover:bg-white/5 rounded-xl transition-colors">
+                  <X className="w-6 h-6 text-white/40" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+                <section className="grid grid-cols-2 gap-4">
+                   <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-2">Entrega Prevista</p>
+                      <p className="text-white font-medium">{selectedProject.dataEntregaPrevista ? new Date(selectedProject.dataEntregaPrevista).toLocaleDateString('pt-BR') : 'A definir'}</p>
+                   </div>
+                   <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
+                      <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-2">Próximo Passo</p>
+                      <p className="text-[#009EE3] font-bold">{selectedProject.proximaAcao || 'Em análise'}</p>
+                   </div>
+                </section>
+
+                <section>
+                   <h4 className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><CheckCircle2 className="w-3 h-3"/> Checklist Operacional</h4>
+                   <div className="space-y-2">
+                      {selectedProject.tasks?.map((t: any) => (
+                        <div key={t.id} className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                          {t.isCompleted ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Circle className="w-4 h-4 text-white/20" />}
+                          <span className={`text-sm ${t.isCompleted ? 'text-white/30 line-through' : 'text-white/80'}`}>{t.title}</span>
+                        </div>
+                      ))}
+                      {(!selectedProject.tasks || selectedProject.tasks.length === 0) && <p className="text-xs text-white/20 italic">Nenhuma tarefa listada ainda.</p>}
+                   </div>
+                </section>
+
+                <section>
+                   <h4 className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><Clock className="w-3 h-3"/> Linha do Tempo</h4>
+                   <div className="space-y-6 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:bg-white/5">
+                      {selectedProject.timeline?.map((event: any, i: number) => (
+                        <div key={i} className="relative pl-8">
+                          <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-[#080808] border-2 border-blue-500 flex items-center justify-center">
+                            <div className="w-1 h-1 rounded-full bg-blue-500" />
+                          </div>
+                          <p className="text-sm font-bold text-white/90">{event.titulo}</p>
+                          <p className="text-xs text-white/40 mt-1 leading-relaxed">{event.descricao}</p>
+                          <p className="text-[10px] font-mono text-white/20 mt-2">{new Date(event.createdAt).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                      ))}
+                      {(!selectedProject.timeline || selectedProject.timeline.length === 0) && <p className="text-xs text-white/20 italic pl-8">Nenhum evento registrado.</p>}
+                   </div>
+                </section>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -186,26 +283,222 @@ const PanelFiles = ({ clientData }: { clientData: any }) => {
   );
 };
 
+const PanelPayments = ({ clientData }: { clientData: any }) => {
+  const allInvoices = (clientData.projects || []).flatMap((p: any) => (p.invoices || []).map((i: any) => ({ ...i, projectName: p.name })));
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block">Extrato Financeiro</span>
+      </div>
+      
+      {allInvoices.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-48 bg-[#0c0c0c] rounded-2xl border border-white/[0.03]">
+          <CreditCard className="w-8 h-8 text-white/10 mb-3" />
+          <span className="text-xs text-white/20">Nenhuma fatura pendente ou liquidada.</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-3">
+          {allInvoices.map((inv: any, i: number) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="group bg-[#0c0c0c] border border-white/[0.05] hover:border-white/10 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  inv.status === 'paid' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
+                }`}>
+                  <DollarSign className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white/90">{inv.description}</h4>
+                  <p className="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">{inv.projectName}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-8">
+                <div className="text-right">
+                  <p className="text-sm font-mono font-bold text-white">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(inv.amount)}
+                  </p>
+                  <p className={`text-[9px] font-bold uppercase tracking-tighter mt-0.5 ${
+                    inv.status === 'paid' ? 'text-emerald-500' : 'text-amber-500'
+                  }`}>
+                    {inv.status === 'paid' ? 'Liquidado' : 'Aguardando Pagamento'}
+                  </p>
+                </div>
+                
+                {inv.status !== 'paid' && (
+                  <button className="px-5 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-colors">
+                    Pagar Agora
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const PanelContracts = ({ clientData }: { clientData: any }) => {
+  const allContracts = (clientData.projects || []).flatMap((p: any) => (p.contracts || []).filter((c:any) => c.visivelCliente).map((c: any) => ({ ...c, projectName: p.name })));
+
+  return (
+    <div className="space-y-6">
+      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-2">Instrumentos Jurídicos</span>
+      
+      {allContracts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-48 bg-[#0c0c0c] rounded-2xl border border-white/[0.03]">
+          <Shield className="w-8 h-8 text-white/10 mb-3" />
+          <span className="text-xs text-white/20">Nenhum contrato disponível para visualização.</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {allContracts.map((c: any, i: number) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-[#0c0c0c] border border-white/[0.05] p-6 rounded-2xl flex flex-col justify-between h-full group hover:border-white/20 transition-all"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white/40" />
+                </div>
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border ${
+                  c.status === 'assinado' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10' : 'text-amber-400 border-amber-400/20 bg-amber-400/10'
+                }`}>
+                  {c.status}
+                </span>
+              </div>
+              
+              <div>
+                <h4 className="text-base font-bold text-white/90 mb-1">{c.titulo}</h4>
+                <p className="text-[11px] text-white/30">{c.projectName}</p>
+              </div>
+              
+              <div className="mt-8 pt-4 border-t border-white/[0.03] flex justify-between items-center">
+                <span className="text-[10px] text-white/20 font-mono">v{c.versao}</span>
+                <a href={c.fileUrl} target="_blank" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
+                  Visualizar <ChevronRight className="w-3 h-3" />
+                </a>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PanelPlaceholder = ({ label, items = [] }: { label: string, items?: any[] }) => (
   <div className="flex flex-col space-y-4">
-    <h2 className="text-xl font-semibold mb-4">{label}</h2>
+    <h2 className="text-xl font-semibold mb-4 text-white">{label}</h2>
     {items.length === 0 ? (
-      <div className="flex flex-col items-center justify-center h-64 bg-[#0c0c0c] rounded-2xl rounded-tl-none relative mt-4">
-        <div className="absolute -top-4 left-0 w-20 h-4 bg-[#0c0c0c] rounded-t-lg" />
-        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/20">Nenhum dado</span>
+      <div className="flex flex-col items-center justify-center h-64 bg-[#0c0c0c] rounded-2xl rounded-tl-none relative mt-4 border border-white/5">
+        <div className="absolute -top-4 left-0 w-24 h-4 bg-[#0c0c0c] rounded-t-lg" />
+        <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/20">Nenhum dado disponível</span>
       </div>
     ) : (
       <div className="space-y-2">
          {items.map((it, i) => (
-             <div key={i} className="p-4 bg-[#0c0c0c] rounded-2xl rounded-tl-none text-sm relative mt-4">
+             <div key={i} className="p-4 bg-[#0c0c0c] rounded-2xl rounded-tl-none text-sm relative mt-4 border border-white/5">
                <div className="absolute -top-3 left-0 w-16 h-3 bg-[#0c0c0c] rounded-t-lg" />
-               {JSON.stringify(it)}
+               <pre className="text-[10px] text-white/40 overflow-auto">{JSON.stringify(it, null, 2)}</pre>
              </div>
          ))}
       </div>
     )}
   </div>
 );
+
+const PanelSupport = ({ clientData }: { clientData: any }) => {
+  const [msg, setMsg] = useState("");
+  const [sending, setSending] = useState(false);
+  const { showToast } = useToast();
+
+  const send = async () => {
+    if (!msg.trim()) return;
+    setSending(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v2/projects/${clientData.projects[0]?.id}/messages`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('clientToken')}`
+        },
+        body: JSON.stringify({
+          senderType: 'client',
+          senderName: clientData.name,
+          content: msg,
+          clientId: clientData.id
+        })
+      });
+      if (!res.ok) throw new Error();
+      showToast("Mensagem enviada para o time técnico.", "success");
+      setMsg("");
+    } catch {
+      showToast("Falha ao transmitir sinal. Tente novamente.", "error");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8 max-w-2xl">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight mb-2">Suporte & Comunicação</h2>
+        <p className="text-sm text-white/40">Abra um chamado direto com nosso time de engenharia.</p>
+      </div>
+
+      <div className="bg-[#0c0c0c] border border-white/[0.05] rounded-3xl p-8 space-y-6 relative mt-4">
+        <div className="absolute -top-4 left-0 w-24 h-4 bg-[#0c0c0c] rounded-t-lg" />
+        <div className="space-y-2">
+          <label className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Descreva sua solicitação</label>
+          <textarea 
+            value={msg}
+            onChange={e => setMsg(e.target.value)}
+            placeholder="Ex: Preciso atualizar os textos da home..."
+            className="w-full h-40 bg-white/[0.02] border border-white/5 rounded-2xl p-5 text-white text-sm outline-none focus:border-blue-500/50 transition-all resize-none"
+          />
+        </div>
+        <button 
+          onClick={send}
+          disabled={sending || !msg.trim()}
+          className="w-full py-4 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-xl hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-50"
+        >
+          {sending ? "Transmitindo..." : "Enviar Mensagem"}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-blue-400/50 uppercase tracking-widest">Tempo de Resposta</p>
+            <p className="text-sm text-white font-medium">Média de 2 horas</p>
+          </div>
+        </div>
+        <div className="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+            <Shield className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-emerald-400/50 uppercase tracking-widest">Canal Seguro</p>
+            <p className="text-sm text-white font-medium">Criptografia E2E</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PanelSettings = () => (
   <div className="space-y-6">
@@ -228,6 +521,7 @@ const PanelSettings = () => (
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function ClientDashboard() {
   const navigate  = useNavigate();
+  const { showToast } = useToast();
   const [active, setActive]     = useState<NavId>("overview");
   const [clientData, setClient] = useState<any>(null);
   const [loading, setLoading]   = useState(true);
@@ -243,7 +537,11 @@ export default function ClientDashboard() {
     if (!token) { navigate("/portal"); return; }
     fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(d => { setClient(d); setLoading(false); })
+      .then(d => { 
+        setClient(d); 
+        setLoading(false); 
+        showToast(`Bem-vindo de volta!`, 'success');
+      })
       .catch(() => { localStorage.removeItem("clientToken"); localStorage.removeItem("clientId"); navigate("/portal"); });
   }, [navigate]);
 
@@ -261,8 +559,9 @@ export default function ClientDashboard() {
     overview:    <PanelOverview clientData={clientData} />,
     deployments: <PanelDeployments clientData={clientData} />,
     files:       <PanelFiles clientData={clientData} />,
-    contracts:   <PanelPlaceholder label="Contratos" items={(clientData.projects || []).flatMap((p:any) => p.contracts || [])} />,
-    payments:    <PanelPlaceholder label="Pagamentos" items={(clientData.projects || []).flatMap((p:any) => p.invoices || [])} />,
+    contracts:   <PanelContracts clientData={clientData} />,
+    payments:    <PanelPayments clientData={clientData} />,
+    support:     <PanelSupport clientData={clientData} />,
     analytics:   <PanelPlaceholder label="Analytics" items={(clientData.projects || []).flatMap((p:any) => p.integrations || [])} />,
     settings:    <PanelSettings />,
   };

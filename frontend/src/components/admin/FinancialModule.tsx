@@ -6,6 +6,7 @@ import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -25,13 +26,11 @@ const EMPTY = {
 
 export function FinancialModule() {
   const { invoices, projects, loading, mutate } = useAdminData();
+  const { showToast } = useToast();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const openCreate = () => { setForm({ ...EMPTY, projectId: projects[0]?.id || "" }); setModal("create"); };
   const openEdit = (i: any) => { setForm({ ...i }); setModal("edit"); };
@@ -273,6 +272,14 @@ export function FinancialModule() {
                   className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
               </div>
               <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-emerald-400/50 uppercase tracking-[0.2em]">Já Recebido (BRL)</label>
+                <input type="number" step="0.01" value={form.valorPago ?? 0} onChange={e => setForm((f: any) => ({ ...f, valorPago: e.target.value }))}
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status de Liquidação</label>
                 <select value={form.status ?? "pending"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}
                   className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
@@ -283,6 +290,11 @@ export function FinancialModule() {
                   <option value="canceled">Cancelado</option>
                 </select>
               </div>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Data de Vencimento</label>
+                <input type="date" value={form.vencimento ? new Date(form.vencimento).toISOString().split('T')[0] : ""} onChange={e => setForm((f: any) => ({ ...f, vencimento: e.target.value }))}
+                  className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -292,12 +304,6 @@ export function FinancialModule() {
                 <option value="" disabled>Selecione a entidade do projeto...</option>
                 {projects.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Data de Vencimento</label>
-              <input type="date" value={form.vencimento ? new Date(form.vencimento).toISOString().split('T')[0] : ""} onChange={e => setForm((f: any) => ({ ...f, vencimento: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
             </div>
           </div>
         </div>

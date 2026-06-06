@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API_BASE = `${API_URL}/api/v2`;
 
@@ -8,6 +9,7 @@ export function useAdminFetch<T = any>(path: string) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -26,7 +28,10 @@ export function useAdminFetch<T = any>(path: string) {
         if (active) setData(json);
       })
       .catch((err: any) => {
-        if (active) setError(err?.message ?? 'Erro de rede');
+        if (active) {
+          setError(err?.message ?? 'Erro de rede');
+          showToast(err?.message ?? 'Erro de rede', 'error');
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -35,7 +40,7 @@ export function useAdminFetch<T = any>(path: string) {
     return () => {
       active = false;
     };
-  }, [path]);
+  }, [path, showToast]);
 
   return { data, loading, error };
 }

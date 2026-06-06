@@ -12,6 +12,7 @@ import paymentsRouter from './routes/payments.ts';
 import authRouter from './routes/auth.ts';
 import apiRouter from './routes/api.ts';
 import projectsRouter from './routes/projects.ts';
+import webhooksRouter from './routes/webhooks.ts';
 import rateLimit from 'express-rate-limit';
 import { env } from './lib/env.js';
 import { audit, getClientIp } from './lib/audit.js';
@@ -115,6 +116,7 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Mount newly extracted routers (non-destructive mount alongside existing handlers)
 app.use('/api/v2', apiRouter);
+app.use('/api/webhooks', webhooksRouter);
 app.use('/api', authRouter);
 app.use('/api/projects', projectsRouter(upload));
 

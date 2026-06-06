@@ -87,6 +87,11 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
                 </select>
               </div>
               <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6">
+                <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2">Valor do Projeto (BRL)</p>
+                <input type="number" value={project.value ?? 0} onChange={e => updateProject({ value: Number(e.target.value) })}
+                  className="w-full bg-transparent text-lg font-semibold text-white outline-none border-b border-white/10 pb-1 focus:border-[#009EE3] transition-colors font-mono" />
+              </div>
+              <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-6">
                 <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest mb-2">Próxima Ação (Next Step)</p>
                 <input type="text" value={project.proximaAcao ?? ""} onChange={e => updateProject({ proximaAcao: e.target.value })}
                   placeholder="Definir ação imediata..."

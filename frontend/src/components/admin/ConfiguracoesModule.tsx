@@ -32,17 +32,6 @@ export function ConfiguracoesModule() {
 
   return (
     <div className="w-full py-10 px-8 xl:px-12 space-y-12 max-w-7xl mx-auto">
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 z-[9999] bg-[#0B0B0B] border border-white/10 px-5 py-3 rounded-xl text-sm text-white shadow-2xl flex items-center gap-3">
-            <Activity className="w-4 h-4 text-[#009EE3]" />
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Configurações</h1>

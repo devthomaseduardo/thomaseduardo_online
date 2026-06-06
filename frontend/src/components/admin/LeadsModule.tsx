@@ -6,6 +6,7 @@ import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -25,13 +26,11 @@ const EMPTY = {
 
 export function LeadsModule() {
   const { leads, loading, mutate } = useAdminData();
+  const { showToast } = useToast();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const openCreate = () => { setForm({ ...EMPTY }); setModal("create"); };
   const openEdit = (l: any) => { setForm({ ...l }); setModal("edit"); };
@@ -58,7 +57,7 @@ export function LeadsModule() {
       }
       
       setModal(null); mutate('leads'); showToast(isEdit ? "Lead atualizado." : "Lead cadastrado.");
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -81,7 +80,7 @@ export function LeadsModule() {
 
       mutate('leads'); showToast("Lead removido.");
       setModal(null);
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -114,7 +113,7 @@ export function LeadsModule() {
 
       mutate(); // Reload everything since clients list changed too
       showToast("Lead convertido em Cliente!");
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -128,17 +127,6 @@ export function LeadsModule() {
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
-            <Activity className="w-4 h-4 animate-pulse" />
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
           <h1 className="text-4xl font-extrabold text-white tracking-tight">Inteligência de Leads</h1>
