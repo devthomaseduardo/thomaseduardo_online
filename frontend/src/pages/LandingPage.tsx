@@ -12,58 +12,13 @@ import { RotatingText } from "../components/RotatingText";
 import { useSVGL } from "../hooks/useSVGL";
 import { DeviceMockup } from "../components/DeviceMockup";
 import { ContactForm } from "../components/ContactForm";
+import { useLang } from "../contexts/LangContext";
 
-
-/* ─── DATA ─────────────────────────────────────────────── */
-const BENEFITS = [
-  { label: "Projetos Entregues", value: "+18", icon: LayoutGrid },
-  { label: "Código Proprietário", value: "100%", icon: Code2 },
-  { label: "Tarefas Manuais", value: "-90%", icon: Zap },
-  { label: "Retenção de Clientes", value: "+", icon: Users },
-];
-
-const SERVICES = [
-  { 
-    title: "Organização Operacional", 
-    desc: "Centralização de dados e fluxos de trabalho. Criação de centros de comando para gerenciar sua empresa inteira em um só lugar.",
-    icon: Database 
-  },
-  { 
-    title: "Automação", 
-    desc: "Substituição de processos manuais e repetitivos por integrações inteligentes, liberando sua equipe para trabalho estratégico.",
-    icon: Workflow 
-  },
-  { 
-    title: "Escalabilidade", 
-    desc: "Arquiteturas robustas projetadas para suportar o crescimento da base de clientes sem aumento linear de custo ou complexidade.",
-    icon: LineChart 
-  },
-];
-
-const OTHER_PROJECTS = [
-  { name: "Homma Design", desc: "Plataforma de gestão de escritórios de arquitetura." },
-  { name: "Portal Nexio", desc: "Sistema de onboarding e gestão de parceiros B2B." },
-  { name: "Paper Contracts", desc: "Automação de contratos e assinaturas digitais." },
-  { name: "Guardian", desc: "Monitoramento de infraestrutura e alertas em tempo real." },
-];
-
-const PROCESS = [
-  { num: "01", title: "Diagnóstico", desc: "Mapeamento dos gargalos." },
-  { num: "02", title: "Arquitetura", desc: "Desenho da solução técnica." },
-  { num: "03", title: "Desenvolvimento", desc: "Código e integrações." },
-  { num: "04", title: "Implantação", desc: "Rollout controlado." },
-  { num: "05", title: "Escala", desc: "Manutenção e evolução." },
-];
-
-const TESTIMONIALS = [
-  { text: "A automação do nosso onboarding reduziu o tempo de entrada de clientes de dias para minutos. A previsibilidade que ganhamos foi essencial para o nosso crescimento este ano.", name: "Marcelo Souza", role: "Diretor de Operações", company: "Nexio Corporate" },
-  { text: "Precisávamos de um sistema que conversasse com nosso ERP legado e ao mesmo tempo oferecesse uma interface moderna para nossos vendedores. A entrega foi impecável.", name: "Carla Ferraz", role: "Head de Inovação", company: "Homma Design" },
-  { text: "O nível de engenharia e a preocupação com a arquitetura do projeto nos deu segurança para escalar nossa operação sem medo de o sistema sair do ar.", name: "Rodrigo Alcantara", role: "CEO", company: "Paper Contracts" },
-];
 
 /* ─── COMPONENTS ───────────────────────────────────────── */
 
 function Nav() {
+  const { t } = useLang();
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
@@ -74,15 +29,15 @@ function Nav() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center px-6 md:px-12 transition-all duration-300 ${scrolled ? "bg-[#060606]/95 backdrop-blur-md border-b border-white/[0.06]" : ""}`}>
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
-        <span className="text-[13px] md:text-[14px] font-bold tracking-tight text-white">THOMAS EDUARDO</span>
+        <span className="text-[13px] md:text-[14px] font-bold tracking-tight text-white uppercase">Thomas Eduardo</span>
         <div className="hidden lg:flex items-center gap-8">
-          {["Projetos", "Processo", "Depoimentos"].map(l => (
-            <a key={l} href="#" className="text-[13px] text-white/50 hover:text-white transition-colors">{l}</a>
-          ))}
+          <a href="#projetos" className="text-[13px] text-white/50 hover:text-white transition-colors">{t.landing.nav.projects}</a>
+          <a href="#processo" className="text-[13px] text-white/50 hover:text-white transition-colors">{t.landing.nav.process}</a>
+          <a href="#depoimentos" className="text-[13px] text-white/50 hover:text-white transition-colors">{t.landing.nav.testimonials}</a>
         </div>
         <a href="#contato" className="flex items-center gap-2 px-5 py-2.5 bg-white text-black text-[12px] md:text-[13px] font-semibold rounded-none hover:bg-white/90 transition-all">
-          <span className="hidden sm:inline">Agendar Conversa</span>
-          <span className="sm:hidden">Contato</span>
+          <span className="hidden sm:inline">{t.landing.nav.cta}</span>
+          <span className="sm:hidden">{t.landing.nav.mobileCta}</span>
         </a>
       </div>
     </nav>
@@ -90,6 +45,7 @@ function Nav() {
 }
 
 function Hero() {
+  const { t } = useLang();
   return (
     <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-6 md:px-12 min-h-[90vh] flex items-center">
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -97,17 +53,17 @@ function Hero() {
         {/* Left Column */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }} className="max-w-xl text-left">
           <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-bold tracking-tighter leading-[1.0] mb-6 text-white">
-            Transformo operações em vantagem competitiva.
+            {t.landing.hero.h1}
           </h1>
           <p className="text-base md:text-lg lg:text-xl text-white/60 mb-10 leading-relaxed font-light">
-            Desenvolvimento de sistemas, automações e plataformas privadas para empresas que precisam crescer com previsibilidade.
+            {t.landing.hero.desc}
           </p>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <a href="#contato" className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-semibold text-[14px] rounded-none hover:bg-white/90 transition-all">
-              Agendar Conversa <ArrowRight className="w-4 h-4" />
+              {t.landing.hero.cta1} <ArrowRight className="w-4 h-4" />
             </a>
             <a href="#projetos" className="flex items-center justify-center gap-2 px-8 py-4 border border-white/[0.15] text-white font-medium text-[14px] rounded-none hover:bg-white/5 hover:border-white/30 transition-all">
-              Ver Projetos
+              {t.landing.hero.cta2}
             </a>
           </div>
         </motion.div>
@@ -127,6 +83,14 @@ function Hero() {
 }
 
 function Benefits() {
+  const { t } = useLang();
+  const BENEFITS = [
+    { label: t.landing.benefits.projects, value: "+18", icon: LayoutGrid },
+    { label: t.landing.benefits.code, value: "100%", icon: Code2 },
+    { label: t.landing.benefits.tasks, value: "-90%", icon: Zap },
+    { label: t.landing.benefits.retention, value: "+", icon: Users },
+  ];
+
   return (
     <section className="px-8 py-16 border-y border-white/[0.08] bg-[#030303]">
       <div className="w-full max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -148,6 +112,7 @@ function Benefits() {
 }
 
 function About() {
+  const { t } = useLang();
   return (
     <section className="px-8 py-32 bg-[#060606]">
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -156,11 +121,11 @@ function About() {
         </motion.div>
         <motion.div initial={{ opacity:0, x:20 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}>
           <h2 className="text-[clamp(32px,4vw,56px)] font-bold tracking-tighter leading-[1.1] mb-6">
-            Engenharia sob <br />
-            <span className="text-white/40">medida.</span>
+            {t.landing.about.h2.split('.')[0]}. <br />
+            <span className="text-white/40">{t.landing.about.h2.split('.')[1]}</span>
           </h2>
           <p className="text-[16px] text-white/60 leading-relaxed max-w-lg font-light mb-8">
-            Desenvolvo soluções tecnológicas exclusivas para empresas que buscam escalar. Foco em arquitetura robusta, interfaces de alta performance e código sustentável a longo prazo.
+            {t.landing.about.desc}
           </p>
         </motion.div>
       </div>
@@ -169,16 +134,17 @@ function About() {
 }
 
 function Problem() {
+  const { t } = useLang();
   return (
     <section className="px-8 py-32">
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <motion.div initial={{ opacity:0, x:-20 }} whileInView={{ opacity:1, x:0 }} viewport={{ once:true }}>
           <h2 className="text-[clamp(32px,4vw,56px)] font-bold tracking-tighter leading-[1.1] mb-6">
-            A maioria dos sistemas<br />
-            <span className="text-white/40">cria complexidade.</span>
+            {t.landing.problem.h2.split('.')[0]}.<br />
+            <span className="text-white/40">{t.landing.problem.h2.split('.')[1]}</span>
           </h2>
           <p className="text-[16px] text-white/60 leading-relaxed max-w-lg mb-8 font-light">
-            Grande parte dos negócios sofre com ferramentas genéricas e desconectadas. O resultado é dados perdidos, retrabalho constante e a equipe gastando mais tempo gerenciando planilhas do que executando o trabalho real. A operação trava em vez de escalar.
+            {t.landing.problem.desc}
           </p>
         </motion.div>
 
@@ -198,7 +164,7 @@ function Problem() {
             </div>
           </div>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="px-4 py-2 bg-black border border-white/10 shadow-xl font-mono text-[11px] text-white/80">Processos Desconectados</div>
+            <div className="px-4 py-2 bg-black border border-white/10 shadow-xl font-mono text-[11px] text-white/80">{t.landing.problem.diagram}</div>
           </div>
         </motion.div>
       </div>
@@ -207,15 +173,18 @@ function Problem() {
 }
 
 function Services() {
+  const { t } = useLang();
+  const SERVICE_ICONS = [Database, Workflow, LineChart];
+
   return (
     <section className="px-8 py-32 bg-[#030303] border-t border-white/[0.05]">
       <div className="w-full max-w-7xl mx-auto">
         <div className="mb-16">
-          <h2 className="text-[40px] font-bold tracking-tighter">O que eu faço</h2>
+          <h2 className="text-[40px] font-bold tracking-tighter">{t.landing.services.title}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {SERVICES.map((s, i) => {
-            const Icon = s.icon;
+          {t.landing.services.items.map((s, i) => {
+            const Icon = SERVICE_ICONS[i] || LineChart;
             return (
               <motion.div key={i} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*0.1 }} className="p-8 border border-white/[0.08] bg-[#080808] hover:bg-[#0a0a0a] transition-colors">
                 <Icon className="w-8 h-8 text-white mb-6" strokeWidth={1.5} />
@@ -231,13 +200,14 @@ function Services() {
 }
 
 function FeaturedCase() {
+  const { t } = useLang();
   const { getIcon } = useSVGL();
   return (
     <section id="projetos" className="px-6 md:px-12 py-24 md:py-32">
       <div className="w-full max-w-7xl mx-auto">
         <div className="mb-12 md:mb-16 flex items-center justify-between">
-          <h2 className="text-3xl md:text-[40px] font-bold tracking-tighter">Projeto Destaque</h2>
-          <span className="text-[11px] md:text-[13px] font-mono text-white/40 uppercase tracking-widest">Case de Sucesso</span>
+          <h2 className="text-3xl md:text-[40px] font-bold tracking-tighter">{t.landing.featured.title}</h2>
+          <span className="text-[11px] md:text-[13px] font-mono text-white/40 uppercase tracking-widest">{t.landing.featured.eyebrow}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -255,7 +225,7 @@ function FeaturedCase() {
           <div className="lg:col-span-5 lg:pl-6">
             <h3 className="text-4xl md:text-[48px] font-bold tracking-tighter leading-none mb-6">Sleep House</h3>
             <p className="text-base md:text-[17px] text-white/60 mb-8 leading-relaxed font-light">
-              Sistema digital completo e arquitetura operacional projetada para unificar o estoque, gerenciar fluxo de vendas e oferecer um front-end de alta performance para a rede de franquias. O resultado foi um showroom robusto com integração nativa ao ecossistema existente.
+              {t.landing.featured.desc}
             </p>
             <div className="flex flex-wrap gap-2 md:gap-3 mb-10">
               {["React", "Node.js", "PostgreSQL", "Tailwind CSS"].map(tech => {
@@ -269,7 +239,7 @@ function FeaturedCase() {
               })}
             </div>
             <a href="#" className="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-8 py-4 bg-white text-black font-semibold text-[14px] hover:bg-white/90 transition-all">
-              Ver Case Completo <ArrowRight className="w-4 h-4" />
+              {t.landing.featured.cta} <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>
@@ -279,12 +249,13 @@ function FeaturedCase() {
 }
 
 function OtherProjects() {
+  const { t } = useLang();
   return (
     <section className="px-8 py-24 bg-[#030303] border-t border-white/[0.05]">
       <div className="w-full max-w-7xl mx-auto">
-        <h2 className="text-[32px] font-bold tracking-tighter mb-12">Outros Projetos</h2>
+        <h2 className="text-[32px] font-bold tracking-tighter mb-12">{t.landing.otherProjects.title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {OTHER_PROJECTS.map((p, i) => (
+          {t.landing.otherProjects.items.map((p, i) => (
             <div key={i} className="p-8 border border-white/[0.08] bg-[#080808] hover:border-white/[0.2] transition-colors group cursor-pointer flex flex-col justify-between min-h-[200px]">
               <div>
                 <h3 className="text-[24px] font-bold tracking-tight mb-3 text-white group-hover:text-white/80 transition-colors">{p.name}</h3>
@@ -302,17 +273,18 @@ function OtherProjects() {
 }
 
 function Process() {
+  const { t } = useLang();
   return (
-    <section className="px-8 py-32 border-t border-white/[0.05]">
+    <section id="processo" className="px-8 py-32 border-t border-white/[0.05]">
       <div className="w-full max-w-7xl mx-auto">
-        <h2 className="text-[40px] font-bold tracking-tighter mb-16 text-center">Processo Estruturado</h2>
+        <h2 className="text-[40px] font-bold tracking-tighter mb-16 text-center">{t.landing.process.title}</h2>
         
         <div className="hidden lg:grid grid-cols-5 gap-4 relative">
           <div className="absolute top-[28px] left-[10%] right-[10%] h-px bg-white/[0.1]" />
-          {PROCESS.map((p, i) => (
+          {t.landing.process.steps.map((p, i) => (
             <motion.div key={i} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*0.1 }} className="relative z-10 flex flex-col items-center text-center">
               <div className="w-14 h-14 bg-[#060606] border border-white/20 rounded-full flex items-center justify-center text-[16px] font-mono font-bold mb-6">
-                {p.num}
+                0{i+1}
               </div>
               <h3 className="text-[18px] font-semibold mb-2">{p.title}</h3>
               <p className="text-[14px] text-white/50 font-light px-2">{p.desc}</p>
@@ -322,10 +294,10 @@ function Process() {
 
         {/* Mobile View */}
         <div className="flex flex-col gap-8 lg:hidden">
-          {PROCESS.map((p, i) => (
+          {t.landing.process.steps.map((p, i) => (
             <div key={i} className="flex gap-6 items-start border-l border-white/10 pl-6 relative">
               <div className="absolute -left-[18px] top-0 w-9 h-9 bg-[#060606] border border-white/20 rounded-full flex items-center justify-center text-[12px] font-mono font-bold">
-                {p.num}
+                0{i+1}
               </div>
               <div>
                 <h3 className="text-[18px] font-semibold mb-1 mt-1">{p.title}</h3>
@@ -341,17 +313,18 @@ function Process() {
 }
 
 function Testimonials() {
+  const { t } = useLang();
   return (
-    <section className="px-8 py-32 bg-[#030303] border-t border-white/[0.05]">
+    <section id="depoimentos" className="px-8 py-32 bg-[#030303] border-t border-white/[0.05]">
       <div className="w-full max-w-7xl mx-auto">
-        <h2 className="text-[40px] font-bold tracking-tighter mb-16">O que dizem</h2>
+        <h2 className="text-[40px] font-bold tracking-tighter mb-16">{t.landing.testimonials.title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map((t, i) => (
+          {t.landing.testimonials.items.map((tItem, i) => (
             <motion.div key={i} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*0.1 }} className="p-8 border border-white/[0.08] bg-[#080808] flex flex-col justify-between">
-              <p className="text-[15px] text-white/70 leading-relaxed font-light mb-10">"{t.text}"</p>
+              <p className="text-[15px] text-white/70 leading-relaxed font-light mb-10">"{tItem.text}"</p>
               <div>
-                <h4 className="text-[16px] font-semibold text-white">{t.name}</h4>
-                <p className="text-[13px] text-white/40">{t.role} · {t.company}</p>
+                <h4 className="text-[16px] font-semibold text-white">{tItem.name}</h4>
+                <p className="text-[13px] text-white/40">{tItem.role} · {tItem.company}</p>
               </div>
             </motion.div>
           ))}
@@ -362,15 +335,16 @@ function Testimonials() {
 }
 
 function CTA() {
+  const { t } = useLang();
   return (
     <section id="contato" className="px-8 py-40 border-t border-white/[0.05]">
       <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}>
           <h2 className="text-[clamp(40px,5vw,72px)] font-bold tracking-tighter leading-[1.05] mb-10">
-            Vamos falar sobre sua operação?
+            {t.landing.cta.h2}
           </h2>
           <p className="text-xl text-white/50 mb-12 max-w-lg leading-relaxed">
-            Preencha o formulário e receba uma análise inicial da sua arquitetura digital em até 24 horas.
+            {t.landing.cta.desc}
           </p>
           <div className="flex items-center gap-6">
             <div className="flex -space-x-3">
@@ -378,7 +352,7 @@ function CTA() {
                 <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800" />
               ))}
             </div>
-            <p className="text-xs text-white/40 font-mono uppercase tracking-widest">+18 empresas já escaladas</p>
+            <p className="text-xs text-white/40 font-mono uppercase tracking-widest">{t.landing.cta.social}</p>
           </div>
         </motion.div>
 

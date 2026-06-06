@@ -58,8 +58,8 @@ const Home = () => {
       <main className="relative z-10">
         <Hero />
         <Suspense fallback={null}>
-          <AboutSection />
           <SolutionsSection />
+          <AboutSection />
           <BentoGrid />
           <ProcessSection />
           <ProjectSection />

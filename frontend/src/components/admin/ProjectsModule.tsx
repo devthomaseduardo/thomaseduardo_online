@@ -99,14 +99,14 @@ export function ProjectsModule() {
   const activeCount = projects.filter((p: any) => p.status !== 'completed' && p.status !== 'paused').length;
 
   return (
-    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <div className="py-6 md:py-10 px-4 sm:px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8 md:space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Pipeline de Projetos</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Pipeline de Projetos</h1>
           <p className="text-zinc-500 text-sm font-medium">Coordene as fases de entrega e execução técnica.</p>
         </div>
         <button onClick={openCreate}
-          className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
+          className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95 w-full md:w-auto">
           <Plus className="w-4 h-4 stroke-[3]" /> Iniciar Novo Projeto
         </button>
       </div>
@@ -140,7 +140,7 @@ export function ProjectsModule() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-hide">
           {loading ? (
             <div className="p-8"><TableSkeleton rows={5} /></div>
           ) : filtered.length === 0 ? (
@@ -149,7 +149,7 @@ export function ProjectsModule() {
               <p className="text-zinc-500 text-sm font-medium">Nenhum projeto encontrado no buffer atual.</p>
             </div>
           ) : (
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
                   {["Entidade Técnica", "Fase de Execução", "Status Operacional", "Cliente Associado", "Operações"].map(h => (
@@ -215,23 +215,23 @@ export function ProjectsModule() {
         description="Defina os parâmetros operacionais principais para este projeto."
         maxWidth="xl"
         footer={
-          <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
+          <div className="flex flex-col sm:flex-row items-center justify-between w-full pt-4 sm:pt-6 border-t border-white/5 gap-4">
             {modal === "edit" ? (
                <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">ENCERRAR PROJETO</button>
-            ) : <div/>}
-            <div className="flex gap-4">
-              <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
+            ) : <div className="hidden sm:block" />}
+            <div className="flex gap-4 w-full sm:w-auto">
+              <button onClick={() => setModal(null)} className="flex-1 sm:flex-none cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all text-center">
                 Descartar
               </button>
-              <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="flex-1 sm:flex-none cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50 text-center">
                 {saving ? "Sincronizando..." : modal === "create" ? "Implantar Pipeline" : "Confirmar Alterações"}
               </button>
             </div>
           </div>
         }
       >
-        <div className="space-y-8 py-4">
-          <div className="grid grid-cols-2 gap-6">
+        <div className="space-y-6 md:space-y-8 py-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Identificador da Solução</label>
               <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))}
@@ -253,7 +253,7 @@ export function ProjectsModule() {
             </select>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="space-y-2">
               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status Operacional</label>
               <select value={form.status ?? "briefing"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}

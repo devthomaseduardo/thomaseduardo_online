@@ -24,12 +24,12 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
         <div className="mb-2 md:mb-5">
           <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-3 font-semibold">
             {project.category === 'operational' 
-              ? (lang === "pt" ? "SISTEMA OPERACIONAL" : "OPERATIONAL SYSTEM")
-              : (lang === "pt" ? "SITES & LANDING PAGES" : "SITES & LANDING PAGES")}
+              ? t.projects.catOperational
+              : t.projects.catInfra}
             
             {project.publishedAt && new Date(project.publishedAt).getTime() > new Date().getTime() - 30 * 24 * 60 * 60 * 1000 && (
               <span className="bg-blue-500/10 text-blue-400 text-[9px] font-mono px-2 py-0.5 rounded uppercase tracking-widest">
-                {lang === "pt" ? "Novo" : "New"}
+                {t.projects.newBadge}
               </span>
             )}
           </span>
@@ -65,9 +65,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 showDetails ? 'border-white text-white' : 'border-white/20 text-white/50 hover:text-white hover:border-white/50'
               }`}
             >
-              {lang === "pt" 
-                ? (showDetails ? "Recolher Detalhes" : "Detalhes do Projeto") 
-                : (showDetails ? "Hide Details" : "Project Details")}
+              {showDetails ? t.projects.hideDetails : t.projects.showDetails}
               <AnimatedEmoji 
                 name={showDetails ? "pointing_up" : "pointing_right"} 
                 className="w-5 h-5" 
@@ -83,13 +81,13 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 className="relative inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 rounded-lg bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
               >
                 <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
-                <span>Discutir Projeto</span>
+                <span>{t.projects.discussProject}</span>
               </a>
               <a
                 href="/cases"
                 className="relative inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-95 text-[10px] font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-xl group border border-white/10 hover:border-white/20"
               >
-                <span>{lang === 'pt' ? 'Explorar Todos os Cases' : 'Explore All Cases'}</span>
+                <span>{t.projects.exploreAll}</span>
                 <ArrowRight className="w-4 h-4 text-emerald-400 transition-transform duration-300 group-hover:translate-x-1" />
               </a>
             </div>
@@ -108,7 +106,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 {/* Challenge (Desafio) */}
                 <div className="space-y-1">
                   <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest block">
-                    {lang === "pt" ? "O Desafio" : "The Challenge"}
+                    {t.projects.challenge}
                   </span>
                   <p className="text-sm text-white/70 font-light leading-relaxed">
                     {lang === "pt" ? project.challenge_pt : project.challenge_en}
@@ -118,7 +116,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 {/* Impact (Resultado) */}
                 <div className="space-y-1">
                   <span className="text-[9px] font-mono text-emerald-400/40 uppercase tracking-widest block font-medium">
-                    {lang === "pt" ? "Impacto no Negócio" : "Business Impact"}
+                    {t.projects.impact}
                   </span>
                   <p className="text-sm text-emerald-400/80 font-light leading-relaxed">
                     {lang === "pt" ? project.impact_pt : project.impact_en}
@@ -128,7 +126,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 {/* Key Features (Destaques) */}
                 <div className="space-y-1.5">
                   <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest block">
-                    {lang === "pt" ? "Destaques do Sistema" : "Key Highlights"}
+                    {t.projects.highlights}
                   </span>
                   <ul className="grid grid-cols-1 gap-1.5">
                     {((lang === "pt" ? project.features_pt : project.features_en) || []).map((feat: string, idx: number) => (
@@ -161,7 +159,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="absolute w-[calc(100%-2rem)] md:w-auto justify-center z-50 bottom-4 md:bottom-4 left-1/2 -translate-x-1/2 inline-flex flex-row flex-nowrap whitespace-nowrap items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-3 rounded-lg bg-black/80 backdrop-blur-md border border-white/10 hover:bg-white text-[9px] md:text-[10px] font-mono font-bold tracking-widest uppercase text-white hover:text-black transition-colors duration-300 group shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
           >
-            <span>{lang === 'pt' ? 'Acessar ao Vivo' : 'Live Preview'}</span>
+            <span>{t.projects.livePreview}</span>
             <AnimatedEmoji name="eyes" className="w-5 h-5 md:w-[25px] md:h-[25px] group-hover:scale-110 transition-transform shrink-0" />
           </motion.a>
         )}
@@ -249,7 +247,7 @@ export const ProjectSection = () => {
       {/* Client Projects Carousel */}
       <div className="mb-10 md:mb-20 mt-16 md:mt-0">
         <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4 md:mb-1 block pb-0">
-          {lang === 'pt' ? 'Projetos de Clientes' : 'Client Projects'}
+          {t.projects.clientHeader}
         </span>
         <div className="flex flex-col space-y-8">
           {featuredProjects.length > 0 && (

@@ -64,7 +64,7 @@ export const ProcessSection = () => {
               className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-lg bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
             >
               <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
-            <span>Começar Agora</span>
+            <span>{t.process.cta}</span>
             </a>
           </div>
         </motion.div>
@@ -99,7 +99,7 @@ export const ProcessSection = () => {
               {/* Folder Tab */}
               <div className="w-[120px] md:w-[140px] h-8 md:h-10 bg-neutral-900/80 backdrop-blur-md border-t border-l border-r border-white/10 rounded-t-xl flex items-center px-4 md:px-5 relative z-10 transition-colors group-hover:border-white/20 group-hover:bg-neutral-800/80">
                 <span className="text-[9px] md:text-[10px] font-mono font-bold text-white/40 group-hover:text-white/80 transition-colors tracking-widest uppercase">
-                  Fase {tab.step}
+                  {t.process.phase} {tab.step}
                 </span>
                 {/* The bridge to mask the body's top border */}
                 <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-neutral-900/80 backdrop-blur-md group-hover:bg-neutral-800/80 transition-colors z-20" />
@@ -135,7 +135,7 @@ export const ProcessSection = () => {
             className="flex items-center justify-center w-full gap-3 px-6 py-3 rounded-lg bg-white hover:bg-neutral-200 text-neutral-950 active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
           >
             <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
-            Iniciar Estruturação
+            <span>{t.process.mobileCta}</span>
           </a>
         </motion.div>
       </div>

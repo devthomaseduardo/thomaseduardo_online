@@ -94,7 +94,7 @@ const Navbar = () => {
 
 
           <a
-            href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
+            href={`/r?to=${encodeURIComponent(lang === 'pt' ? "https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto." : "https://wa.me/5511977070209?text=Hi Thomas, I would like to start a project.")}`}
             className="hidden lg:flex items-center gap-2 transition-all duration-200 group"
             style={{
               fontSize: 13,
@@ -177,7 +177,7 @@ const Navbar = () => {
               className="flex flex-col items-center gap-6 mt-12 w-full px-6"
             >
               <a
-                href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
+                href={`/r?to=${encodeURIComponent(lang === 'pt' ? "https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto." : "https://wa.me/5511977070209?text=Hi Thomas, I would like to start a project.")}`}
                 className="w-full flex items-center justify-center gap-2 group"
                 style={{
                   fontSize: 15,

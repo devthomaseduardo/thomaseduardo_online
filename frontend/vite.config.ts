@@ -23,11 +23,11 @@ export default defineConfig(({mode}) => {
       headers: {
         'Content-Security-Policy': [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://platform.linkedin.com https://app.posthog.com",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://platform.linkedin.com https://app.posthog.com https://us-assets.i.posthog.com",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com",
           "font-src 'self' https://fonts.gstatic.com https://api.fontshare.com https://cdn.fontshare.com",
           "img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com https://cdn.simpleicons.org https://raw.githubusercontent.com https://images.openai.com",
-          "connect-src 'self' http://localhost:3001 http://localhost:3002 ws://localhost:* https://www.google-analytics.com https://analytics.google.com https://api.fontshare.com https://app.posthog.com",
+          "connect-src 'self' http://localhost:3001 http://localhost:3002 ws://localhost:* https://www.google-analytics.com https://analytics.google.com https://api.fontshare.com https://app.posthog.com https://us.i.posthog.com https://us-assets.i.posthog.com",
           "frame-src 'self' https://www.googletagmanager.com",
           "worker-src 'self' blob:",
         ].join('; '),

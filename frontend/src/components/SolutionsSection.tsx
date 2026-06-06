@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { 
   Laptop, Zap, LayoutDashboard, Code2, Check, ArrowRight 
 } from 'lucide-react';
+import { useLang } from '../contexts/LangContext';
 
 const SMOOTH_TRANSITION = { type: "spring", stiffness: 40, damping: 20 };
 const FADE_UP = {
@@ -11,38 +12,17 @@ const FADE_UP = {
   viewport: { once: true, margin: "-100px" }
 };
 
-const SOLUTIONS = [
-  {
-    id: 1,
-    icon: LayoutDashboard,
-    title: 'Sistema Operacional',
-    desc: 'Centralize processos, equipe, clientes, estoque, financeiro e ordens de serviço em uma única plataforma.',
-    features: ['Ordens de Serviço', 'CRM', 'Gestão Operacional', 'Financeiro', 'Estoque']
-  },
-  {
-    id: 2,
-    icon: Zap,
-    title: 'Automações Inteligentes',
-    desc: 'Automatize tarefas repetitivas, integrações, mensagens, notificações e fluxos internos.',
-    features: ['WhatsApp', 'Telegram', 'E-mail', 'APIs', 'Workflows']
-  },
-  {
-    id: 3,
-    icon: Laptop,
-    title: 'Plataformas Privadas',
-    desc: 'Portais do cliente, áreas restritas, dashboards, pagamentos, contratos e arquivos.',
-    features: ['Portal do Cliente', 'Área Restrita', 'Dashboards', 'Contratos', 'Pagamentos']
-  },
-  {
-    id: 4,
-    icon: Code2,
-    title: 'Aplicações Web',
-    desc: 'Landing pages, e-commerces, SaaS, portais e sistemas web performáticos.',
-    features: ['SaaS', 'Landing Pages', 'E-commerce', 'Websites', 'Portais']
-  }
-];
+const SOLUTION_ICONS = [LayoutDashboard, Zap, Laptop, Code2];
 
 export function SolutionsSection() {
+  const { t } = useLang();
+  
+  const SOLUTIONS = t.solutions.items.map((item, index) => ({
+    ...item,
+    id: index + 1,
+    icon: SOLUTION_ICONS[index] || Code2
+  }));
+
   return (
     <section id="solucoes" className="relative z-20 py-16 md:py-24 px-4 md:px-12 bg-[#050505] overflow-hidden">
       <div className="w-full max-w-[1400px] mx-auto relative z-10">
@@ -55,13 +35,13 @@ export function SolutionsSection() {
         >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-mono font-bold text-emerald-500 tracking-[0.2em] uppercase">SOLUÇÕES</span>
+            <span className="text-[10px] font-mono font-bold text-emerald-500 tracking-[0.2em] uppercase">{t.solutions.eyebrow}</span>
           </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tighter mb-6 max-w-3xl">
-            Soluções que eliminam gargalos.
+            {t.solutions.h2}
           </h2>
           <p className="text-white/50 text-lg md:text-xl max-w-2xl font-light">
-            Sistemas, automações e plataformas privadas para organizar processos, reduzir trabalho manual e preparar empresas para crescer.
+            {t.solutions.desc}
           </p>
         </motion.div>
 
@@ -138,7 +118,7 @@ export function SolutionsSection() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-xs font-bold font-mono tracking-wider uppercase text-white/50 group-hover:text-emerald-500 transition-colors"
                     >
-                      Saiba Mais <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      {t.solutions.learnMore} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </a>
                   </div>
                 </div>

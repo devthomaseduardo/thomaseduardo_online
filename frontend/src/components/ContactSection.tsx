@@ -16,7 +16,7 @@ export const ContactSection = () => {
       >
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
           <span className="text-[10px] font-mono font-medium text-white/40 tracking-[0.25em] uppercase block mb-8 border border-white/10 px-4 py-1.5 rounded-full bg-white/[0.02]">
-            Contato
+            {t.contact.eyebrow}
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-8 tracking-tighter leading-[1.1] text-white">
             <TextReveal>{t.contact.h2a}</TextReveal> <br className="hidden md:block" />
@@ -35,7 +35,7 @@ export const ContactSection = () => {
               className="group flex items-center justify-center gap-3 bg-white/[0.03] border border-white/10 text-white px-8 py-4 font-mono text-xs uppercase tracking-widest hover:bg-white/5 transition-colors rounded-xl"
             >
               <AnimatedEmoji name="rocket" className="w-4 h-4 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
-              WhatsApp
+              {t.contact.btnWhatsapp}
             </a>
             
             <a 
@@ -43,7 +43,7 @@ export const ContactSection = () => {
               className="group flex items-center justify-center gap-3 border border-white/10 text-white/60 px-8 py-4 font-mono text-xs uppercase tracking-widest hover:bg-white/5 hover:text-white transition-colors rounded-xl"
             >
               <AnimatedEmoji name="handshake" className="w-4 h-4 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
-              E-mail Direto
+              {t.contact.btnEmail}
             </a>
           </div>
         </div>

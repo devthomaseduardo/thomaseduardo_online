@@ -76,7 +76,7 @@ const ServicesSection = () => {
               {/* Folder Tab */}
               <div className="w-[120px] md:w-[140px] h-8 md:h-10 bg-neutral-900/80 backdrop-blur-md border-t border-l border-r border-white/10 rounded-t-xl flex items-center px-4 md:px-5 relative z-10 transition-colors group-hover:border-white/20 group-hover:bg-neutral-800/80">
                 <span className="text-[9px] md:text-[10px] font-mono font-bold text-white/40 group-hover:text-white/80 transition-colors tracking-widest uppercase">
-                  Gargalo 0{index + 1}
+                  {t.bento.bottleneck} 0{index + 1}
                 </span>
                 {/* The bridge to mask the body's top border */}
                 <div className="absolute -bottom-[1px] left-0 w-full h-[2px] bg-neutral-900/80 backdrop-blur-md group-hover:bg-neutral-800/80 transition-colors z-20" />

@@ -39,37 +39,35 @@ const ProjectsPage = () => {
     <div className="min-h-screen bg-(--pg-bg) text-(--pg-text) transition-colors duration-500 overflow-x-hidden">
       <Navbar />
       
-      <main className="section-padding px-6 max-w-6xl mx-auto pt-32 pb-24">
+      <main className="section-padding px-4 sm:px-6 max-w-6xl mx-auto pt-24 md:pt-32 pb-16 md:pb-24">
         {/* Back Link */}
-        <motion.div {...FADE_UP} className="mb-10">
+        <motion.div {...FADE_UP} className="mb-8 md:mb-10">
           <a 
             href="/" 
             className="inline-flex items-center gap-2 text-xs font-mono text-white/40 hover:text-white uppercase tracking-widest transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            {lang === "pt" ? "Voltar ao Início" : "Back to Home"}
+            {t.projects.backToHome}
           </a>
         </motion.div>
 
         {/* Page Header */}
         <motion.div {...FADE_UP} className="mb-16">
           <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-6">
-            {lang === "pt" ? "Portfólio de Cases" : "Case Portfolio"}
+            {t.projects.pageEyebrow}
           </span>
           <h1 className="text-[clamp(36px,6vw,80px)] font-bold tracking-tighter leading-[1] text-white mb-6 uppercase">
-            {lang === "pt" ? "Sistemas & Páginas" : "Systems & Pages"}
+            {t.projects.pageTitle}
           </h1>
           <p className="text-lg md:text-xl text-white/50 font-light max-w-2xl leading-relaxed">
-            {lang === "pt" 
-              ? "Confira todos os sistemas completos, automações e landing pages de alta conversão desenvolvidos para simplificar operações e gerar vendas reais."
-              : "Explore the full suite of operational tools, custom dashboards, and high-performance pages designed to eliminate waste and accelerate business growth."}
+            {t.projects.pageDesc}
           </p>
         </motion.div>
 
         {/* Frontend Projects */}
         <div className="mb-24 md:mb-32">
           <h2 className="text-[12px] md:text-sm font-mono text-emerald-400 uppercase tracking-[0.2em] mb-10 flex items-center gap-3 font-semibold px-4 md:px-0">
-            {lang === "pt" ? "Frontend & Páginas" : "Frontend & Pages"}
+            {t.projects.catFrontend}
           </h2>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-8 md:gap-16 pb-12 no-scrollbar px-4 md:px-0">
             {frontendProjects.map((project) => (
@@ -120,7 +118,7 @@ const ProjectsPage = () => {
         {/* Backend Projects */}
         <div className="mb-24 md:mb-32">
           <h2 className="text-[12px] md:text-sm font-mono text-emerald-400 uppercase tracking-[0.2em] mb-10 flex items-center gap-3 font-semibold px-4 md:px-0">
-            {lang === "pt" ? "Backend & Sistemas" : "Backend & Systems"}
+            {t.projects.catBackend}
           </h2>
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-8 md:gap-16 pb-12 no-scrollbar px-4 md:px-0">
             {backendProjects.map((project) => (
