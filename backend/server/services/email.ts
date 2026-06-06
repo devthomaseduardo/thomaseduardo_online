@@ -2,14 +2,23 @@ import { Resend } from 'resend';
 import { env } from '../lib/env.js';
 import { getWelcomeEmailTemplate } from './emailTemplates.js';
 
-// Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Get API Key safely
+const apiKey = env.RESEND_API_KEY || '';
+
+// Initialize Resend with a dummy key if missing to prevent constructor throw, 
+// but we'll check it before sending.
+const resend = new Resend(apiKey || 're_missing_key');
 
 export const emailService = {
   /**
    * Sends a standard transactional email
    */
   async sendEmail(to: string, subject: string, html: string) {
+    if (!apiKey) {
+      console.warn('⚠️ Resend API Key não configurada. E-mail não enviado:', subject);
+      return { error: 'Missing API Key' };
+    }
+
     try {
       const data = await resend.emails.send({
         from: 'Thomas Eduardo <noreply@thomaseduardo.online>',

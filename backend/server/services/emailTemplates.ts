@@ -9,9 +9,9 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
     /* Reset & Base */
     body, p, h1, h2, h3, h4, h5, h6 { margin: 0; padding: 0; }
     body {
-      background-color: #FAFAFA;
+      background-color: #09090B;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #3F3F46;
+      color: #A1A1AA;
       -webkit-font-smoothing: antialiased;
       line-height: 1.6;
       padding: 0;
@@ -25,7 +25,7 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
     /* Layout Principal - Full Width */
     .wrapper {
       width: 100%;
-      background-color: #FAFAFA;
+      background-color: #09090B;
       padding: 60px 20px;
       box-sizing: border-box;
     }
@@ -69,18 +69,8 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       width: 48px;
       height: auto;
       margin-bottom: 24px;
-      filter: invert(1); 
+      /* Removido o filter: invert(1) para preservar as cores originais da logo */
     }
-    
-    .brand-subtitle {
-      font-size: 11px;
-      color: #71717A;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 600;
-      margin-top: 24px;
-    }
-
     /* Conteúdo Principal */
     .content {
       text-align: left;
@@ -88,30 +78,30 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
     .title {
       font-size: 36px;
       font-weight: 600;
-      color: #09090B;
+      color: #FAFAFA;
       margin-bottom: 32px;
       letter-spacing: -0.03em;
       line-height: 1.2;
     }
-    .title span {
-      color: #71717A;
+    .title span.name {
+      color: #A1A1AA;
     }
     .message {
       font-size: 18px;
-      color: #3F3F46;
+      color: #D4D4D8;
       margin-bottom: 56px;
       font-weight: 400;
       line-height: 1.7;
     }
     .highlight {
-      color: #09090B;
+      color: #FAFAFA;
       font-weight: 600;
     }
 
     /* Dados de Acesso e Funcionalidades */
     .info-section {
-      background-color: #FFFFFF;
-      border: 1px solid rgba(0,0,0,0.05);
+      background-color: #18181B;
+      border: 1px solid rgba(255,255,255,0.05);
       border-radius: 8px;
       padding: 32px;
       margin-bottom: 56px;
@@ -127,13 +117,13 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
     .info-value {
       font-size: 16px;
       font-family: monospace;
-      color: #09090B;
+      color: #FAFAFA;
       margin-bottom: 24px;
       font-weight: 500;
     }
     .features-list {
       margin-top: 32px;
-      border-top: 1px solid rgba(0,0,0,0.05);
+      border-top: 1px solid rgba(255,255,255,0.05);
       padding-top: 32px;
     }
     .feature-item {
@@ -141,7 +131,7 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       align-items: center;
       margin-bottom: 12px;
       font-size: 15px;
-      color: #3F3F46;
+      color: #A1A1AA;
     }
     .feature-check {
       color: #10B981;
@@ -157,10 +147,10 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background-color: #09090B;
-      color: #FFFFFF;
+      background-color: #FAFAFA;
+      color: #09090B;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       padding: 18px 42px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -170,32 +160,29 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
 
     /* Assinatura */
     .signature-container {
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding-top: 48px;
-      display: flex;
-      align-items: center;
-      gap: 24px;
     }
     .sig-img {
       width: 56px;
       height: 56px;
       border-radius: 50%;
       object-fit: cover;
+      display: block;
     }
     .sig-info {
-      display: flex;
-      flex-direction: column;
+      text-align: left;
     }
     .sig-name {
       font-size: 16px;
       font-weight: 600;
-      color: #09090B;
+      color: #FAFAFA;
       margin-bottom: 2px;
       letter-spacing: -0.01em;
     }
     .sig-role {
       font-size: 14px;
-      color: #71717A;
+      color: #A1A1AA;
       font-weight: 400;
     }
 
@@ -205,7 +192,7 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       font-size: 12px;
       color: #71717A;
       line-height: 1.6;
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding-top: 40px;
     }
     .footer p {
@@ -215,7 +202,7 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       margin-top: 24px;
     }
     .footer-links a {
-      color: #3F3F46;
+      color: #A1A1AA;
       margin-right: 16px;
       text-decoration: underline;
     }
@@ -237,12 +224,11 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
       <!-- Cabeçalho com Logo -->
       <div class="header">
         <img src="https://thomaseduardo.online/logo.png" alt="Thomas Eduardo Logo" class="brand-logo">
-        <div class="brand-subtitle">Ecossistema Digital</div>
       </div>
 
       <!-- Conteúdo -->
       <div class="content">
-        <h1 class="title">Bem-vindo(a), <span class="emoji-wave">👋</span><br><span style="color: #09090B;">\${clientName}</span>.</h1>
+        <h1 class="title">Bem-vindo(a), <span class="emoji-wave">👋</span><br><span class="name">\${clientName}</span>.</h1>
         <p class="message">
           Seu portal de gerenciamento foi <span class="highlight">oficialmente ativado</span> <span class="emoji-bounce">🚀</span><br><br>
           Este ambiente exclusivo foi desenhado para garantir total transparência sobre o andamento do seu projeto. Através dele, você poderá acompanhar atualizações em tempo real, gerenciar documentos, faturas e validar etapas de desenvolvimento com máxima eficiência e sofisticação <span class="emoji-bounce">✨</span>
@@ -274,11 +260,17 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
 
         <!-- Assinatura -->
         <div class="signature-container">
-          <img src="https://thomaseduardo.online/avatar.webp" alt="Thomas Eduardo" class="sig-img">
-          <div class="sig-info">
-            <div class="sig-name">Thomas Eduardo</div>
-            <div class="sig-role">Software Engineer</div>
-          </div>
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td width="80" valign="middle">
+                <img src="https://thomaseduardo.online/avatar.webp" alt="Thomas Eduardo" class="sig-img">
+              </td>
+              <td valign="middle" class="sig-info">
+                <div class="sig-name">Thomas Eduardo</div>
+                <div class="sig-role">Software Engineer</div>
+              </td>
+            </tr>
+          </table>
         </div>
 
       </div>
@@ -298,4 +290,3 @@ export const getWelcomeEmailTemplate = (clientName: string, portalLink: string, 
 </body>
 </html>
 `;
-
