@@ -11,7 +11,8 @@ import {
   Target, 
   MessageSquare, 
   UsersRound, 
-  Settings 
+  Settings,
+  X 
 } from 'lucide-react';
 import { RotatingText } from '../../RotatingText';
 
@@ -29,11 +30,11 @@ const menuItems = [
   { icon: Settings, label: 'Configurações', path: '/admin/settings' },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ className = "", onAction }: { className?: string, onAction?: () => void }) {
   return (
-    <aside className="w-64 border-r border-white/5 bg-black/40 backdrop-blur-xl hidden md:flex flex-col relative z-20">
+    <aside className={`w-64 border-r border-white/5 bg-black md:bg-black/40 backdrop-blur-xl flex flex-col relative z-20 ${className}`}>
       {/* Logo Area */}
-      <div className="h-20 flex items-center px-6 border-b border-white/5">
+      <div className="h-20 flex items-center px-6 border-b border-white/5 shrink-0 justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             <img src="/logo-preta-branca.png" alt="Logo" className="w-6 h-6 object-contain" />
@@ -43,6 +44,9 @@ export function AdminSidebar() {
             <div className="text-[10px] text-white/30 font-mono uppercase tracking-[0.2em] mt-1">Painel Admin</div>
           </div>
         </div>
+        <button onClick={onAction} className="lg:hidden p-2 text-white/20 hover:text-white transition-colors">
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Navigation */}

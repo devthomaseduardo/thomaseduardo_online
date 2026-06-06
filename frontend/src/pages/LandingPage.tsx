@@ -72,16 +72,17 @@ function Nav() {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center px-8 transition-all duration-300 ${scrolled ? "bg-[#060606]/95 backdrop-blur-md border-b border-white/[0.06]" : ""}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 h-[72px] flex items-center px-6 md:px-12 transition-all duration-300 ${scrolled ? "bg-[#060606]/95 backdrop-blur-md border-b border-white/[0.06]" : ""}`}>
       <div className="w-full max-w-7xl mx-auto flex items-center justify-between">
-        <span className="text-[14px] font-bold tracking-tight text-white">THOMAS EDUARDO</span>
-        <div className="hidden md:flex items-center gap-8">
+        <span className="text-[13px] md:text-[14px] font-bold tracking-tight text-white">THOMAS EDUARDO</span>
+        <div className="hidden lg:flex items-center gap-8">
           {["Projetos", "Processo", "Depoimentos"].map(l => (
             <a key={l} href="#" className="text-[13px] text-white/50 hover:text-white transition-colors">{l}</a>
           ))}
         </div>
-        <a href="#contato" className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white text-black text-[13px] font-semibold rounded-none hover:bg-white/90 transition-all">
-          Agendar Conversa
+        <a href="#contato" className="flex items-center gap-2 px-5 py-2.5 bg-white text-black text-[12px] md:text-[13px] font-semibold rounded-none hover:bg-white/90 transition-all">
+          <span className="hidden sm:inline">Agendar Conversa</span>
+          <span className="sm:hidden">Contato</span>
         </a>
       </div>
     </nav>
@@ -90,32 +91,31 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="relative pt-32 pb-24 px-8 min-h-[90vh] flex items-center">
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-6 md:px-12 min-h-[90vh] flex items-center">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         
         {/* Left Column */}
-        <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }} className="max-w-xl">
-          <h1 className="text-[clamp(48px,6vw,80px)] font-bold tracking-tighter leading-[1.05] mb-6 text-white">
+        <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }} className="max-w-xl text-left">
+          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-bold tracking-tighter leading-[1.0] mb-6 text-white">
             Transformo operações em vantagem competitiva.
           </h1>
-          <p className="text-[16px] md:text-[18px] text-white/60 mb-10 leading-relaxed font-light">
+          <p className="text-base md:text-lg lg:text-xl text-white/60 mb-10 leading-relaxed font-light">
             Desenvolvimento de sistemas, automações e plataformas privadas para empresas que precisam crescer com previsibilidade.
           </p>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <a href="#contato" className="flex items-center justify-center w-full sm:w-auto gap-2 px-8 py-4 bg-white text-black font-semibold text-[14px] rounded-none hover:bg-white/90 transition-all">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <a href="#contato" className="flex items-center justify-center gap-2 px-8 py-4 bg-white text-black font-semibold text-[14px] rounded-none hover:bg-white/90 transition-all">
               Agendar Conversa <ArrowRight className="w-4 h-4" />
             </a>
-            <a href="#projetos" className="flex items-center justify-center w-full sm:w-auto gap-2 px-8 py-4 border border-white/[0.15] text-white font-medium text-[14px] rounded-none hover:bg-white/5 hover:border-white/30 transition-all">
+            <a href="#projetos" className="flex items-center justify-center gap-2 px-8 py-4 border border-white/[0.15] text-white font-medium text-[14px] rounded-none hover:bg-white/5 hover:border-white/30 transition-all">
               Ver Projetos
             </a>
           </div>
         </motion.div>
 
         {/* Right Column: Visual */}
-        <motion.div initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.7, delay:0.2 }} className="relative w-full h-[400px] md:h-[600px] flex items-center justify-center">
+        <motion.div initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.7, delay:0.2 }} className="relative w-full aspect-square max-w-[500px] mx-auto lg:max-w-none flex items-center justify-center order-first lg:order-last">
           <div className="absolute inset-0 border border-white/5 shadow-2xl overflow-hidden flex flex-col items-center justify-center bg-[#080808]">
             <img src={brutalistLogo} alt="Massive 3D Monolithic Logo" className="absolute inset-0 w-full h-full object-cover opacity-90" />
-            {/* Subtle gradient overlay to blend into the dark theme */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#060606] via-transparent to-transparent opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#060606] via-transparent to-transparent opacity-50" />
           </div>
@@ -233,16 +233,16 @@ function Services() {
 function FeaturedCase() {
   const { getIcon } = useSVGL();
   return (
-    <section id="projetos" className="px-8 py-32">
+    <section id="projetos" className="px-6 md:px-12 py-24 md:py-32">
       <div className="w-full max-w-7xl mx-auto">
-        <div className="mb-16 flex items-center justify-between">
-          <h2 className="text-[40px] font-bold tracking-tighter">Projeto Destaque</h2>
-          <span className="text-[13px] font-mono text-white/40">Case de Sucesso</span>
+        <div className="mb-12 md:mb-16 flex items-center justify-between">
+          <h2 className="text-3xl md:text-[40px] font-bold tracking-tighter">Projeto Destaque</h2>
+          <span className="text-[11px] md:text-[13px] font-mono text-white/40 uppercase tracking-widest">Case de Sucesso</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Mockups */}
-          <div className="lg:col-span-7 relative h-[500px]">
+          <div className="lg:col-span-7 relative h-[300px] sm:h-[400px] md:h-[500px]">
             <DeviceMockup 
               desktopImg={adminHero}
               tabletImg={adminHero}
@@ -252,23 +252,23 @@ function FeaturedCase() {
           </div>
 
           {/* Info */}
-          <div className="lg:col-span-5 lg:pl-10">
-            <h3 className="text-[48px] font-bold tracking-tighter leading-none mb-6">Sleep House</h3>
-            <p className="text-[16px] text-white/60 mb-8 leading-relaxed font-light">
+          <div className="lg:col-span-5 lg:pl-6">
+            <h3 className="text-4xl md:text-[48px] font-bold tracking-tighter leading-none mb-6">Sleep House</h3>
+            <p className="text-base md:text-[17px] text-white/60 mb-8 leading-relaxed font-light">
               Sistema digital completo e arquitetura operacional projetada para unificar o estoque, gerenciar fluxo de vendas e oferecer um front-end de alta performance para a rede de franquias. O resultado foi um showroom robusto com integração nativa ao ecossistema existente.
             </p>
-            <div className="flex flex-wrap gap-3 mb-10">
+            <div className="flex flex-wrap gap-2 md:gap-3 mb-10">
               {["React", "Node.js", "PostgreSQL", "Tailwind CSS"].map(tech => {
                 const iconUrl = getIcon(tech);
                 return (
-                  <span key={tech} className="inline-flex items-center gap-1.5 px-3 py-1 border border-white/[0.15] text-[12px] text-white/60 font-mono">
+                  <span key={tech} className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/[0.1] text-[11px] md:text-[12px] text-white/60 font-mono bg-white/[0.02]">
                     {iconUrl && <img src={iconUrl} alt={tech} className="w-3.5 h-3.5 opacity-80" loading="lazy" />}
                     {tech}
                   </span>
                 );
               })}
             </div>
-            <a href="#" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black text-[13px] font-semibold hover:bg-white/90 transition-all">
+            <a href="#" className="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-8 py-4 bg-white text-black font-semibold text-[14px] hover:bg-white/90 transition-all">
               Ver Case Completo <ArrowRight className="w-4 h-4" />
             </a>
           </div>

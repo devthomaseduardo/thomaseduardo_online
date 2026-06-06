@@ -34,7 +34,7 @@ const STEPS = [
 
 // ─── Components ─────────────────────────────────────────────────────────────
 
-const SidebarInfo = ({ b, i }: { b: any, i: number }) => (
+const SidebarInfo = ({ b, i }: any) => (
   <motion.div
     initial={{ opacity: 0, x: -8 }}
     animate={{ opacity: 1, x: 0 }}
@@ -257,6 +257,67 @@ const PendingState = ({ invoice, method, setMethod, processing, handlePay, statu
   );
 };
 
+const Sidebar = ({ amount, projectData }: any) => {
+  const navigate = useNavigate();
+  return (
+    <aside className="w-full xl:w-[440px] bg-[#0A0A0A] border-b xl:border-b-0 xl:border-r border-white/5 flex flex-col shrink-0 overflow-hidden xl:h-screen sticky top-0 z-[70]">
+      <div className="absolute inset-0 z-0">
+        <img src={fundoBg} alt="Background" className="w-full h-full object-cover opacity-10 grayscale mix-blend-luminosity" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent" />
+      </div>
+
+      <div className="relative z-10 p-6 md:p-10 flex flex-col h-full">
+        <button 
+          onClick={() => navigate("/portal/dashboard")}
+          className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-white/30 hover:text-white transition-colors mb-12 md:mb-20"
+        >
+          <ArrowLeft className="w-3 h-3" /> Voltar ao Painel
+        </button>
+
+        <div className="mt-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[10px] font-mono font-bold text-emerald-500 tracking-[0.2em] uppercase">Checkout Seguro</span>
+          </div>
+          
+          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter leading-none mb-6">
+            Finalize sua <br /> <span className="text-white/40">operação técnica.</span>
+          </h2>
+          
+          <div className="space-y-4 md:space-y-6 pt-6 border-t border-white/5">
+            <div className="flex justify-between items-end">
+               <div>
+                  <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-1">Total da Liquidação</p>
+                  <p className="text-2xl md:text-4xl font-bold text-white tracking-tight">R$ {amount.toLocaleString('pt-BR')}</p>
+               </div>
+               <div className="text-right">
+                  <p className="text-[10px] font-mono text-emerald-500/50 uppercase tracking-[0.2em] mb-1">Status</p>
+                  <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Aguardando</p>
+               </div>
+            </div>
+
+            {projectData && (
+              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                <p className="text-[10px] font-mono text-white/20 uppercase mb-2">Projeto Vinculado</p>
+                <p className="text-sm font-semibold text-white/90">{projectData.name}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="hidden xl:grid grid-cols-1 gap-2 mt-12">
+          {[
+            { icon: Shield, title: "Segurança", desc: "Processamento criptografado" },
+            { icon: Zap, title: "Velocidade", desc: "Liberação em tempo real" }
+          ].map((b, i) => (
+            <SidebarInfo key={i} b={b} i={i} />
+          ))}
+        </div>
+      </div>
+    </aside>
+  );
+};
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -265,6 +326,8 @@ export default function PaymentPage() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const amount = invoice?.saldo || invoice?.amount || 0;
 
   const loadInvoice = async () => {
     const token = localStorage.getItem("clientToken");
@@ -350,85 +413,91 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#060606] text-white selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-[#060606] text-white selection:bg-emerald-500/30 flex flex-col xl:flex-row">
       
-      {/* Header */}
-      <header className="h-20 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-10 sticky top-0 z-[60]">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <img src="/logo-preta-branca.png" alt="Logo" className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold tracking-tight">Checkout de Engenharia</h1>
-            <p className="text-[10px] text-white/20 font-mono uppercase tracking-widest">Ambiente de Liquidação Seguro</p>
-          </div>
-        </div>
-        <button onClick={() => navigate('/portal/dashboard')} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-white/40 hover:text-white">
-          <X className="w-6 h-6" />
-        </button>
-      </header>
+      <Sidebar amount={amount} projectData={invoice?.project} />
 
-      <main className="max-w-[1400px] mx-auto">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         
-        {/* Breadcrumb / Progress */}
-        <div className="px-10 pt-12">
-           <div className="flex items-center gap-4 overflow-x-auto pb-4 scrollbar-hide">
-              {STEPS.map((s, i) => (
-                <div key={i} className="flex items-center gap-3 shrink-0">
-                   <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-[10px] font-mono font-bold ${
-                      s.done ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 
-                      s.num === "03" ? 'bg-white/10 border-white/30 text-white' : 'border-white/5 text-white/20'
-                   }`}>
-                      {s.done ? <Check className="w-4 h-4" /> : s.num}
-                   </div>
-                   <span className={`text-xs font-bold uppercase tracking-widest ${s.num === "03" ? 'text-white' : 'text-white/20'}`}>{s.label}</span>
-                   {i < STEPS.length - 1 && <ChevronRight className="w-3 h-3 text-white/5" />}
-                </div>
+        {/* Header */}
+        <header className="h-20 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between px-6 md:px-10 sticky top-0 z-[60]">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+              <img src="/logo-preta-branca.png" alt="Logo" className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold tracking-tight">Checkout de Engenharia</h1>
+              <p className="text-[10px] text-white/20 font-mono uppercase tracking-widest hidden sm:block">Ambiente de Liquidação Seguro</p>
+            </div>
+          </div>
+          <button onClick={() => navigate('/portal/dashboard')} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-white/40 hover:text-white">
+            <X className="w-6 h-6" />
+          </button>
+        </header>
+
+        <main className="max-w-[1400px] mx-auto w-full flex-1">
+          
+          {/* Breadcrumb / Progress */}
+          <div className="px-6 md:px-10 pt-8 md:pt-12">
+             <div className="flex items-center gap-4 md:gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                {STEPS.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 shrink-0">
+                     <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full border flex items-center justify-center text-[10px] font-mono font-bold ${
+                        s.done ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 
+                        s.num === "03" ? 'bg-white/10 border-white/30 text-white' : 'border-white/5 text-white/20'
+                     }`}>
+                        {s.done ? <Check className="w-3.5 h-3.5" /> : s.num}
+                     </div>
+                     <span className={`text-[10px] md:text-xs font-bold uppercase tracking-widest ${s.num === "03" ? 'text-white' : 'text-white/20'}`}>{s.label}</span>
+                     {i < STEPS.length - 1 && <ChevronRight className="w-3 h-3 text-white/5" />}
+                  </div>
+                ))}
+             </div>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {invoice?.status === 'paid' ? (
+              <PaidState invoice={invoice} onBack={() => navigate('/portal/dashboard')} />
+            ) : (
+              <PendingState 
+                invoice={invoice} 
+                method={method} 
+                setMethod={setMethod} 
+                processing={processing}
+                handlePay={handlePay}
+                statusMessage={statusMessage}
+              />
+            )}
+          </AnimatePresence>
+
+        </main>
+
+        {/* Global Footer (Trust) */}
+        <footer className="mt-12 md:mt-20 border-t border-white/5 px-6 md:px-10 py-12 bg-black/20">
+           <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                 { icon: Shield, title: "Criptografia", desc: "Dados protegidos por SSL de nível bancário." },
+                 { icon: Lock, title: "Privacidade", desc: "Suas informações nunca são compartilhadas." },
+                 { icon: Star, title: "Autoridade", desc: "Soluções desenvolvidas com rigor técnico." },
+                 { icon: Zap, title: "Performance", desc: "Reconhecimento de pagamento instantâneo." }
+              ].map((item, i) => (
+                 <div key={i} className="flex gap-4">
+                    <item.icon className="w-5 h-5 text-white/20 shrink-0" />
+                    <div>
+                       <h4 className="text-xs font-bold text-white/80 uppercase tracking-widest">{item.title}</h4>
+                       <p className="text-[11px] text-white/30 leading-relaxed mt-1">{item.desc}</p>
+                    </div>
+                 </div>
               ))}
            </div>
-        </div>
+           <div className="max-w-[1400px] mx-auto mt-12 pt-8 border-t border-white/[0.03] flex flex-col sm:flex-row justify-between items-center gap-4">
+              <p className="text-[10px] text-white/10 font-mono uppercase tracking-[0.3em] text-center sm:text-left">Thomas Eduardo | Engenharia de Software</p>
+              <p className="text-[10px] text-white/10 font-mono">© 2026</p>
+           </div>
+        </footer>
 
-        <AnimatePresence mode="wait">
-          {invoice?.status === 'paid' ? (
-            <PaidState invoice={invoice} onBack={() => navigate('/portal/dashboard')} />
-          ) : (
-            <PendingState 
-              invoice={invoice} 
-              method={method} 
-              setMethod={setMethod} 
-              processing={processing}
-              handlePay={handlePay}
-              statusMessage={statusMessage}
-            />
-          )}
-        </AnimatePresence>
-
-      </main>
-
-      {/* Global Footer (Trust) */}
-      <footer className="mt-20 border-t border-white/5 px-10 py-12 bg-black/20">
-         <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-               { icon: Shield, title: "Criptografia", desc: "Dados protegidos por SSL de nível bancário." },
-               { icon: Lock, title: "Privacidade", desc: "Suas informações nunca são compartilhadas." },
-               { icon: Star, title: "Autoridade", desc: "Soluções desenvolvidas com rigor técnico." },
-               { icon: Zap, title: "Performance", desc: "Reconhecimento de pagamento instantâneo." }
-            ].map((item, i) => (
-               <div key={i} className="flex gap-4">
-                  <item.icon className="w-5 h-5 text-white/20 shrink-0" />
-                  <div>
-                     <h4 className="text-xs font-bold text-white/80 uppercase tracking-widest">{item.title}</h4>
-                     <p className="text-[11px] text-white/30 leading-relaxed mt-1">{item.desc}</p>
-                  </div>
-               </div>
-            ))}
-         </div>
-         <div className="max-w-[1400px] mx-auto mt-12 pt-8 border-t border-white/[0.03] flex justify-between items-center">
-            <p className="text-[10px] text-white/10 font-mono uppercase tracking-[0.3em]">Thomas Eduardo | Engenharia de Software</p>
-            <p className="text-[10px] text-white/10 font-mono">© 2026</p>
-         </div>
-      </footer>
-
+      </div>
     </div>
   );
 }

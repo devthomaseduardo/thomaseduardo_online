@@ -16,29 +16,29 @@ const ServicesSection = () => {
 
   return (
     <section id="metodologia" className="relative py-16 md:py-24 w-full overflow-hidden bg-pg-bg">
-      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10">
+      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-12 relative z-10">
         <motion.div 
           {...FADE_UP}
-          className="mb-8 md:mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8"
+          className="mb-12 md:mb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-8"
         >
-          <div>
-            <span className="text-xs font-mono font-medium text-pg-muted tracking-widest uppercase block mb-8">
+          <div className="max-w-3xl">
+            <span className="text-[10px] font-mono font-medium text-white/40 tracking-[0.25em] uppercase block mb-8 border border-white/10 w-fit px-3 py-1 rounded-full">
               {t.bento.eyebrow}
             </span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 tracking-tighter leading-[1.1] text-white">
+            <h2 className="text-[clamp(2.5rem,7vw,4.5rem)] font-bold mb-8 tracking-tighter leading-[1.0] text-white">
               <TextReveal>{t.bento.h2a}</TextReveal> <br className="hidden sm:block" />
               <span className="text-white/40"><TextReveal delay={0.2}>{t.bento.h2b}</TextReveal></span>
             </h2>
-            <p className="text-xl md:text-3xl text-white/70 leading-relaxed font-light max-w-2xl">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/60 leading-relaxed font-light">
               {t.bento.desc}
             </p>
           </div>
-          <div className="hidden md:block pb-2">
+          <div className="hidden lg:block pb-2">
             <a
               href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de conversar sobre a minha operação.")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-lg bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[10px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
+              className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-white hover:bg-neutral-200 text-neutral-950 hover:scale-[1.02] active:scale-95 text-[11px] font-bold tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] group"
             >
               <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
               <span>Quero Evoluir</span>
@@ -46,8 +46,8 @@ const ServicesSection = () => {
           </div>
         </motion.div>
     
-        {/* Edge-to-edge mobile carousel wrapper with negative margins */}
-        <div className="mt-4 md:mt-16 flex md:grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-12 w-[calc(100%+2rem)] -mx-4 px-4 md:w-full md:mx-0 md:px-0 overflow-x-auto snap-x snap-mandatory pb-8 md:pb-0 no-scrollbar scroll-px-4">
+        {/* Edge-to-edge mobile carousel */}
+        <div className="mt-8 lg:mt-16 flex lg:grid lg:grid-cols-4 gap-6 w-[calc(100%+3rem)] -mx-6 px-6 lg:w-full lg:mx-0 lg:px-0 overflow-x-auto snap-x snap-mandatory pb-12 lg:pb-0 no-scrollbar scroll-px-6">
           {TAB_CONTENT.map((tab: any, index: number) => (
             <motion.div
               key={index}

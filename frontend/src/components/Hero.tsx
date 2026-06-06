@@ -53,7 +53,7 @@ const Hero = () => {
           <motion.h1 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter leading-[0.95] text-white pb-6 text-left mt-8 lg:mt-0"
+            className="text-[clamp(2.5rem,10vw,5.5rem)] font-bold tracking-tighter leading-[0.9] text-white pb-6 text-left mt-8 lg:mt-0"
           >
             {t.hero.h1a} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">{t.hero.h1b}</span>
@@ -63,13 +63,13 @@ const Hero = () => {
             {...HERO_FADE_UP}
             className="mb-8 w-full max-w-full"
           >
-            <div className="inline-flex items-start sm:items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-3xl bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 w-fit max-w-full overflow-hidden">
+            <div className="inline-flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-3xl bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 w-fit max-w-full overflow-hidden">
               <img 
                 src="/avatar.webp" 
                 alt="Thomas" 
                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover grayscale opacity-80 shrink-0"
               />
-              <span className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[8px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase pt-1 sm:pt-0 leading-relaxed">
+              <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase leading-none">
                 {greeting}
                 <AnimatedEmoji name="waving_hand" className="w-3 h-3 sm:w-4 sm:h-4 origin-bottom-right hover:animate-wave shrink-0" />
               </span>
@@ -81,7 +81,7 @@ const Hero = () => {
           <motion.p
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.2 }}
-            className="text-white/50 text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-xl mt-2"
+            className="text-white/50 text-sm sm:text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-xl mt-2"
           >
             {t.hero.desc}
           </motion.p>

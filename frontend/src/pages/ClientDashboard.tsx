@@ -5,7 +5,7 @@ import {
   LogOut, CheckCircle2, Circle, Clock, ArrowUpRight, ChevronRight,
   Server, GitBranch, Globe, Activity, Shield, Download, UploadCloud,
   Check, Hourglass, AlertCircle, Bell, Search, Command, Settings, MessageSquare,
-  X, DollarSign, Key, Eye, EyeOff
+  X, DollarSign, Key, Eye, EyeOff, Menu
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
@@ -768,6 +768,7 @@ export default function ClientDashboard() {
   const [active, setActive]     = useState<NavId>("overview");
   const [clientData, setClient] = useState<any>(null);
   const [loading, setLoading]   = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("clientToken");
@@ -797,6 +798,11 @@ export default function ClientDashboard() {
     });
   }, [navigate]);
 
+  // Close menu on nav change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [active]);
+
   if (loading) return (
     <div className="min-h-screen bg-[#060606] flex items-center justify-center">
       <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/20 animate-pulse">Inicializando ambiente...</span>
@@ -824,17 +830,54 @@ export default function ClientDashboard() {
     <div className="min-h-screen bg-[#060606] text-[#e8e8e8] font-sans flex">
 
       {/* ── SIDEBAR ─────────────────────────────────────────────────────── */}
-      <aside className="w-[220px] shrink-0 flex flex-col sticky top-0 h-screen bg-[#060606]">
+      
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] lg:hidden" />
+            <motion.div initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-72 bg-[#060606] border-r border-white/5 z-[100] flex flex-col lg:hidden"
+            >
+              <div className="px-6 h-20 flex items-center justify-between border-b border-white/5">
+                 <div className="flex items-center">
+                    <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain mr-3" />
+                    <span className="text-sm font-semibold tracking-tight uppercase">Portal</span>
+                 </div>
+                 <button onClick={() => setMobileMenuOpen(false)} className="p-2 text-white/20 hover:text-white"><X className="w-5 h-5"/></button>
+              </div>
+              <nav className="flex-1 px-3 py-6 space-y-1">
+                 {NAV.map(item => (
+                   <button key={item.id} onClick={() => setActive(item.id)}
+                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm transition-all ${active === item.id ? "bg-white/10 text-white shadow-xl" : "text-white/40 hover:text-white"}`}
+                   >
+                     <item.icon className="w-4 h-4 shrink-0" />
+                     {item.label}
+                   </button>
+                 ))}
+              </nav>
+              <div className="p-4 border-t border-white/5">
+                 <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all text-sm font-bold uppercase tracking-widest">
+                    <LogOut className="w-4 h-4" /> Sair do Portal
+                 </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <aside className="w-[240px] shrink-0 flex flex-col sticky top-0 h-screen bg-[#060606] border-r border-white/5 hidden lg:flex">
         {/* Logo */}
-        <div className="px-5 h-14 flex items-center">
-          <div className="w-6 h-6 flex items-center justify-center mr-3">
+        <div className="px-7 h-20 flex items-center border-b border-white/5">
+          <div className="w-7 h-7 flex items-center justify-center mr-3">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-sm font-semibold tracking-tight">Portal</span>
+          <span className="text-sm font-bold tracking-tight uppercase">Portal</span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-4 py-8 space-y-1">
           {NAV.map(item => {
             const Icon = item.icon;
             const isActive = active === item.id;
@@ -842,13 +885,13 @@ export default function ClientDashboard() {
               <button
                 key={item.id}
                 onClick={() => setActive(item.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left text-[13px] transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-[13px] transition-all group ${
                   isActive
-                    ? "bg-white/[0.07] text-white font-medium"
-                    : "text-white/40 hover:text-white/70 hover:bg-white/[0.03]"
+                    ? "bg-white/10 text-white font-semibold shadow-[0_4px_20px_rgba(0,0,0,0.2)] border border-white/5"
+                    : "text-white/40 hover:text-white hover:bg-white/[0.03]"
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-white" : "text-white/30"}`} />
+                <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${isActive ? "text-white" : "text-white/30"}`} />
                 {item.label}
               </button>
             );
@@ -856,15 +899,15 @@ export default function ClientDashboard() {
         </nav>
 
         {/* User footer */}
-        <div className="px-3 pb-4 pt-4">
-          <div className="flex items-center gap-2.5 px-3 py-2">
-            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-bold text-white/70 shrink-0">{initials}</div>
+        <div className="px-4 pb-6 pt-4 border-t border-white/5 bg-white/[0.01]">
+          <div className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{initials}</div>
             <div className="flex-1 min-w-0">
-              <span className="block text-[12px] font-medium truncate">{clientData.name}</span>
-              <span className="block text-[10px] text-white/25 font-mono">Cliente Ativo</span>
+              <span className="block text-[12px] font-semibold truncate text-white">{clientData.name}</span>
+              <span className="block text-[10px] text-white/25 font-mono">Status: Ativo</span>
             </div>
-            <button onClick={() => { localStorage.removeItem("clientToken"); navigate("/portal"); }}>
-              <LogOut className="w-3.5 h-3.5 text-white/20 hover:text-white/60 transition-colors" />
+            <button onClick={handleLogout} title="Sair">
+              <LogOut className="w-4 h-4 text-white/20 hover:text-rose-400 transition-colors" />
             </button>
           </div>
         </div>
@@ -874,21 +917,23 @@ export default function ClientDashboard() {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Topbar */}
-        <header className="h-14 flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40">
-          <div className="flex items-center gap-3">
-            <h1 className="text-[22px] font-bold tracking-tight">
-              {active === "overview" ? "Bem-vindo à sua operação." : NAV.find(n => n.id === active)?.label}
+        <header className="h-20 flex items-center justify-between px-6 md:px-10 bg-[#060606] sticky top-0 z-40 border-b border-white/5">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setMobileMenuOpen(true)} className="lg:hidden p-2 rounded-xl bg-white/5 text-white/60 hover:text-white">
+               <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white/90">
+              {active === "overview" ? "Sua Operação" : NAV.find(n => n.id === active)?.label}
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/[0.08] text-white/30 hover:text-white/60 text-[12px] font-mono transition-colors">
-              <Search className="w-3 h-3" />
+            <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.08] text-white/30 hover:text-white transition-all text-xs font-mono">
+              <Search className="w-3.5 h-3.5" />
               <span>Buscar</span>
-              <span className="flex items-center gap-0.5 text-white/15"><Command className="w-2.5 h-2.5" />K</span>
             </button>
-            <button className="w-8 h-8 rounded-lg border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white/60 transition-colors relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full" />
+            <button className="w-10 h-10 rounded-xl border border-white/[0.08] flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-[#060606] animate-pulse" />
             </button>
           </div>
         </header>
@@ -897,41 +942,41 @@ export default function ClientDashboard() {
         <div className="flex flex-1 min-h-0">
 
           {/* Panel */}
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="flex-1 overflow-y-auto p-6 md:p-10 scrollbar-hide">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.3 }}
               >
                 {panels[active]}
               </motion.div>
             </AnimatePresence>
           </main>
 
-          {/* Activity Feed */}
-          <aside className="w-[260px] shrink-0 overflow-y-auto p-5 hidden xl:block">
-            <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-5">Atividade Recente</span>
-            <div className="space-y-4">
+          {/* Activity Feed (Desktop Only) */}
+          <aside className="w-[300px] shrink-0 overflow-y-auto p-8 border-l border-white/5 hidden 2xl:block bg-white/[0.01]">
+            <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-white/20 block mb-8">Fluxo de Inteligência</span>
+            <div className="space-y-8">
               {clientData.projects?.flatMap((p: any) => p.timeline || []).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 10).map((a: any, i: number) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: 8 }}
+                  initial={{ opacity: 0, x: 12 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className="flex gap-3 items-start"
+                  transition={{ delay: i * 0.05 }}
+                  className="flex gap-4 items-start group"
                 >
                   <ActivityIcon type={a.tipo} />
-                  <div>
-                    <p className="text-[12px] text-white/60 leading-snug">{a.descricao}</p>
-                    <span className="text-[10px] text-white/20 font-mono mt-1 block">{new Date(a.createdAt).toLocaleString('pt-BR')}</span>
+                  <div className="pt-0.5">
+                    <p className="text-[13px] text-white/70 leading-relaxed group-hover:text-white transition-colors">{a.descricao}</p>
+                    <span className="text-[10px] text-white/20 font-mono mt-2 block uppercase tracking-tighter">{new Date(a.createdAt).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
                   </div>
                 </motion.div>
               ))}
               {(!clientData.projects || clientData.projects.flatMap((p: any) => p.timeline || []).length === 0) && (
-                <div className="text-white/40 text-sm">Nenhuma atividade recente.</div>
+                <div className="text-white/40 text-sm italic">Nenhum sinal capturado.</div>
               )}
             </div>
           </aside>

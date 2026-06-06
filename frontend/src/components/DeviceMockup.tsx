@@ -55,17 +55,12 @@ function ResponsiveIframe({ src, title, targetWidth, targetHeight }: ResponsiveI
 }
 
 export function DeviceMockup({ desktopImg, mobileImg, tabletImg, altText = "Project Mockup", iframeUrl }: DeviceMockupProps) {
-  const [device, setDevice] = useState<DeviceType>(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return iframeUrl ? 'mobile' : 'desktop';
-    }
-    return 'desktop';
-  });
+  const [device, setDevice] = useState<DeviceType>('desktop');
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4 md:gap-6">
       {/* Device Selector */}
-      <div className="flex items-center gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
+      <div className="hidden md:flex items-center gap-2 bg-white/5 p-1.5 rounded-full border border-white/10">
         <button
           onClick={() => setDevice('desktop')}
           className={`p-2 rounded-full transition-all duration-300 ${

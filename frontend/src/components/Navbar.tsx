@@ -63,7 +63,7 @@ const Navbar = () => {
           </span>
         </a>
 
-        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+        <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
           {isHome && navLinks.map((link) => (
             <a
               key={link.id}
@@ -86,7 +86,7 @@ const Navbar = () => {
             <>
               <button
             onClick={() => setLang(lang === "pt" ? "en" : "pt")}
-            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200"
+            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-full text-[11px] font-semibold transition-all duration-200"
             style={{ color: "rgba(245,245,247,0.6)", background: "rgba(255,255,255,0.06)" }}
           >
             {lang === "pt" ? "EN" : "PT"}
@@ -95,7 +95,7 @@ const Navbar = () => {
 
           <a
             href={`/r?to=${encodeURIComponent("https://wa.me/5511977070209?text=Olá Thomas, gostaria de iniciar um projeto.")}`}
-            className="hidden sm:flex items-center gap-2 transition-all duration-200 group"
+            className="hidden lg:flex items-center gap-2 transition-all duration-200 group"
             style={{
               fontSize: 13,
               color: "#F5F5F7",
@@ -116,11 +116,11 @@ const Navbar = () => {
           {isHome && (
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex flex-col items-center justify-center w-10 h-10 gap-[5px]"
+            className="lg:hidden flex flex-col items-center justify-center w-10 h-10 gap-[5px] relative z-[1000]"
             aria-label="Menu"
           >
             <motion.span
-              animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 6 : 0 }}
+              animate={{ rotate: mobileMenuOpen ? 45 : 0, y: mobileMenuOpen ? 6.5 : 0 }}
               transition={{ duration: 0.25 }}
               className="w-5 h-[1.5px] rounded-full"
               style={{ background: "#F5F5F7" }}
@@ -132,7 +132,7 @@ const Navbar = () => {
               style={{ background: "#F5F5F7" }}
             />
             <motion.span
-              animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -6 : 0 }}
+              animate={{ rotate: mobileMenuOpen ? -45 : 0, y: mobileMenuOpen ? -6.5 : 0 }}
               transition={{ duration: 0.25 }}
               className="w-5 h-[1.5px] rounded-full"
               style={{ background: "#F5F5F7" }}
