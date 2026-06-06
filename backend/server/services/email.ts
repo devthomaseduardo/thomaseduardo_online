@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { env } from '../lib/env.js';
-import { getWelcomeEmailTemplate } from './emailTemplates.js';
+import { getWelcomeEmailTemplate, getLeadAutoReplyTemplate } from './emailTemplates.js';
 
 // Get API Key safely
 const apiKey = env.RESEND_API_KEY || '';
@@ -214,5 +214,12 @@ export const emailService = {
       console.error('Error fetching received email:', error);
       throw error;
     }
+  },
+
+  /**
+   * Generates the auto-reply template for new leads
+   */
+  generateLeadAutoReplyEmail(leadName: string) {
+    return getLeadAutoReplyTemplate(leadName);
   }
 };

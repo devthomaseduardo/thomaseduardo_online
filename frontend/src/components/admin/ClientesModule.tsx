@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { ClientDrawer } from "./ClientDrawer";
 import { Plus, X, Edit2, Trash2, Users, Search, MoreVertical, Shield, Mail, Lock, Activity } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
@@ -20,15 +21,28 @@ const STATUS_COLOR: Record<string, string> = {
 
 const EMPTY = { name: "", email: "", cnpj: "", clientType: "new", password: "", phone: "", obs: "" };
 
+function generatePassword(length = 12) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  let retVal = "";
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+}
+
 export function ClientesModule() {
   const { showToast } = useToast();
   const { clients, loading, mutate: load } = useAdminData();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
 
-  const openCreate = () => { setForm(EMPTY); setModal("create"); };
+  const openCreate = () => { 
+    setForm({ ...EMPTY, password: generatePassword() }); 
+    setModal("create"); 
+  };
   const openEdit = (c: any) => { setForm({ ...c, password: "" }); setModal("edit"); };
 
   const save = async (e: React.FormEvent) => {
@@ -168,7 +182,7 @@ export function ClientesModule() {
               </thead>
               <tbody className="text-sm">
                 {filtered.map(c => (
-                  <tr key={c.id} className="group border-b border-white/5 hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
+                  <tr key={c.id} onClick={() => setSelectedClientId(c.id)} className="group border-b border-white/5 hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-800 to-black border border-white/10 flex items-center justify-center text-xs font-bold text-white group-hover:scale-110 transition-transform">
@@ -280,8 +294,11 @@ export function ClientesModule() {
             </div>
             {modal === "create" && (
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-emerald-400/50 uppercase tracking-[0.2em] flex items-center gap-2"><Lock className="w-3 h-3"/> Senha Mestra Inicial</label>
-                <input type="password" value={form.password ?? ""} onChange={e => setForm((f: any) => ({ ...f, password: e.target.value }))}
+                <label className="block text-[10px] font-bold text-emerald-400/50 uppercase tracking-[0.2em] flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-2"><Lock className="w-3 h-3"/> Senha Mestra Inicial</span>
+                  <button type="button" onClick={() => setForm((f:any) => ({ ...f, password: generatePassword() }))} className="text-[#009EE3] hover:text-white transition-colors lowercase font-mono">Gerar Nova</button>
+                </label>
+                <input type="text" value={form.password ?? ""} onChange={e => setForm((f: any) => ({ ...f, password: e.target.value }))}
                   className="w-full bg-emerald-500/[0.02] border border-emerald-500/10 rounded-2xl px-5 py-4 text-emerald-400 text-sm outline-none focus:border-emerald-500/30 transition-all font-mono" placeholder="Defina a chave de acesso..." />
               </div>
             )}
@@ -294,6 +311,16 @@ export function ClientesModule() {
           </div>
         </div>
       </Modal>
+
+      <AnimatePresence>
+        {selectedClientId && (
+          <ClientDrawer 
+            clientId={selectedClientId} 
+            onClose={() => setSelectedClientId(null)} 
+            onRefresh={() => load('clients')}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

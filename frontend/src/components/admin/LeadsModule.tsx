@@ -24,6 +24,15 @@ const EMPTY = {
   name: "", email: "", phone: "", source: "site", status: "new", notes: ""
 };
 
+function generatePassword(length = 12) {
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  let retVal = "";
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+}
+
 export function LeadsModule() {
   const { leads, loading, mutate } = useAdminData();
   const { showToast } = useToast();
@@ -85,8 +94,9 @@ export function LeadsModule() {
   };
 
   const convertToClient = async (lead: any) => {
-    const password = prompt("Defina uma senha de acesso inicial para o novo cliente:", "123456");
-    if (!password) return; // Cancelou
+    const password = generatePassword();
+    
+    if (!confirm(`Converter "${lead.name}" em cliente? Uma senha automática será gerada e enviada por e-mail.`)) return;
     
     setSaving(true);
     try {

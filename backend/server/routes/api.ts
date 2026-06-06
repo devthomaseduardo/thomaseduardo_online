@@ -267,6 +267,29 @@ router.get('/clients', adminAuth, async (req, res) => {
   }
 });
 
+router.get('/clients/:id', adminAuth, async (req, res) => {
+  try {
+    const client = await prisma.client.findUnique({
+      where: { id: req.params.id },
+      include: { 
+        projects: {
+          include: {
+            invoices: true,
+            contracts: true,
+            tasks: true
+          }
+        },
+        proposals: true,
+        messages: true
+      }
+    });
+    if (!client) return res.status(404).json({ error: 'Cliente não encontrado.' });
+    res.json(client);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar dados do cliente.' });
+  }
+});
+
 router.post('/clients', adminAuth, async (req, res) => {
   try {
     const { name, email, cnpj, clientType, password, phone, obs } = req.body;
