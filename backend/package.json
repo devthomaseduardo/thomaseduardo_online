@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server/index.ts",
+    "build": "npx prisma generate",
     "start": "tsx server/index.ts",
     "lint": "tsc --noEmit --project tsconfig.json",
     "seed": "tsx prisma/seed.ts"

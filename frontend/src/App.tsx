@@ -61,8 +61,8 @@ const Home = () => {
           <SolutionsSection />
           <AboutSection />
           <BentoGrid />
-          <ProcessSection />
           <ProjectSection />
+          <ProcessSection />
           <ContactSection />
         </Suspense>
       </main>
