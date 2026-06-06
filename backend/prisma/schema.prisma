@@ -79,8 +79,54 @@ model Project {
   integrations       Integration[]
   proposals          Proposal[]
   messages           Message[]
+  credentials        Credential[]
+  milestoneApprovals MilestoneApproval[]
 
   @@map("Project")
+}
+
+// ==========================================
+// COFRE DE ACESSOS (SHARED VAULT)
+
+model Credential {
+  id             String    @id @default(uuid())
+  label          String    // Ex: "Hospedagem Hostgator", "API Google Maps"
+  username       String?
+  password       String?   
+  url            String?
+  notes          String?
+  category       String    @default("hosting") // hosting, api, social, other
+  visivelCliente Boolean   @default(false)
+
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("Credential")
+}
+
+// ==========================================
+// APROVAÇÕES DE MARCOS (MILESTONE APPROVALS)
+
+model MilestoneApproval {
+  id                String    @id @default(uuid())
+  title             String    // Ex: "Arquitetura Backend", "Design UI v1"
+  description       String?
+  status            String    @default("pending") // pending, approved, revision_requested
+  approvedAt        DateTime?
+  approvedIp        String?
+  approvedUserAgent String?
+  feedback          String?   
+
+  projectId         String
+  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("MilestoneApproval")
 }
 
 // ==========================================
@@ -268,23 +314,25 @@ model Integration {
 // PROPOSTAS COMERCIAIS
 
 model Proposal {
-  id            String    @id @default(uuid())
-  title         String
-  description   String?
-  status        String    @default("draft") // draft, sent, approved, rejected
-  stage         String    @default("draft")
-  amount        Float     @default(0)
-  version       Int       @default(1)
-  approvalLink  String?
-  acceptedAt    DateTime?
+  id                String    @id @default(uuid())
+  title             String
+  description       String?
+  status            String    @default("draft") // draft, sent, approved, rejected
+  stage             String    @default("draft")
+  amount            Float     @default(0)
+  version           Int       @default(1)
+  approvalLink      String?
+  acceptedAt        DateTime?
+  approvedIp        String?   // Signature tracking
+  approvedUserAgent String?   // Signature tracking
 
-  clientId      String?
-  client        Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  projectId     String?
-  project       Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  clientId          String?
+  client            Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId         String?
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@map("Proposal")
 }

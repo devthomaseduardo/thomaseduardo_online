@@ -5,22 +5,95 @@ import {
   LogOut, CheckCircle2, Circle, Clock, ArrowUpRight, ChevronRight,
   Server, GitBranch, Globe, Activity, Shield, Download, UploadCloud,
   Check, Hourglass, AlertCircle, Bell, Search, Command, Settings, MessageSquare,
-  X, DollarSign
+  X, DollarSign, Key, Eye, EyeOff
 } from "lucide-react";
+...
+const PanelVault = ({ clientData }: { clientData: any }) => {
+  const [creds, setCreds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const token = localStorage.getItem('clientToken');
+    const projectIds = (clientData.projects || []).map((p:any) => p.id);
+    if (projectIds.length === 0) { setLoading(false); return; }
+
+    // Fetch creds for the first project for now (most clients have 1)
+    fetch(`${API_URL}/api/v2/projects/${projectIds[0]}/credentials`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => { setCreds(data); setLoading(false); })
+    .catch(() => setLoading(false));
+  }, [clientData.projects]);
+
+  const toggle = (id: string) => setVisible(v => ({ ...v, [id]: !v[id] }));
+
+  return (
+    <div className="space-y-8 max-w-4xl">
+       <div>
+          <h2 className="text-2xl font-bold tracking-tight mb-2 text-white">Cofre de Acessos</h2>
+          <p className="text-sm text-white/40">Credenciais compartilhadas de forma segura para sua operação.</p>
+       </div>
+
+       {loading ? (
+          <div className="animate-pulse space-y-4">
+             {[1,2].map(i => <div key={i} className="h-20 bg-white/5 rounded-2xl" />)}
+          </div>
+       ) : creds.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-48 bg-[#0c0c0c] rounded-2xl border border-white/[0.03]">
+             <Key className="w-8 h-8 text-white/10 mb-3" />
+             <span className="text-xs text-white/20">Nenhuma credencial compartilhada ainda.</span>
+          </div>
+       ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {creds.map((c, i) => (
+                <div key={i} className="bg-[#0c0c0c] border border-white/[0.05] p-6 rounded-2xl group hover:border-white/10 transition-all">
+                   <div className="flex justify-between items-start mb-6">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40">
+                         <Shield className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase text-white/20">{c.category}</span>
+                   </div>
+                   <h4 className="text-white font-bold mb-4">{c.label}</h4>
+                   <div className="space-y-3">
+                      <div className="bg-black/40 p-3 rounded-lg flex items-center justify-between border border-white/5">
+                         <span className="text-[10px] text-white/30 uppercase font-mono">Usuário</span>
+                         <span className="text-xs text-white/80 font-mono">{c.username || '---'}</span>
+                      </div>
+                      <div className="bg-black/40 p-3 rounded-lg flex items-center justify-between border border-white/5">
+                         <span className="text-[10px] text-white/30 uppercase font-mono">Senha</span>
+                         <div className="flex items-center gap-3">
+                            <span className="text-xs text-white font-mono">{visible[c.id] ? c.password : '••••••••'}</span>
+                            <button onClick={() => toggle(c.id)} className="text-white/20 hover:text-white">
+                               {visible[c.id] ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            </button>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+             ))}
+          </div>
+       )}
+    </div>
+  );
+};
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
 import { useToast } from "../contexts/ToastContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type NavId = "overview" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "support" | "settings";
+type NavId = "overview" | "proposals" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "vault" | "support" | "settings";
 
 interface NavItem { id: NavId; label: string; icon: React.ElementType; }
 
 const NAV: NavItem[] = [
   { id: "overview",     label: "Projetos",     icon: LayoutGrid },
-  { id: "contracts",    label: "Contratos",    icon: FileText   },
+  { id: "proposals",    label: "Propostas",    icon: FileText   },
+  { id: "contracts",    label: "Contratos",    icon: Shield     },
   { id: "payments",     label: "Pagamentos",   icon: CreditCard },
   { id: "files",        label: "Arquivos",     icon: FolderOpen },
+  { id: "vault",        label: "Cofre",        icon: Key        },
   { id: "support",      label: "Suporte",      icon: MessageSquare },
   { id: "deployments",  label: "Deployments",  icon: Zap        },
   { id: "analytics",    label: "Analytics",    icon: BarChart2  },
@@ -283,6 +356,97 @@ const PanelFiles = ({ clientData }: { clientData: any }) => {
   );
 };
 
+const PanelProposals = ({ clientData, loadData }: { clientData: any, loadData: () => void }) => {
+  const { showToast } = useToast();
+  const [approving, setProcessing] = useState(false);
+  const proposals = clientData.proposals || [];
+
+  const handleApprove = async (id: string) => {
+    if (!confirm("Ao aprovar, você aceita digitalmente os termos desta proposta comercial. Deseja prosseguir?")) return;
+    setProcessing(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v2/proposals/${id}/approve`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem('clientToken')}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao aprovar proposta.");
+      showToast("Proposta aprovada com sucesso! Um comprovante foi enviado por e-mail.", "success");
+      loadData();
+    } catch (e: any) {
+      showToast(e.message, "error");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block">Propostas Comerciais</span>
+      </div>
+      
+      {proposals.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-48 bg-[#0c0c0c] rounded-2xl border border-white/[0.03]">
+          <FileText className="w-8 h-8 text-white/10 mb-3" />
+          <span className="text-xs text-white/20">Nenhuma proposta enviada.</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {proposals.map((pr: any, i: number) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-[#0c0c0c] border border-white/[0.05] p-6 rounded-2xl flex flex-col justify-between h-full group hover:border-white/20 transition-all"
+            >
+              <div className="flex justify-between items-start mb-6">
+                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white/40" />
+                </div>
+                <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border ${
+                  pr.status === 'approved' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10' : 'text-amber-400 border-amber-400/20 bg-amber-400/10'
+                }`}>
+                  {pr.status === 'approved' ? 'Aprovada' : pr.status}
+                </span>
+              </div>
+              
+              <div>
+                <h4 className="text-base font-bold text-white/90 mb-1">{pr.title}</h4>
+                <p className="text-[14px] font-mono text-emerald-400">R$ {pr.amount.toLocaleString('pt-BR')}</p>
+                {pr.description && <p className="text-[11px] text-white/30 mt-3">{pr.description}</p>}
+              </div>
+              
+              <div className="mt-8 pt-4 border-t border-white/[0.03] flex justify-between items-center">
+                <span className="text-[10px] text-white/20 font-mono">v{pr.version}</span>
+                <div className="flex gap-2">
+                  <button onClick={() => window.print()} className="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white border border-white/10 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-colors">
+                    Gerar PDF
+                  </button>
+                  {pr.status !== 'approved' && pr.status !== 'rejected' && (
+                    <button 
+                      disabled={approving}
+                      onClick={() => handleApprove(pr.id)} 
+                      className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+                    >
+                      Aceitar <CheckCircle2 className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+                {pr.status === 'approved' && (
+                  <span className="text-[10px] text-emerald-500/50 font-mono uppercase tracking-widest">
+                    Aceite Legal em {new Date(pr.acceptedAt).toLocaleDateString('pt-BR')}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PanelPayments = ({ clientData }: { clientData: any }) => {
   const navigate = useNavigate();
   const allInvoices = (clientData.projects || []).flatMap((p: any) => (p.invoices || []).map((i: any) => ({ ...i, projectName: p.name })));
@@ -352,6 +516,17 @@ const PanelPayments = ({ clientData }: { clientData: any }) => {
 const PanelContracts = ({ clientData }: { clientData: any }) => {
   const allContracts = (clientData.projects || []).flatMap((p: any) => (p.contracts || []).filter((c:any) => c.visivelCliente).map((c: any) => ({ ...c, projectName: p.name })));
 
+  const handleView = (contract: any) => {
+    fetch(`${API_URL}/api/v2/metrics`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem('clientToken')}`
+      },
+      body: JSON.stringify({ action: 'contract_viewed', metadata: { title: contract.titulo } })
+    }).catch(() => {});
+  };
+
   return (
     <div className="space-y-6">
       <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/30 block mb-2">Instrumentos Jurídicos</span>
@@ -388,7 +563,7 @@ const PanelContracts = ({ clientData }: { clientData: any }) => {
               
               <div className="mt-8 pt-4 border-t border-white/[0.03] flex justify-between items-center">
                 <span className="text-[10px] text-white/20 font-mono">v{c.versao}</span>
-                <a href={c.fileUrl} target="_blank" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
+                <a href={c.fileUrl} target="_blank" rel="noopener noreferrer" onClick={() => handleView(c)} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/40 group-hover:text-white transition-colors">
                   Visualizar <ChevronRight className="w-3 h-3" />
                 </a>
               </div>
@@ -541,17 +716,26 @@ export default function ClientDashboard() {
     navigate("/portal");
   };
 
-  useEffect(() => {
+  const loadData = async () => {
     const token = localStorage.getItem("clientToken");
     if (!token) { navigate("/portal"); return; }
-    fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(d => { 
-        setClient(d); 
-        setLoading(false); 
-        showToast(`Bem-vindo de volta!`, 'success');
-      })
-      .catch(() => { localStorage.removeItem("clientToken"); localStorage.removeItem("clientId"); navigate("/portal"); });
+    try {
+      const r = await fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!r.ok) throw new Error();
+      const d = await r.json();
+      setClient(d);
+      setLoading(false);
+    } catch {
+      localStorage.removeItem("clientToken"); 
+      localStorage.removeItem("clientId"); 
+      navigate("/portal");
+    }
+  };
+
+  useEffect(() => {
+    loadData().then(() => {
+      showToast(`Bem-vindo de volta!`, 'success');
+    });
   }, [navigate]);
 
   if (loading) return (
@@ -566,8 +750,10 @@ export default function ClientDashboard() {
 
   const panels: Record<NavId, React.ReactNode> = {
     overview:    <PanelOverview clientData={clientData} />,
+    proposals:   <PanelProposals clientData={clientData} loadData={loadData} />,
     deployments: <PanelDeployments clientData={clientData} />,
     files:       <PanelFiles clientData={clientData} />,
+    vault:       <PanelVault clientData={clientData} />,
     contracts:   <PanelContracts clientData={clientData} />,
     payments:    <PanelPayments clientData={clientData} />,
     support:     <PanelSupport clientData={clientData} />,

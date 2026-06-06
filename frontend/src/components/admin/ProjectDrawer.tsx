@@ -4,7 +4,7 @@ import {
   X, LayoutDashboard, Clock, CheckSquare, FileText, 
   DollarSign, Briefcase, Rocket, BarChart3, Plus, 
   CheckCircle2, Circle, Eye, EyeOff, Activity, AlertTriangle,
-  UploadCloud, FileSignature, Download, Trash2
+  UploadCloud, FileSignature, Download, Trash2, Shield, Key
 } from "lucide-react";
 import { useProjectDrawer } from "./useProjectDrawer";
 import { TimelineSkeleton } from "./Loaders";
@@ -17,7 +17,9 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
     tasks, addTask, updateTask, deleteTask,
     invoices, addInvoice, registerPayment, deleteInvoice,
     contracts, addContract, updateContract, deleteContract,
-    files, uploadFiles, deleteFile
+    files, uploadFiles, deleteFile,
+    credentials, addCredential, deleteCredential,
+    milestones, addMilestone
   } = useProjectDrawer(projectId, () => {}); // No need to refresh kanban for every internal change unless closed
 
   // Estados dos Modais Personalizados
@@ -32,6 +34,12 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
 
   const [contractModal, setContractModal] = useState(false);
   const [contractForm, setContractForm] = useState({ titulo: "", fileUrl: "", visivelCliente: true });
+
+  const [credModal, setCredModal] = useState(false);
+  const [credForm, setCredForm] = useState({ label: "", username: "", password: "", url: "", category: "hosting", visivelCliente: false });
+
+  const [milestoneModal, setMilestoneModal] = useState(false);
+  const [milestoneTitle, setMilestoneTitle] = useState("");
 
   useEffect(() => { loadProject(projectId); }, [projectId, loadProject]);
 
@@ -247,37 +255,98 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
 
             </div>
 
-            {/* Coluna Direita: Timeline Operacional */}
-            <section className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-5 md:p-8 flex flex-col h-full">
-              <div className="flex items-center justify-between mb-6 md:mb-8">
-                <h3 className="text-[10px] md:text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2"><Clock className="w-3 h-3 md:w-4 md:h-4" /> Timeline</h3>
-                <button onClick={() => setTimelineModal(true)} 
-                  className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline shrink-0">
-                  + Registrar
-                </button>
-              </div>
-              <div className="relative pl-6 space-y-6 flex-1 before:absolute before:inset-y-0 before:left-[11px] before:w-px before:bg-white/[0.06]">
-                {timeline.map(ev => (
-                  <div key={ev.id} className="relative group">
-                    <div className="absolute left-[-29px] top-1.5 w-3 h-3 rounded-full bg-[#050505] border-2 border-[#009EE3]" />
-                    <div className="bg-[#050505] border border-white/[0.04] rounded-xl p-3 md:p-4 hover:border-white/10 transition-colors">
-                      <div className="flex justify-between items-start mb-2 gap-2">
-                        <h4 className="text-[13px] md:text-sm font-medium text-white/90 leading-tight">{ev.title}</h4>
-                        <div className="flex items-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                          <button onClick={() => toggleTimelineVisibility(ev)} className="text-white/30 hover:text-white" title="Visibilidade Cliente">
-                            {ev.visivelCliente ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                          </button>
-                          <button onClick={() => deleteTimelineEvent(ev.id)} title="Excluir evento" aria-label="Excluir evento" className="text-[10px] uppercase font-mono text-rose-400 hover:text-white">
-                            Excluir
-                          </button>
+            <section className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-5 md:p-8 flex flex-col h-full space-y-10">
+              
+              <div>
+                <div className="flex items-center justify-between mb-6 md:mb-8">
+                  <h3 className="text-[10px] md:text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2"><Clock className="w-3 h-3 md:w-4 md:h-4" /> Timeline</h3>
+                  <button onClick={() => setTimelineModal(true)} 
+                    className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline shrink-0">
+                    + Registrar
+                  </button>
+                </div>
+                <div className="relative pl-6 space-y-6 flex-1 before:absolute before:inset-y-0 before:left-[11px] before:w-px before:bg-white/[0.06]">
+                  {timeline.map(ev => (
+                    <div key={ev.id} className="relative group">
+                      <div className={`absolute left-[-29px] top-1.5 w-3 h-3 rounded-full bg-[#050505] border-2 ${ev.visivelCliente ? 'border-[#009EE3]' : 'border-white/10'}`} />
+                      <div className="bg-[#050505] border border-white/[0.04] rounded-xl p-3 md:p-4 hover:border-white/10 transition-colors">
+                        <div className="flex justify-between items-start mb-2 gap-2">
+                          <h4 className="text-[13px] md:text-sm font-medium text-white/90 leading-tight">{ev.title}</h4>
+                          <div className="flex items-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <button onClick={() => toggleTimelineVisibility(ev)} className="text-white/30 hover:text-white" title="Visibilidade Cliente">
+                              {ev.visivelCliente ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                            </button>
+                            <button onClick={() => deleteTimelineEvent(ev.id)} title="Excluir evento" aria-label="Excluir evento" className="text-[10px] uppercase font-mono text-rose-400 hover:text-white">
+                              Excluir
+                            </button>
+                          </div>
                         </div>
+                        <p className="text-[9px] md:text-[10px] font-mono text-white/30">{new Date(ev.createdAt).toLocaleString("pt-BR")}</p>
                       </div>
-                      <p className="text-[9px] md:text-[10px] font-mono text-white/30">{new Date(ev.createdAt).toLocaleString("pt-BR")}</p>
                     </div>
-                  </div>
-                ))}
-                {timeline.length === 0 && <p className="text-[10px] md:text-xs text-white/20 font-mono italic">Sem histórico registrado.</p>}
+                  ))}
+                  {timeline.length === 0 && <p className="text-[10px] md:text-xs text-white/20 font-mono italic">Sem histórico registrado.</p>}
+                </div>
               </div>
+
+              {/* Cofre de Acessos */}
+              <div className="pt-8 border-t border-white/[0.04]">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2">
+                    <Key className="w-4 h-4" /> Cofre de Acessos
+                  </h3>
+                  <button onClick={() => setCredModal(true)} className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline">+ Novo</button>
+                </div>
+                <div className="space-y-3">
+                  {credentials.map(c => (
+                    <div key={c.id} className="bg-[#050505] border border-white/[0.04] p-4 rounded-xl flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/30">
+                            <Shield className="w-3.5 h-3.5" />
+                         </div>
+                         <div>
+                            <p className="text-[13px] font-medium text-white/90">{c.label}</p>
+                            <p className="text-[10px] text-white/20 font-mono">{c.username}</p>
+                         </div>
+                      </div>
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <span className="text-[10px] text-white/10 uppercase font-mono">{c.category}</span>
+                         <button onClick={() => deleteCredential(c.id)} className="text-rose-400/50 hover:text-rose-400">
+                            <Trash2 className="w-3.5 h-3.5" />
+                         </button>
+                      </div>
+                    </div>
+                  ))}
+                  {credentials.length === 0 && <div className="text-center p-6 text-white/10 text-[10px] font-mono uppercase tracking-widest">Cofre Vazio</div>}
+                </div>
+              </div>
+
+              {/* Aprovações de Marcos */}
+              <div className="pt-8 border-t border-white/[0.04]">
+                 <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" /> Aprovações
+                  </h3>
+                  <button onClick={() => setMilestoneModal(true)} className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline">+ Solicitar</button>
+                </div>
+                <div className="space-y-3">
+                   {milestones.map(m => (
+                      <div key={m.id} className="bg-[#050505] border border-white/[0.04] p-4 rounded-xl flex items-center justify-between">
+                         <div>
+                            <p className="text-[13px] font-medium text-white/90">{m.title}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                               <span className={`text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ${
+                                  m.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
+                               }`}>{m.status}</span>
+                            </div>
+                         </div>
+                         {m.status === 'approved' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                      </div>
+                   ))}
+                   {milestones.length === 0 && <div className="text-center p-6 text-white/10 text-[10px] font-mono uppercase tracking-widest">Sem solicitações</div>}
+                </div>
+              </div>
+
             </section>
           </div>
 
@@ -352,6 +421,54 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
               <input type="checkbox" checked={contractForm.visivelCliente} onChange={e => setContractForm(f => ({...f, visivelCliente: e.target.checked}))} className="rounded border-white/20 bg-transparent text-[#009EE3] focus:ring-[#009EE3]" />
               Visível no portal do cliente
             </label>
+          </div>
+        </Modal>
+
+        <Modal isOpen={credModal} onClose={() => setCredModal(false)} title="Novo Acesso" maxWidth="sm"
+          footer={
+            <div className="flex items-center gap-3 w-full">
+              <button onClick={() => setCredModal(false)} className="flex-1 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5">Cancelar</button>
+              <button onClick={() => { if(credForm.label) { addCredential(credForm); setCredForm({ label: "", username: "", password: "", url: "", category: "hosting", visivelCliente: false }); setCredModal(false); } }} 
+                className="flex-1 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90">Salvar Acesso</button>
+            </div>
+          }>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Identificador (Ex: Hosting, AWS)</label>
+              <input type="text" autoFocus value={credForm.label} onChange={e => setCredForm(f => ({...f, label: e.target.value}))}
+                className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+               <div>
+                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Usuário</label>
+                  <input type="text" value={credForm.username} onChange={e => setCredForm(f => ({...f, username: e.target.value}))}
+                    className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+               </div>
+               <div>
+                  <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Senha</label>
+                  <input type="text" value={credForm.password} onChange={e => setCredForm(f => ({...f, password: e.target.value}))}
+                    className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+               </div>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer mt-2 text-sm text-white/70 hover:text-white transition-colors">
+              <input type="checkbox" checked={credForm.visivelCliente} onChange={e => setCredForm(f => ({...f, visivelCliente: e.target.checked}))} className="rounded border-white/20 bg-transparent text-emerald-500 focus:ring-emerald-500" />
+              Compartilhar com o cliente
+            </label>
+          </div>
+        </Modal>
+
+        <Modal isOpen={milestoneModal} onClose={() => setMilestoneModal(false)} title="Solicitar Aprovação" maxWidth="sm"
+          footer={
+            <div className="flex items-center gap-3 w-full">
+              <button onClick={() => setMilestoneModal(false)} className="flex-1 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5">Cancelar</button>
+              <button onClick={() => { if(milestoneTitle) { addMilestone({ title: milestoneTitle }); setMilestoneTitle(""); setMilestoneModal(false); } }} 
+                className="flex-1 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90">Solicitar Aceite</button>
+            </div>
+          }>
+          <div>
+            <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Título do Marco (Milestone)</label>
+            <input type="text" autoFocus value={milestoneTitle} onChange={e => setMilestoneTitle(e.target.value)}
+              className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" placeholder="Ex: Entrega da Primeira Versão" />
           </div>
         </Modal>
 

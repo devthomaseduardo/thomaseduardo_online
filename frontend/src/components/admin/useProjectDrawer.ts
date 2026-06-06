@@ -35,6 +35,8 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
   const [deploys, setDeploys] = useState<any[]>([]);
   const [integrations, setIntegrations] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
+  const [credentials, setCredentials] = useState<any[]>([]);
+  const [milestones, setMilestones] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
@@ -50,12 +52,19 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
       setDeploys(p.deploys ?? []);
       setIntegrations(p.integrations ?? []);
       setFiles(p.files ?? []);
+      
+      const [creds, stones] = await Promise.all([
+        apiFetch(`/projects/${id}/credentials`),
+        apiFetch(`/projects/${id}/milestones`)
+      ]);
+      setCredentials(creds);
+      setMilestones(stones);
     } catch (e: any) {
       showToast(e.message, 'error');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [showToast]);
 
   // OVERVIEW
   const updateProject = async (data: Record<string, any>) => {
@@ -239,6 +248,34 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
     } catch (e: any) { showToast(e.message, 'error'); }
   };
 
+  // CREDENCIAIS
+  const addCredential = async (data: Record<string, any>) => {
+    if (!projectId) return;
+    try {
+      const c = await apiFetch(`/projects/${projectId}/credentials`, { method: 'POST', body: JSON.stringify(data) });
+      setCredentials(prev => [c, ...prev]);
+      showToast('Acesso registrado!');
+    } catch (e: any) { showToast(e.message, 'error'); }
+  };
+
+  const deleteCredential = async (id: string) => {
+    try {
+      await apiFetch(`/credentials/${id}`, { method: 'DELETE' });
+      setCredentials(prev => prev.filter(c => c.id !== id));
+      showToast('Acesso removido.');
+    } catch (e: any) { showToast(e.message, 'error'); }
+  };
+
+  // MARCOS
+  const addMilestone = async (data: Record<string, any>) => {
+    if (!projectId) return;
+    try {
+      const m = await apiFetch(`/projects/${projectId}/milestones`, { method: 'POST', body: JSON.stringify(data) });
+      setMilestones(prev => [m, ...prev]);
+      showToast('Solicitação de aprovação enviada!');
+    } catch (e: any) { showToast(e.message, 'error'); }
+  };
+
   // ANALYTICS
   const addIntegration = async (data: Record<string, any>) => {
     if (!projectId) return;
@@ -259,7 +296,7 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
   };
 
   return {
-    tab, setTab, project, timeline, tasks, invoices, contracts, deploys, integrations, files,
+    tab, setTab, project, timeline, tasks, invoices, contracts, deploys, integrations, files, credentials, milestones,
     loading,
     loadProject, updateProject,
     addTimelineEvent, deleteTimelineEvent, toggleTimelineVisibility,
@@ -268,6 +305,8 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
     addContract, updateContract, deleteContract,
     addDeploy, updateDeploy,
     uploadFiles, deleteFile,
+    addCredential, deleteCredential,
+    addMilestone,
     addIntegration, updateIntegration,
   };
 }

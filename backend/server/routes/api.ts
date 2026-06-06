@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { extractBearer, verifyAdminToken } from '../lib/jwt.js';
 import { authenticateToken } from '../lib/auth.js';
+import { getClientIp } from '../lib/audit.js';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 const router = Router();
@@ -501,7 +502,7 @@ router.post('/projects', adminAuth, async (req, res) => {
 router.put('/projects/:id', adminAuth, async (req, res) => {
   try {
     const { name, phase, status, progresso, proximaAcao, dataEntregaPrevista, internalNotes, value, tipo, descricao, repoUrl, productionUrl } = req.body;
-    const prev = await prisma.project.findUnique({ where: { id: req.params.id } });
+    const prev = await prisma.project.findUnique({ where: { id: req.params.id }, include: { client: true } });
 
     const result = await prisma.project.update({
       where: { id: req.params.id },
@@ -522,13 +523,144 @@ router.put('/projects/:id', adminAuth, async (req, res) => {
     });
 
     if (status && prev?.status !== status) {
-      await addTimeline(result.id, 'Status Atualizado', `Status alterado de "${prev?.status}" para "${status}"`, 'projeto', false);
+      await addTimeline(result.id, 'Status Atualizado', `Status alterado para "${status.toUpperCase()}"`, 'projeto', true);
+      
+      // Notificação Automática por E-mail
+      if (prev?.client?.email) {
+        const statusHtml = `
+          <div style="background:#000; color:#fff; padding:40px; font-family:sans-serif; border-radius:12px; border:1px solid #1a1a1a;">
+            <h1 style="color:#10b981; font-size:24px; margin-bottom:20px;">Avanço na Operação</h1>
+            <p>Olá, o status do seu projeto <strong>${prev.name}</strong> foi atualizado.</p>
+            <div style="background:#111; padding:20px; border-radius:8px; margin:20px 0; border-left:4px solid #10b981;">
+              <span style="font-size:10px; text-transform:uppercase; color:#666;">Novo Status Ativo</span><br>
+              <strong style="font-size:18px; color:#fff;">${status.toUpperCase()}</strong>
+            </div>
+            <p>Você pode acompanhar todos os detalhes e o cronograma atualizado no seu portal.</p>
+            <a href="${process.env.FRONTEND_URL}/portal" style="display:inline-block; background:#fff; color:#000; padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:bold; margin-top:20px;">ACESSAR PORTAL SEGURO</a>
+            <p style="font-size:10px; color:#333; margin-top:40px;">© 2026 Thomas Eduardo. Premium Digital Assets.</p>
+          </div>
+        `;
+        emailService.sendEmail(prev.client.email, `Operação Atualizada: ${prev.name}`, statusHtml).catch(() => {});
+      }
     }
+    
     if (progresso !== undefined && prev?.progresso !== progresso) {
       await addTimeline(result.id, 'Progresso Atualizado', `Progresso atualizado para ${progresso}%`, 'sistema', false);
     }
 
     res.json(result);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// COFRE DE ACESSOS (CREDENTIALS)
+
+router.get('/projects/:id/credentials', authenticateToken, async (req: any, res) => {
+  try {
+    const creds = await (prisma as any).credential.findMany({
+      where: { 
+        projectId: req.params.id,
+        ...(req.user.role !== 'admin' ? { visivelCliente: true } : {})
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(creds);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar credenciais.' });
+  }
+});
+
+router.post('/projects/:id/credentials', adminAuth, async (req, res) => {
+  try {
+    const { label, username, password, url, notes, category, visivelCliente } = req.body;
+    const cred = await (prisma as any).credential.create({
+      data: {
+        projectId: req.params.id,
+        label, username, password, url, notes, category, visivelCliente
+      }
+    });
+    res.status(201).json(cred);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/credentials/:id', adminAuth, async (req, res) => {
+  try {
+    await (prisma as any).credential.delete({ where: { id: req.params.id } });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// MARCOS E APROVAÇÕES (MILESTONES)
+
+router.get('/projects/:id/milestones', authenticateToken, async (req: any, res) => {
+  try {
+    const milestones = await (prisma as any).milestoneApproval.findMany({
+      where: { projectId: req.params.id },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(milestones);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar marcos.' });
+  }
+});
+
+router.post('/projects/:id/milestones', adminAuth, async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const milestone = await (prisma as any).milestoneApproval.create({
+      data: {
+        projectId: req.params.id,
+        title, description, status: 'pending'
+      }
+    });
+    
+    // Notificação de Aprovação Solicitada
+    const project = await prisma.project.findUnique({ where: { id: req.params.id }, include: { client: true } });
+    if (project?.client?.email) {
+      const approvalHtml = `
+        <div style="background:#000; color:#fff; padding:40px; font-family:sans-serif; border-radius:12px; border:1px solid #1a1a1a;">
+          <h1 style="color:#10b981; font-size:24px; margin-bottom:20px;">Aprovação Solicitada</h1>
+          <p>Olá, uma nova entrega parcial do projeto <strong>${project.name}</strong> está aguardando sua revisão.</p>
+          <div style="background:#111; padding:20px; border-radius:8px; margin:20px 0;">
+            <span style="font-size:10px; text-transform:uppercase; color:#666;">Marco de Entrega</span><br>
+            <strong style="font-size:18px; color:#fff;">${title}</strong>
+          </div>
+          <p>Acesse o portal para conferir o material e realizar o aceite digital.</p>
+          <a href="${process.env.FRONTEND_URL}/portal" style="display:inline-block; background:#fff; color:#000; padding:14px 28px; text-decoration:none; border-radius:8px; font-weight:bold; margin-top:20px;">REVISAR ENTREGA</a>
+        </div>
+      `;
+      emailService.sendEmail(project.client.email, `Aprovação Pendente: ${title}`, approvalHtml).catch(() => {});
+    }
+
+    res.status(201).json(milestone);
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/milestones/:id/approve', authenticateToken, async (req: any, res) => {
+  try {
+    const ip = getClientIp(req);
+    const ua = req.headers['user-agent'] || 'Unknown';
+    
+    const milestone = await (prisma as any).milestoneApproval.update({
+      where: { id: req.params.id },
+      data: { 
+        status: 'approved', 
+        approvedAt: new Date(), 
+        approvedIp: ip, 
+        approvedUserAgent: ua 
+      }
+    });
+
+    res.json({ success: true, milestone });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
@@ -1076,6 +1208,16 @@ router.post('/projects/:id/deploys', adminAuth, async (req, res) => {
 
     await addTimeline(req.params.id, 'Deploy Iniciado', `Deploy em ${ambiente ?? 'production'} iniciado.`, 'deploy', visivelCliente ?? false);
 
+    // Auto-trigger Vercel webhook if available
+    if (provider?.toLowerCase() === 'vercel' || !provider) {
+      const vercelHook = await (prisma as any).integration.findFirst({
+        where: { projectId: req.params.id, tipo: 'vercel_deploy_hook', status: 'ativo' }
+      });
+      if (vercelHook && vercelHook.identificador) {
+        fetch(vercelHook.identificador, { method: 'POST' }).catch(err => console.error('Failed to trigger Vercel webhook', err));
+      }
+    }
+
     res.status(201).json(deploy);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -1266,6 +1408,52 @@ router.delete('/proposals/:id', adminAuth, async (req, res) => {
   }
 });
 
+router.post('/proposals/:id/approve', authenticateToken, async (req: any, res) => {
+  try {
+    const proposalId = req.params.id;
+    const ip = getClientIp(req);
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+
+    const proposal = await prisma.proposal.findUnique({
+      where: { id: proposalId },
+      include: { client: true }
+    });
+
+    if (!proposal) return res.status(404).json({ error: 'Proposta não encontrada.' });
+    if (proposal.client?.id !== req.user.id) return res.status(403).json({ error: 'Acesso negado.' });
+    if (proposal.status === 'approved') return res.status(400).json({ error: 'Proposta já aprovada.' });
+
+    const updated = await prisma.proposal.update({
+      where: { id: proposalId },
+      data: {
+        status: 'approved',
+        acceptedAt: new Date(),
+        approvedIp: ip,
+        approvedUserAgent: userAgent
+      }
+    });
+
+    // Notify Admin
+    emailService.sendEmail(
+      'devthomaseduardo@gmail.com',
+      `Aceite Digital: Proposta "${proposal.title}"`,
+      `<h1>Proposta Aprovada</h1>
+       <p>O cliente <strong>${proposal.client?.name}</strong> assinou e aprovou a proposta comercial via Portal.</p>
+       <p><strong>Proposta:</strong> ${proposal.title}</p>
+       <p><strong>Valor:</strong> R$ ${proposal.amount}</p>
+       <hr>
+       <h3>Logs de Assinatura (Aceite Legal)</h3>
+       <p><strong>IP:</strong> ${ip}</p>
+       <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+       <p><strong>Device:</strong> ${userAgent}</p>`
+    ).catch(err => console.error('Failed to send proposal approval notification', err));
+
+    res.json({ success: true, proposal: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Erro ao registrar aceite digital.' });
+  }
+});
+
 router.post('/proposals/:id/convert', adminAuth, async (req, res) => {
   try {
     const proposal = await prisma.proposal.findUnique({ where: { id: req.params.id } });
@@ -1408,6 +1596,37 @@ router.post('/leads/:id/convert', adminAuth, async (req, res) => {
     res.json({ client, converted: true });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// CLIENT ENGAGEMENT ANALYTICS
+// ==========================================
+
+router.post('/metrics', authenticateToken, async (req: any, res) => {
+  try {
+    const { action, metadata } = req.body;
+    
+    // If it's a high-value action, notify admin via the Intelligence Feed (Message)
+    if (action === 'proposal_viewed' || action === 'contract_viewed') {
+      const client = await prisma.client.findUnique({ where: { id: req.user.id } });
+      const itemName = metadata?.title || 'Documento';
+      
+      await prisma.message.create({
+        data: {
+          clientId: req.user.id,
+          senderType: 'system',
+          senderName: 'System Analytics',
+          content: `[ENGAJAMENTO] O cliente ${client?.name} visualizou: ${itemName}`,
+          read: false
+        }
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Metrics Error:', error);
+    res.status(500).json({ error: 'Erro ao registrar métrica' });
   }
 });
 

@@ -57,4 +57,7 @@ export const env = {
   ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:5173").split(",").map(s => s.trim()),
   SEED_SECRET: process.env.SEED_SECRET ?? null,
   RESEND_API_KEY: process.env.RESEND_API_KEY || null,
+  FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
+  BACKEND_URL: process.env.BACKEND_URL || "http://localhost:3001",
+  VERCEL_TOKEN: process.env.VERCEL_TOKEN || null,
 } as const;
