@@ -4,23 +4,23 @@ import { Calendar } from 'lucide-react';
 
 export function UpcomingDeadlines({ deadlines }: { deadlines: Deadline[] }) {
   return (
-    <div className="bg-[#0B0B0B] border border-[#222] rounded-lg overflow-hidden h-full">
-      <div className="p-5 border-b border-[#222]">
-        <h3 className="font-semibold text-white">Próximos Prazos</h3>
+    <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden h-full flex flex-col hover:bg-white/[0.04] transition-all duration-500">
+      <div className="p-6 border-b border-white/5">
+        <h3 className="font-bold text-white tracking-tight">Project Milestones</h3>
       </div>
-      <div className="p-5 space-y-4">
+      <div className="p-8 space-y-4 flex-1 overflow-y-auto scrollbar-hide">
         {deadlines.map((deadline) => (
-          <div key={deadline.id} className="flex items-center justify-between p-3 rounded-md bg-[#111] border border-[#222]">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#1A1A1A] rounded text-zinc-400">
+          <div key={deadline.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-white/10 transition-all duration-300 group">
+            <div className="flex items-center gap-4">
+              <div className="p-2.5 bg-white/5 rounded-xl text-zinc-400 group-hover:scale-110 group-hover:bg-white/10 transition-all">
                 <Calendar className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-sm font-medium text-zinc-200">{deadline.title}</p>
-                <p className="text-xs text-zinc-500">{deadline.project}</p>
+                <p className="text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors">{deadline.title}</p>
+                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">{deadline.project}</p>
               </div>
             </div>
-            <span className="text-xs font-medium text-amber-500 bg-amber-500/10 px-2 py-1 rounded">
+            <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-3 py-1.5 rounded-full border border-amber-400/20 group-hover:bg-amber-400/20 transition-all">
               {deadline.date}
             </span>
           </div>

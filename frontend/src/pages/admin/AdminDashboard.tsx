@@ -72,38 +72,38 @@ export function AdminDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold text-white tracking-tight">Centro de Operações</h1>
-          <p className="text-zinc-500 text-sm">Visão geral do sistema e indicadores chave.</p>
+    <div className="space-y-10 pb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Mission Control</h1>
+          <p className="text-zinc-500 text-sm font-medium">System performance and strategic insights.</p>
         </div>
         {!isProd && (
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button 
               onClick={handleClearDB}
-              className="px-4 py-2 bg-red-600/20 hover:bg-red-500/30 text-red-500 border border-red-500/20 text-sm font-medium rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 text-xs font-bold uppercase tracking-widest rounded-full transition-all hover:scale-105 active:scale-95"
             >
-              Limpar Banco
+              Wipe Database
             </button>
             <button 
               onClick={handleSeedRealData}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
+              className="px-5 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-full transition-all hover:bg-zinc-200 shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95"
             >
-              Popular Banco (Dados Reais)
+              Seed Production Data
             </button>
           </div>
         )}
       </div>
 
       {(loading || error) && (
-        <div className="rounded-lg border border-[#222] bg-[#0B0B0B] p-4 text-sm text-zinc-300">
-          {loading && 'Carregando dados do dashboard...'}
-          {error && `Erro ao buscar dados do dashboard: ${error}`}
+        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-sm text-zinc-400 backdrop-blur-sm animate-pulse">
+          {loading && 'Synchronizing operational data...'}
+          {error && `Error synchronizing data: ${error}`}
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         {kpis.map((kpi: any, i: number) => (
           <KpiCard 
             key={i}
@@ -114,17 +114,19 @@ export function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <RevenueChart data={revenueData} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="h-[400px]">
+            <RevenueChart data={revenueData} />
+          </div>
           <ActiveProjects projects={projects} />
         </div>
-        <div className="space-y-6">
+        <div className="space-y-8 h-full">
           <ActivityFeed activities={activities} />
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <RecentDeploys deploys={data?.deploys ?? []} />
         <UpcomingDeadlines deadlines={data?.deadlines ?? []} />
       </div>

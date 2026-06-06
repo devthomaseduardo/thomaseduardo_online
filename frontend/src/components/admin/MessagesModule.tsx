@@ -62,90 +62,93 @@ export function MessagesModule() {
   const filtered = messages.filter((m: any) => m.content?.toLowerCase().includes(search.toLowerCase()) || m.senderName?.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8">
+    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <AnimatePresence>
         {toast && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 z-[9999] bg-[#0B0B0B] border border-white/10 px-5 py-3 rounded-xl text-sm text-white shadow-2xl flex items-center gap-3">
-            <Activity className="w-4 h-4 text-[#009EE3]" /> {toast}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
+            <Activity className="w-4 h-4 animate-pulse" /> {toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Mensagens</h1>
-          <p className="text-white/40 text-sm font-mono uppercase tracking-widest">Comunicações do Portal</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Intelligence Feed</h1>
+          <p className="text-zinc-500 text-sm font-medium">Monitor ecosystem communications and support signals.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total", val: messages.length, icon: MessageSquare, color: "text-white" },
-          { label: "Não Lidas", val: messages.filter((m: any) => !m.read).length, icon: Mail, color: "text-amber-400" },
-          { label: "Lidas", val: messages.filter((m: any) => m.read).length, icon: CheckCircle, color: "text-emerald-400" },
+          { label: "Total Transmissions", val: messages.length, icon: MessageSquare, color: "text-white", glow: "white" },
+          { label: "Unread Signals", val: messages.filter((m: any) => !m.read).length, icon: Mail, color: "text-amber-400", glow: "amber" },
+          { label: "Processed", val: messages.filter((m: any) => m.read).length, icon: CheckCircle, color: "text-emerald-400", glow: "emerald" },
         ].map((k, i) => (
-          <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-5 flex items-center justify-between group">
+          <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
-              <p className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-1">{k.label}</p>
-              <p className={`text-2xl font-bold tracking-tight ${k.color}`}>{k.val}</p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">{k.label}</p>
+              <p className={`text-2xl font-extrabold tracking-tight ${k.color}`}>{k.val}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-              <k.icon className="w-4 h-4 text-white/40" />
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center relative">
+              <k.icon className={`w-5 h-5 ${k.color} relative z-10`} />
+              <div className={`absolute inset-0 bg-${k.glow}-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity`} />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-white/[0.06] flex flex-col md:flex-row items-start md:items-center gap-4 bg-white/[0.01]">
-          <div className="flex-1 relative max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar mensagens..."
-              className="w-full bg-[#050505] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors" />
+      <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden flex flex-col hover:bg-white/[0.04] transition-all duration-500 shadow-2xl">
+        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-start md:items-center gap-6 bg-white/[0.01]">
+          <div className="flex-1 relative max-w-sm w-full group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search in communication buffer..."
+              className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-6"><TableSkeleton rows={5} /></div>
+            <div className="p-8"><TableSkeleton rows={5} /></div>
           ) : filtered.length === 0 ? (
-            <div className="py-24 text-center">
-              <MessageSquare className="w-8 h-8 text-white/10 mx-auto mb-3" />
-              <p className="text-white/30 text-sm">Nenhuma mensagem encontrada.</p>
+            <div className="py-32 text-center">
+              <MessageSquare className="w-12 h-12 text-white/5 mx-auto mb-4" />
+              <p className="text-zinc-500 text-sm font-medium">No signals found in the intelligence buffer.</p>
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-[#050505]">
-                  {["Remetente", "Referência", "Mensagem", "Status", "Ações"].map(h => (
-                    <th key={h} className="text-left text-[10px] font-mono text-white/30 uppercase tracking-widest px-6 py-4">{h}</th>
+                <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  {["Originator", "Entity Reference", "Signal Content", "Status", "Operations"].map(h => (
+                    <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="text-sm">
                 {filtered.map((m: any) => (
-                  <tr key={m.id} className={`hover:bg-white/[0.02] transition-colors group ${!m.read ? 'bg-white/[0.02]' : ''}`}>
-                    <td className="px-6 py-4">
-                      <p className={`text-sm ${!m.read ? 'font-semibold text-white' : 'font-medium text-white/90'}`}>{m.senderName}</p>
-                      <p className="text-[10px] text-white/40 font-mono mt-0.5 uppercase">{m.senderType}</p>
+                  <tr key={m.id} className={`group border-b border-white/5 hover:bg-white/[0.02] transition-all duration-300 cursor-pointer ${!m.read ? 'bg-white/[0.01]' : ''}`}>
+                    <td className="px-6 py-6">
+                      <p className={`font-bold transition-colors ${!m.read ? 'text-white' : 'text-zinc-400 group-hover:text-zinc-200'}`}>{m.senderName}</p>
+                      <p className="text-[10px] text-zinc-500 font-mono mt-0.5 uppercase tracking-tighter">{m.senderType}</p>
                     </td>
-                    <td className="px-6 py-4">
-                      {m.projectId && <p className="text-xs text-white/50 mb-0.5">Proj: {projects.find((p:any)=>p.id===m.projectId)?.name || '?'}</p>}
-                      {m.clientId && <p className="text-xs text-white/50">Cli: {clients.find((c:any)=>c.id===m.clientId)?.name || '?'}</p>}
+                    <td className="px-6 py-6">
+                      <div className="flex flex-col gap-1">
+                        {m.projectId && <p className="text-[11px] font-bold text-blue-400/70 group-hover:text-blue-400 transition-colors">PROJ: {projects.find((p:any)=>p.id===m.projectId)?.name || '?'}</p>}
+                        {m.clientId && <p className="text-[11px] font-bold text-zinc-500 group-hover:text-zinc-300 transition-colors">CLI: {clients.find((c:any)=>c.id===m.clientId)?.name || '?'}</p>}
+                      </div>
                     </td>
-                    <td className="px-6 py-4 max-w-xs">
-                      <p className="text-sm text-white/70 truncate">{m.content}</p>
+                    <td className="px-6 py-6 max-w-xs">
+                      <p className={`text-sm transition-colors ${!m.read ? 'text-zinc-200 font-medium' : 'text-zinc-500 group-hover:text-zinc-400'} truncate`}>{m.content}</p>
                     </td>
-                    <td className="px-6 py-4">
-                      <button disabled={saving} onClick={() => markRead(m.id, m.read)} className={`cursor-pointer text-[10px] font-mono uppercase px-2 py-1 rounded-md border ${m.read ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-amber-400 bg-amber-400/10 border-amber-400/20'}`}>
-                        {m.read ? "Lida" : "Não Lida"}
+                    <td className="px-6 py-6">
+                      <button disabled={saving} onClick={() => markRead(m.id, m.read)} className={`cursor-pointer text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border transition-all ${m.read ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-amber-400 bg-amber-400/10 border-amber-400/20 shadow-[0_0_10px_rgba(251,191,36,0.1)]'}`}>
+                        {m.read ? "Processed" : "Pending"}
                       </button>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setForm({ ...m }); setModal("view"); if(!m.read) markRead(m.id, false); }} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">Ler</button>
-                        <button onClick={() => remove(m.id)} className="cursor-pointer px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-xs font-medium text-rose-200 hover:text-white transition-colors" disabled={saving}>Apagar</button>
+                    <td className="px-6 py-6">
+                      <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                        <button onClick={() => { setForm({ ...m }); setModal("view"); if(!m.read) markRead(m.id, false); }} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">Intercept</button>
+                        <button onClick={() => remove(m.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>Wipe</button>
                       </div>
                     </td>
                   </tr>
@@ -156,22 +159,32 @@ export function MessagesModule() {
         </div>
       </div>
 
-      <Modal isOpen={modal === "view"} onClose={() => setModal(null)} title="Mensagem" description={`De: ${form?.senderName}`} maxWidth="md"
+      <Modal isOpen={modal === "view"} onClose={() => setModal(null)} title="Signal Intercepted" description={`Origin: ${form?.senderName}`} maxWidth="md"
         footer={
-          <div className="flex items-center justify-end w-full pt-6 border-t border-white/[0.06]">
-            <button onClick={() => setModal(null)} className="cursor-pointer px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors">Fechar</button>
+          <div className="flex items-center justify-end w-full pt-6 border-t border-white/5">
+            <button onClick={() => setModal(null)} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95">Dismiss</button>
           </div>
         }
       >
         {form && (
-          <div className="space-y-6">
-            <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-              <p className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">{form.content}</p>
+          <div className="space-y-8 py-4">
+            <div className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 shadow-inner relative overflow-hidden group/msg">
+              <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/50" />
+              <p className="text-sm text-zinc-300 whitespace-pre-wrap leading-relaxed relative z-10 italic">"{form.content}"</p>
             </div>
-            <div className="text-xs text-white/40 font-mono flex flex-col gap-1">
-              <span>Data: {new Date(form.createdAt).toLocaleString('pt-BR')}</span>
-              {form.projectId && <span>Projeto: {projects.find((p:any)=>p.id===form.projectId)?.name || form.projectId}</span>}
-              {form.clientId && <span>Cliente: {clients.find((c:any)=>c.id===form.clientId)?.name || form.clientId}</span>}
+            <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Temporal Marker</p>
+                <p className="text-xs text-white font-mono">{new Date(form.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Entity Source</p>
+                <p className="text-xs text-white font-mono truncate">
+                  {form.projectId ? `PROJ: ${projects.find((p:any)=>p.id===form.projectId)?.name || form.projectId}` : 
+                   form.clientId ? `CLI: ${clients.find((c:any)=>c.id===form.clientId)?.name || form.clientId}` : 
+                   'Direct Transmission'}
+                </p>
+              </div>
             </div>
           </div>
         )}

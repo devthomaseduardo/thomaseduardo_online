@@ -71,97 +71,98 @@ export function TeamModule() {
   const filtered = team.filter((m: any) => m.name?.toLowerCase().includes(search.toLowerCase()) || m.email?.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8">
+    <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <AnimatePresence>
         {toast && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 z-[9999] bg-[#0B0B0B] border border-white/10 px-5 py-3 rounded-xl text-sm text-white shadow-2xl flex items-center gap-3">
-            <Activity className="w-4 h-4 text-[#009EE3]" /> {toast}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
+            <Activity className="w-4 h-4 animate-pulse" /> {toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Equipe</h1>
-          <p className="text-white/40 text-sm font-mono uppercase tracking-widest">Acessos e Permissões</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Personnel Center</h1>
+          <p className="text-zinc-500 text-sm font-medium">Coordinate access vectors and operational roles.</p>
         </div>
         <button onClick={() => { setForm({ ...EMPTY }); setModal("create"); }}
-          className="cursor-pointer bg-white text-black font-semibold px-5 py-3 rounded-xl text-sm flex items-center gap-2 hover:bg-white/90 transition-colors shadow-lg shadow-white/5">
-          <Plus className="w-4 h-4" /> Novo Membro
+          className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
+          <Plus className="w-4 h-4 stroke-[3]" /> Onboard Personnel
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Membros Totais", val: team.length, icon: Users, color: "text-white" },
-          { label: "Ativos", val: team.filter((m: any) => m.active).length, icon: Shield, color: "text-emerald-400" },
-          { label: "Inativos", val: team.filter((m: any) => !m.active).length, icon: ShieldAlert, color: "text-rose-400" },
+          { label: "Total Operatives", val: team.length, icon: Users, color: "text-white", glow: "white" },
+          { label: "Active Vectors", val: team.filter((m: any) => m.active).length, icon: Shield, color: "text-emerald-400", glow: "emerald" },
+          { label: "Suspended", val: team.filter((m: any) => !m.active).length, icon: ShieldAlert, color: "text-rose-400", glow: "rose" },
         ].map((k, i) => (
-          <div key={i} className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl p-5 flex items-center justify-between group">
+          <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
-              <p className="text-white/40 text-[10px] font-mono uppercase tracking-widest mb-1">{k.label}</p>
-              <p className={`text-2xl font-bold tracking-tight ${k.color}`}>{k.val}</p>
+              <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">{k.label}</p>
+              <p className={`text-2xl font-extrabold tracking-tight ${k.color}`}>{k.val}</p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
-              <k.icon className="w-4 h-4 text-white/40" />
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center relative">
+              <k.icon className={`w-5 h-5 ${k.color} relative z-10`} />
+              <div className={`absolute inset-0 bg-${k.glow}-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity`} />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-white/[0.06] flex flex-col md:flex-row items-start md:items-center gap-4 bg-white/[0.01]">
-          <div className="flex-1 relative max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar nome ou email..."
-              className="w-full bg-[#050505] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors" />
+      <div className="bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden flex flex-col hover:bg-white/[0.04] transition-all duration-500 shadow-2xl">
+        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-start md:items-center gap-6 bg-white/[0.01]">
+          <div className="flex-1 relative max-w-sm w-full group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or alias..."
+              className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="p-6"><TableSkeleton rows={5} /></div>
+            <div className="p-8"><TableSkeleton rows={5} /></div>
           ) : filtered.length === 0 ? (
-            <div className="py-24 text-center">
-              <Users className="w-8 h-8 text-white/10 mx-auto mb-3" />
-              <p className="text-white/30 text-sm">Nenhum membro encontrado.</p>
+            <div className="py-32 text-center">
+              <Users className="w-12 h-12 text-white/5 mx-auto mb-4" />
+              <p className="text-zinc-500 text-sm font-medium">No personnel detected in current sector.</p>
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-[#050505]">
-                  {["Nome / Email", "Cargo", "Permissões", "Status", "Ações"].map(h => (
-                    <th key={h} className="text-left text-[10px] font-mono text-white/30 uppercase tracking-widest px-6 py-4">{h}</th>
+                <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
+                  {["Individual Identity", "Operational Role", "Permission Matrix", "Vector Status", "Operations"].map(h => (
+                    <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="text-sm">
                 {filtered.map((m: any) => (
-                  <tr key={m.id} className="hover:bg-white/[0.02] transition-colors group">
-                    <td className="px-6 py-4">
-                      <p className="text-sm font-medium text-white/90">{m.name}</p>
-                      <p className="text-[10px] text-white/40 mt-0.5">{m.email}</p>
+                  <tr key={m.id} className="group border-b border-white/5 hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
+                    <td className="px-6 py-6">
+                      <p className="font-bold text-zinc-200 group-hover:text-white transition-colors">{m.name}</p>
+                      <p className="text-[10px] text-zinc-500 font-mono mt-0.5 tracking-tighter">{m.email}</p>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="text-xs text-white/70">{m.role}</span>
+                    <td className="px-6 py-6">
+                      <span className="text-[11px] font-bold text-zinc-400 group-hover:text-zinc-200 transition-colors uppercase tracking-widest">{m.role}</span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
+                    <td className="px-6 py-6">
+                      <div className="flex flex-wrap gap-2">
                         {m.permissions?.map((p: string) => (
-                          <span key={p} className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/5 text-white/50 border border-white/10">{p}</span>
+                          <span key={p} className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded bg-white/5 text-zinc-500 border border-white/5 group-hover:text-white group-hover:border-white/10 transition-colors">{p}</span>
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`text-[10px] font-mono uppercase px-2 py-1 rounded-md border ${m.active ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-rose-400 bg-rose-400/10 border-rose-400/20'}`}>
-                        {m.active ? "Ativo" : "Inativo"}
+                    <td className="px-6 py-6">
+                      <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${m.active ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-rose-400 bg-rose-400/10 border-rose-400/20'}`}>
+                        {m.active ? "Enabled" : "Disabled"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => { setForm({ ...m, permissions: m.permissions?.join(', ') || '' }); setModal("edit"); }} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">Editar</button>
-                        <button onClick={() => remove(m.id)} className="cursor-pointer px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-xs font-medium text-rose-200 hover:text-white transition-colors" disabled={saving}>Remover</button>
+                    <td className="px-6 py-6">
+                      <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                        <button onClick={() => { setForm({ ...m, permissions: m.permissions?.join(', ') || '' }); setModal("edit"); }} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">Modify</button>
+                        <button onClick={() => remove(m.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>Wipe</button>
                       </div>
                     </td>
                   </tr>
@@ -172,38 +173,41 @@ export function TeamModule() {
         </div>
       </div>
 
-      <Modal isOpen={modal !== null} onClose={() => setModal(null)} title={modal === "create" ? "Novo Membro" : "Editar Membro"} description="Gestão de acesso da equipe." maxWidth="md"
+      <Modal isOpen={modal !== null} onClose={() => setModal(null)} title={modal === "create" ? "Initialize Operative" : "Personnel Configuration"} description="Manage access vectors and operational role definitions." maxWidth="md"
         footer={
-          <div className="flex items-center justify-between w-full pt-6 border-t border-white/[0.06]">
-            {modal === "edit" ? <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-xs text-rose-400 hover:text-rose-300 font-mono transition-colors">REMOVER</button> : <div/>}
-            <div className="flex gap-3">
-              <button onClick={() => setModal(null)} className="cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 transition-colors">Cancelar</button>
-              <button onClick={save} disabled={saving} className="cursor-pointer px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-50">{saving ? "Salvando..." : "Salvar"}</button>
+          <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
+            {modal === "edit" ? <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINATE ACCESS</button> : <div/>}
+            <div className="flex gap-4">
+              <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">Discard</button>
+              <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">{saving ? "Synchronizing..." : "Commit Vector"}</button>
             </div>
           </div>
         }
       >
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Nome</label>
-              <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+        <div className="space-y-8 py-4">
+          <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Full Name / Identity</label>
+              <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: John Doe" />
             </div>
-            <div>
-              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Email</label>
-              <input type="email" value={form.email ?? ""} onChange={e => setForm((f: any) => ({ ...f, email: e.target.value }))} className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Corporate Liaison Email</label>
+              <input type="email" value={form.email ?? ""} onChange={e => setForm((f: any) => ({ ...f, email: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="liaison@company.com" />
             </div>
-            <div>
-              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Cargo</label>
-              <input type="text" value={form.role ?? ""} onChange={e => setForm((f: any) => ({ ...f, role: e.target.value }))} className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Operational Role</label>
+              <input type="text" value={form.role ?? ""} onChange={e => setForm((f: any) => ({ ...f, role: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Senior Architect" />
             </div>
-            <div>
-              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Permissões (separadas por vírgula)</label>
-              <input type="text" value={form.permissions ?? ""} onChange={e => setForm((f: any) => ({ ...f, permissions: e.target.value }))} className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors font-mono" placeholder="read, write, admin" />
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Permission Matrix (CSV)</label>
+              <input type="text" value={form.permissions ?? ""} onChange={e => setForm((f: any) => ({ ...f, permissions: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" placeholder="read, write, admin" />
             </div>
-            <label className="flex items-center gap-2 text-sm text-white/70 cursor-pointer mt-2">
-              <input type="checkbox" checked={form.active} onChange={e => setForm((f: any) => ({ ...f, active: e.target.checked }))} className="rounded border-white/20 bg-transparent text-emerald-500 focus:ring-emerald-500" />
-              Usuário ativo
+            <label className="flex items-center gap-3 text-xs font-bold text-zinc-400 cursor-pointer group/active mt-2">
+              <div className="relative flex items-center justify-center">
+                <input type="checkbox" checked={form.active} onChange={e => setForm((f: any) => ({ ...f, active: e.target.checked }))} className="peer appearance-none w-5 h-5 border border-white/10 rounded-md bg-white/5 checked:bg-white checked:border-white transition-all cursor-pointer" />
+                <CheckCircle className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+              </div>
+              <span className="group-hover/active:text-white transition-colors uppercase tracking-widest">Vector Active</span>
             </label>
           </div>
         </div>
