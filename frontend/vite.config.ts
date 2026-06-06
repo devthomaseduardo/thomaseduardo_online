@@ -28,7 +28,7 @@ export default defineConfig(({mode}) => {
           "font-src 'self' https://fonts.gstatic.com https://api.fontshare.com https://cdn.fontshare.com",
           "img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com https://cdn.simpleicons.org https://raw.githubusercontent.com https://images.openai.com https://*.posthog.com",
           "connect-src 'self' http://localhost:3001 http://localhost:3002 ws://localhost:* https://www.google-analytics.com https://analytics.google.com https://api.fontshare.com https://*.posthog.com",
-          "frame-src 'self' https://www.googletagmanager.com",
+          "frame-src 'self' https://www.googletagmanager.com https://sleep-house.vercel.app",
           "worker-src 'self' blob:",
         ].join('; '),
       },
