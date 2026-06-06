@@ -75,7 +75,7 @@ export function FinanceiroModule() {
           <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Financeiro</h1>
           <p className="text-white/30 text-sm">Controle bancário e de faturamento.</p>
         </div>
-        <button onClick={() => setModal(true)} className="bg-white text-black font-semibold px-5 py-3 rounded-xl text-sm flex items-center gap-2 hover:bg-white/90">
+        <button onClick={() => setModal(true)} className="cursor-pointer bg-white text-black font-semibold px-5 py-3 rounded-xl text-sm flex items-center gap-2 hover:bg-white/90 shadow-lg shadow-white/5 transition-colors">
           <Plus className="w-4 h-4" /> Nova Cobrança
         </button>
       </div>
@@ -145,7 +145,7 @@ export function FinanceiroModule() {
                     </td>
                     <td className="px-6 py-4 text-sm text-white/40">{new Date(i.createdAt).toLocaleDateString("pt-BR")}</td>
                     <td className="px-6 py-4">
-                      <button className="text-white/30 hover:text-white transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-2 text-xs font-mono">
+                      <button className="cursor-pointer text-white/30 hover:text-white transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-2 text-xs font-mono">
                         <Download className="w-3.5 h-3.5" /> PDF
                       </button>
                     </td>
@@ -163,7 +163,7 @@ export function FinanceiroModule() {
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
             <motion.div initial={{ scale: 0.96 }} animate={{ scale: 1 }} exit={{ scale: 0.96 }}
               className="bg-[#0B0B0B] border border-white/[0.08] rounded-2xl p-8 w-full max-w-md relative">
-              <button onClick={() => setModal(false)} className="absolute top-5 right-5 text-white/30 hover:text-white transition-colors">
+              <button onClick={() => setModal(false)} className="cursor-pointer absolute top-5 right-5 text-white/30 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
               <h2 className="text-xl font-bold text-white mb-2">Nova Fatura</h2>
@@ -196,7 +196,7 @@ export function FinanceiroModule() {
                   </div>
                 </div>
                 <button type="button" onClick={handleCreateInvoice} disabled={saving}
-                  className="w-full bg-white text-black font-semibold py-3.5 rounded-xl text-sm hover:bg-white/90 transition-colors mt-2 disabled:opacity-50">
+                  className="cursor-pointer w-full bg-white text-black font-semibold py-3.5 rounded-xl text-sm hover:bg-white/90 transition-colors mt-2 disabled:opacity-50">
                   {saving ? 'Gerando...' : 'Gerar Fatura'}
                 </button>
               </div>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { PropostasModule } from '../../components/admin/PropostasModule';
+import { ProposalsModule } from '../../components/admin/ProposalsModule';
 
 export function Proposals() {
-  return <PropostasModule />;
+  return <ProposalsModule />;
 }

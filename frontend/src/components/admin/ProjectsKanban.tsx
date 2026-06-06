@@ -80,7 +80,7 @@ export const ProjectsKanban = () => {
           <p className="text-white/40 text-sm font-mono uppercase tracking-widest">Gestão de Projetos</p>
         </div>
         <button onClick={() => setNewModal(true)}
-          className="bg-white text-black text-sm font-semibold px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-white/90 transition-colors shrink-0">
+          className="cursor-pointer bg-white text-black text-sm font-semibold px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-white/90 transition-colors shadow-lg shadow-white/5 shrink-0">
           <Plus className="w-4 h-4" /> Novo Projeto
         </button>
       </div>
@@ -115,7 +115,7 @@ export const ProjectsKanban = () => {
               { id: 'completed', label: 'Concluídos' },
             ].map(t => (
               <button key={t.id} onClick={() => setFilter(t.id)}
-                className={`px-4 py-2 rounded-lg text-xs font-mono tracking-widest uppercase transition-colors ${
+                className={`cursor-pointer px-4 py-2 rounded-lg text-xs font-mono tracking-widest uppercase transition-colors ${
                   filter === t.id ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'
                 }`}>
                 {t.label}
@@ -201,7 +201,7 @@ export const ProjectsKanban = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-white/20 group-hover:text-white/60 transition-colors">
+                        <button className="cursor-pointer text-white/20 group-hover:text-white/60 transition-colors">
                           <ChevronRight className="w-5 h-5" />
                         </button>
                       </td>
@@ -230,10 +230,10 @@ export const ProjectsKanban = () => {
         maxWidth="xl"
         footer={
           <div className="flex items-center justify-end w-full gap-3">
-            <button onClick={() => setNewModal(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 transition-colors">
+            <button onClick={() => setNewModal(false)} className="cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 transition-colors">
               Cancelar
             </button>
-            <button onClick={handleCreate} disabled={saving} className="px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-50">
+            <button onClick={handleCreate} disabled={saving} className="cursor-pointer px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-50">
               {saving ? "Iniciando..." : "Criar Projeto"}
             </button>
           </div>

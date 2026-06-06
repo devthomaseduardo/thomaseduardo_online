@@ -168,13 +168,16 @@ const authenticateToken = (req: any, res: any, next: any) => {
 // Admin auth: accept both new JWT Bearer and legacy x-admin-key (transition period)
 const authenticateAdmin = (req: any, res: any, next: any) => {
   // Try Bearer JWT first (new secure method)
-  const bearerToken = extractBearer(req.headers['authorization']);
+  const authHeader = req.headers['authorization'];
+  const authHeaderStr = Array.isArray(authHeader) ? authHeader[0] : authHeader;
+  const bearerToken = extractBearer(authHeaderStr);
   if (bearerToken) {
     const payload = verifyAdminToken(bearerToken);
     if (payload?.role === 'admin') return next();
   }
   // Fall back to legacy x-admin-key
-  const key = req.headers['x-admin-key'];
+  const rawKey = req.headers['x-admin-key'];
+  const key = Array.isArray(rawKey) ? rawKey[0] : rawKey;
   if (key && (key === ADMIN_PASSWORD || key === 'antigravity-admin-dev')) return next();
   return res.status(401).json({ error: 'Não autorizado.' });
 };

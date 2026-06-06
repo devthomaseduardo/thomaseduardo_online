@@ -3,13 +3,32 @@ import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
 
 const API = `${API_URL}/api/v2`;
-// Usa helper centralizado que inclui sempre x-admin-key
 const hdrs = () => getAdminHeaders();
 
-let cacheProjects: any[] | null = null;
-let cacheClients: any[] | null = null;
-let loadingProjects = false;
-let loadingClients = false;
+let cache: Record<string, any[] | null> = {
+  projects: null,
+  clients: null,
+  proposals: null,
+  invoices: null,
+  contracts: null,
+  deploys: null,
+  leads: null,
+  messages: null,
+  team: null,
+};
+
+let loading: Record<string, boolean> = {
+  projects: false,
+  clients: false,
+  proposals: false,
+  invoices: false,
+  contracts: false,
+  deploys: false,
+  leads: false,
+  messages: false,
+  team: false,
+};
+
 let listeners: Function[] = [];
 
 function emit() {
@@ -18,48 +37,60 @@ function emit() {
 
 export function useAdminData() {
   const [data, setData] = useState({
-    projects: cacheProjects || [],
-    clients: cacheClients || [],
-    loading: (cacheProjects === null && loadingProjects) || (cacheClients === null && loadingClients)
+    projects: cache.projects || [],
+    clients: cache.clients || [],
+    proposals: cache.proposals || [],
+    invoices: cache.invoices || [],
+    contracts: cache.contracts || [],
+    deploys: cache.deploys || [],
+    leads: cache.leads || [],
+    messages: cache.messages || [],
+    team: cache.team || [],
+    loading: Object.values(loading).some(l => l) || Object.values(cache).some(c => c === null)
   });
 
   useEffect(() => {
     const handler = () => {
       setData({
-        projects: cacheProjects || [],
-        clients: cacheClients || [],
-        loading: (cacheProjects === null && loadingProjects) || (cacheClients === null && loadingClients)
+        projects: cache.projects || [],
+        clients: cache.clients || [],
+        proposals: cache.proposals || [],
+        invoices: cache.invoices || [],
+        contracts: cache.contracts || [],
+        deploys: cache.deploys || [],
+        leads: cache.leads || [],
+        messages: cache.messages || [],
+        team: cache.team || [],
+        loading: Object.values(loading).some(l => l) || Object.values(cache).some(c => c === null)
       });
     };
     listeners.push(handler);
 
-    if (cacheProjects === null && !loadingProjects) {
-      loadingProjects = true;
-      handler();
-      fetch(`${API}/projects`, { headers: hdrs() })
-        .then(r => r.ok ? r.json() : [])
-        .then(res => {
-          cacheProjects = Array.isArray(res) ? res : [];
-          loadingProjects = false;
-          emit();
-        })
-        .catch(() => { loadingProjects = false; emit(); });
-    }
+    const fetchEntity = (entity: string, endpoint: string) => {
+      if (cache[entity] === null && !loading[entity]) {
+        loading[entity] = true;
+        handler();
+        fetch(`${API}/${endpoint}`, { headers: hdrs() })
+          .then(r => r.ok ? r.json() : [])
+          .then(res => {
+            cache[entity] = Array.isArray(res) ? res : [];
+            loading[entity] = false;
+            emit();
+          })
+          .catch(() => { loading[entity] = false; emit(); });
+      }
+    };
 
-    if (cacheClients === null && !loadingClients) {
-      loadingClients = true;
-      handler();
-      fetch(`${API}/clients`, { headers: hdrs() })
-        .then(r => r.ok ? r.json() : [])
-        .then(res => {
-          cacheClients = Array.isArray(res) ? res : [];
-          loadingClients = false;
-          emit();
-        })
-        .catch(() => { loadingClients = false; emit(); });
-    }
+    fetchEntity('projects', 'projects');
+    fetchEntity('clients', 'clients');
+    fetchEntity('proposals', 'proposals');
+    fetchEntity('invoices', 'invoices');
+    fetchEntity('contracts', 'contracts');
+    fetchEntity('deploys', 'deploys');
+    fetchEntity('leads', 'leads');
+    fetchEntity('messages', 'messages');
+    fetchEntity('team', 'team');
 
-    // Set initial state from cache if available
     handler();
 
     return () => {
@@ -67,27 +98,32 @@ export function useAdminData() {
     };
   }, []);
 
-  const mutate = () => {
-    // We don't wipe the cache entirely to avoid UI flicker, we just re-fetch and replace
-    loadingProjects = true;
-    loadingClients = true;
-    emit();
+  const mutate = (entity?: string) => {
+    const fetchEntity = (ent: string, endpoint: string) => {
+      loading[ent] = true;
+      emit();
+      fetch(`${API}/${endpoint}`, { headers: hdrs() })
+        .then(r => r.ok ? r.json() : [])
+        .then(res => {
+          cache[ent] = Array.isArray(res) ? res : [];
+          loading[ent] = false;
+          emit();
+        }).catch(() => { loading[ent] = false; emit(); });
+    };
 
-    fetch(`${API}/projects`, { headers: hdrs() })
-      .then(r => r.ok ? r.json() : [])
-      .then(res => {
-        cacheProjects = Array.isArray(res) ? res : [];
-        loadingProjects = false;
-        emit();
-      }).catch(() => { loadingProjects = false; emit(); });
-
-    fetch(`${API}/clients`, { headers: hdrs() })
-      .then(r => r.ok ? r.json() : [])
-      .then(res => {
-        cacheClients = Array.isArray(res) ? res : [];
-        loadingClients = false;
-        emit();
-      }).catch(() => { loadingClients = false; emit(); });
+    if (entity) {
+      fetchEntity(entity, entity);
+    } else {
+      fetchEntity('projects', 'projects');
+      fetchEntity('clients', 'clients');
+      fetchEntity('proposals', 'proposals');
+      fetchEntity('invoices', 'invoices');
+      fetchEntity('contracts', 'contracts');
+      fetchEntity('deploys', 'deploys');
+      fetchEntity('leads', 'leads');
+      fetchEntity('messages', 'messages');
+      fetchEntity('team', 'team');
+    }
   };
 
   return { ...data, mutate };

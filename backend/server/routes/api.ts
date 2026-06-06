@@ -7,7 +7,10 @@ const prisma = new PrismaClient();
 
 // ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
 const adminAuth = (req: Request, res: Response, next: Function) => {
-  const bearerToken = extractBearer(req.headers['authorization'] as string | undefined);
+  const authHeader = req.headers['authorization'];
+  const authHeaderStr = Array.isArray(authHeader) ? authHeader[0] : authHeader;
+  const bearerToken = extractBearer(authHeaderStr as string | undefined);
+  
   if (bearerToken) {
     const payload = verifyAdminToken(bearerToken);
     if (payload?.role === 'admin') {
@@ -15,12 +18,14 @@ const adminAuth = (req: Request, res: Response, next: Function) => {
     }
   }
 
-  const key = req.headers['x-admin-key'];
-  if (key === process.env.ADMIN_PASSWORD || key === 'antigravity-admin-dev') {
+  const rawKey = req.headers['x-admin-key'];
+  const key = Array.isArray(rawKey) ? rawKey[0] : rawKey;
+  
+  if (key && (key === process.env.ADMIN_PASSWORD || key === 'antigravity-admin-dev')) {
     return next();
   }
 
-  return res.status(401).json({ error: 'Unauthorized' });
+  return res.status(401).json({ error: 'Não autorizado.', details: 'Invalid token or key' });
 };
 
 // ─── HELPER: criar timeline event ──────────────────────────────────────────
@@ -131,7 +136,7 @@ router.get('/clients', adminAuth, async (req, res) => {
 
 router.post('/clients', adminAuth, async (req, res) => {
   try {
-    const { name, email, cnpj, clientType, password } = req.body;
+    const { name, email, cnpj, clientType, password, phone, obs } = req.body;
     if (!name || !email || !password) return res.status(400).json({ error: 'name, email e password são obrigatórios.' });
 
     const bcrypt = await import('bcrypt');
@@ -143,7 +148,7 @@ router.post('/clients', adminAuth, async (req, res) => {
     }
 
     const result = await prisma.client.create({
-      data: { name, email, cnpj, clientType: clientType ?? 'new', password: hashedPw }
+      data: { name, email, cnpj, clientType: clientType ?? 'new', password: hashedPw, phone, obs }
     });
     res.status(201).json(result);
   } catch (err: any) {
@@ -153,14 +158,14 @@ router.post('/clients', adminAuth, async (req, res) => {
 
 router.put('/clients/:id', adminAuth, async (req, res) => {
   try {
-    const { name, email, cnpj, clientType } = req.body;
+    const { name, email, cnpj, clientType, phone, obs } = req.body;
     const result = await prisma.client.update({
       where: { id: req.params.id },
-      data: { name, email, cnpj, clientType }
+      data: { name, email, cnpj, clientType, phone, obs }
     });
     res.json(result);
   } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: err.message ?? 'Erro ao atualizar cliente.' });
   }
 });
 

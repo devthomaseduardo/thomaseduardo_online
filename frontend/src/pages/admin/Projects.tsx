@@ -1,6 +1,6 @@
 import React from 'react';
-import { ProjectsKanban } from '../../components/admin/ProjectsKanban';
+import { ProjectsModule } from '../../components/admin/ProjectsModule';
 
 export function Projects() {
-  return <ProjectsKanban />;
+  return <ProjectsModule />;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { FinanceiroModule } from '../../components/admin/FinanceiroModule';
+import { FinancialModule } from '../../components/admin/FinancialModule';
 
 export function Financial() {
-  return <FinanceiroModule />;
+  return <FinancialModule />;
 }

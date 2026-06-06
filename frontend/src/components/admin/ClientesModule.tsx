@@ -82,7 +82,7 @@ export function ClientesModule() {
           <p className="text-white/40 text-sm font-mono uppercase tracking-widest">Gestão de acessos e perfis</p>
         </div>
         <button onClick={openCreate}
-          className="bg-white text-black text-sm font-semibold px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-white/90 transition-colors shrink-0">
+          className="cursor-pointer bg-white text-black font-semibold px-5 py-3 rounded-xl text-sm flex items-center gap-2 hover:bg-white/90 transition-colors shadow-lg shadow-white/5">
           <Plus className="w-4 h-4" /> Novo Cliente
         </button>
       </div>
@@ -114,11 +114,13 @@ export function ClientesModule() {
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Buscar por nome ou e-mail..."
               className="w-full bg-[#050505] border border-white/[0.06] rounded-lg pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors" />
+            {search && (
+              <button onClick={() => setSearch("")}
+                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/30 hover:text-white transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
-          <button onClick={() => setSearch("")} disabled={!search}
-            className="h-10 px-4 rounded-lg border border-white/[0.08] text-[10px] uppercase tracking-[0.18em] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed text-white/70 hover:text-white hover:border-white/20 bg-white/5 hover:bg-white/10">
-            Limpar
-          </button>
         </div>
 
         {/* List */}
@@ -173,12 +175,12 @@ export function ClientesModule() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openEdit(c)} className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
+                        <button onClick={() => openEdit(c)} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
                           Editar
                         </button>
-                        <button onClick={() => remove(c.id)} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-xs font-medium text-rose-200 hover:text-white transition-colors"
-                          title="Excluir cliente" aria-label="Excluir cliente">
-                          Excluir
+                        <button onClick={() => remove(c.id)} className="cursor-pointer px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg text-xs font-medium text-rose-200 hover:text-white transition-colors"
+                          title="Remover Cliente" disabled={saving}>
+                          Remover
                         </button>
                       </div>
                     </td>
@@ -198,15 +200,15 @@ export function ClientesModule() {
         description={modal === "create" ? "Libere um novo ambiente no ecossistema." : "Gerencie dados, segurança e observações."}
         maxWidth="xl"
         footer={
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full pt-6 border-t border-white/[0.06]">
             {modal === "edit" ? (
-               <button type="button" onClick={() => remove(form.id)} className="text-xs text-rose-400 hover:text-rose-300 font-mono">REMOVER CLIENTE</button>
+               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-xs text-rose-400 hover:text-rose-300 font-mono transition-colors">REMOVER CLIENTE</button>
             ) : <div/>}
             <div className="flex gap-3">
-              <button onClick={() => setModal(null)} className="px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 transition-colors">
+              <button onClick={() => setModal(null)} className="cursor-pointer px-4 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5 transition-colors">
                 Cancelar
               </button>
-              <button onClick={save} disabled={saving} className="px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-50">
+              <button onClick={save} disabled={saving} className="cursor-pointer px-6 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90 transition-colors disabled:opacity-50">
                 {saving ? "Processando..." : modal === "create" ? "Gerar Acesso" : "Salvar Alterações"}
               </button>
             </div>
