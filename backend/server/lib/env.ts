@@ -1,21 +1,33 @@
 import { config } from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 /**
  * Load .env file into process.env before validation.
  * Search parent directories so backend can run from /backend while .env is at repo root.
  */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const envCandidates = [
   path.resolve(process.cwd(), '.env'),
   path.resolve(process.cwd(), '../.env'),
   path.resolve(process.cwd(), '../../.env'),
+  // Absolute path relative to this file: backend/server/lib/ -> root
+  path.resolve(__dirname, '../../../.env'),
+  path.resolve(__dirname, '../../../../.env'),
 ];
+
 const envPath = envCandidates.find(p => fs.existsSync(p));
 if (envPath) {
-  config({ path: envPath });
+  const result = config({ path: envPath, override: true });
+  if (!result.error) {
+    console.log(`✅ [env] Carregado: ${envPath}`);
+  }
 } else {
-  config();
+  console.warn('⚠️ [env] Arquivo .env não encontrado em nenhum candidato. Usando variáveis do sistema.');
+  config({ override: true });
 }
 
 /**
@@ -56,7 +68,7 @@ export const env = {
   PORT: parseInt(process.env.PORT ?? "3001", 10),
   ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:5173").split(",").map(s => s.trim()),
   SEED_SECRET: process.env.SEED_SECRET ?? null,
-  RESEND_API_KEY: process.env.RESEND_API_KEY || null,
+  RESEND_API_KEY: process.env.RESEND_API_KEY || "re_CzVpVh3V_EMohV75K9jQybnDLwsyBTjKc",
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
   BACKEND_URL: process.env.BACKEND_URL || "http://localhost:3001",
   VERCEL_TOKEN: process.env.VERCEL_TOKEN || null,
