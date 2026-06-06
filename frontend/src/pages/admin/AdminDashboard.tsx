@@ -13,9 +13,14 @@ import { ActiveProjects } from '../../components/admin/dashboard/ActiveProjects'
 import { RecentDeploys } from '../../components/admin/dashboard/RecentDeploys';
 import { UpcomingDeadlines } from '../../components/admin/dashboard/UpcomingDeadlines';
 import { useAdminFetch } from '../../components/admin/useAdminFetch';
+import { API_URL } from '@/config';
+import { getAdminHeaders } from '@/lib/adminAuth';
+
+const API_V2 = `${API_URL}/api/v2`;
 
 export function AdminDashboard() {
   const { data, loading, error } = useAdminFetch<any>('/dashboard');
+  const isProd = import.meta.env.PROD;
 
   const kpis = data?.kpis || [];
   const projects = data?.pipeline?.map((project: any) => ({
@@ -32,110 +37,39 @@ export function AdminDashboard() {
   const activities = data?.activities || [];
 
   const handleSeedRealData = async () => {
+    if (!confirm('Deseja popular o banco com dados reais?')) return;
     try {
-      const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth') || '';
-      const clients = [
-        {
-          clientName: "Sleep House",
-          clientEmail: "contato@sleephouse.com.br",
-          password: "password123",
-          projectName: "Digital Showroom de Colchões Premium",
-          phase: "Entregue",
-          status: "Entregue",
-          projectValue: 12500.0,
-        },
-        {
-          clientName: "LP Yázigi",
-          clientEmail: "contato@yazigi.com.br",
-          password: "password123",
-          projectName: "Página de Alta Conversão para Captação de Alunos",
-          phase: "Em Produção",
-          status: "Em Produção",
-          projectValue: 5700.0,
-        },
-        {
-          clientName: "Bras Service",
-          clientEmail: "contato@brasservice.com",
-          password: "password123",
-          projectName: "Sistema Integrado de Ordem de Serviço",
-          phase: "Entregue",
-          status: "Entregue",
-          projectValue: 28000.0,
-        },
-        {
-          clientName: "Hazap Vendas",
-          clientEmail: "contato@hazap.com.br",
-          password: "password123",
-          projectName: "Painel de Vendas e CRM Comercial",
-          phase: "Em Produção",
-          status: "Em Produção",
-          projectValue: 18000.0,
-        }
-      ];
-
-      for (const c of clients) {
-        const res = await fetch(`${API_URL}/api/projects`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'x-admin-key': 'antigravity-admin-dev'
-          },
-          body: JSON.stringify(c)
-        });
-        
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(`Erro criando projeto ${c.projectName}: ${errText}`);
-        }
-        
-        const project = await res.json();
-        
-        const invoiceRes = await fetch(`${API_URL}/api/payments/intent`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'x-admin-key': 'antigravity-admin-dev'
-          },
-          body: JSON.stringify({
-            projectId: project.id,
-            amount: c.projectValue / 2,
-            description: "Sinal inicial de 50%",
-            type: "service"
-          })
-        });
-
-        if (!invoiceRes.ok) {
-          const errText = await invoiceRes.text();
-          throw new Error(`Erro criando fatura do projeto ${c.projectName}: ${errText}`);
-        }
-      }
+      const res = await fetch(`${API_V2}/dev/seed`, {
+        method: 'POST',
+        headers: getAdminHeaders()
+      });
+      
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Erro ao popular banco');
+      
       alert('Dados reais adicionados com sucesso! Por favor, recarregue a página.');
+      window.location.reload();
     } catch (e: any) {
       alert(`Erro: ${e.message}`);
-      console.error(e);
     }
   };
 
-      const handleClearDB = async () => {
-        try {
-          const token = localStorage.getItem('adminToken') || localStorage.getItem('adminAuth') || '';
-          const res = await fetch(`${API_URL}/api/dev/wipe`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'x-admin-key': 'antigravity-admin-dev'
-            }
-          });
-          if (!res.ok) {
-            throw new Error('Falha ao limpar banco');
-          }
-          alert('Banco de dados limpo com sucesso! Recarregue a página.');
-        } catch (e: any) {
-          alert(`Erro ao limpar banco: ${e.message}`);
-          console.error(e);
-        }
-      };
+  const handleClearDB = async () => {
+    if (!confirm('AVISO: Isso apagará TODOS os dados do sistema. Tem certeza?')) return;
+    try {
+      const res = await fetch(`${API_V2}/dev/wipe`, {
+        method: 'POST',
+        headers: getAdminHeaders()
+      });
+      const resData = await res.json();
+      if (!res.ok) throw new Error(resData.error || 'Falha ao limpar banco');
+      
+      alert('Banco de dados limpo com sucesso!');
+      window.location.reload();
+    } catch (e: any) {
+      alert(`Erro ao limpar banco: ${e.message}`);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -144,20 +78,22 @@ export function AdminDashboard() {
           <h1 className="text-3xl font-bold text-white tracking-tight">Centro de Operações</h1>
           <p className="text-zinc-500 text-sm">Visão geral do sistema e indicadores chave.</p>
         </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={handleClearDB}
-            className="px-4 py-2 bg-red-600/20 hover:bg-red-500/30 text-red-500 border border-red-500/20 text-sm font-medium rounded-lg transition-colors"
-          >
-            Limpar Banco
-          </button>
-          <button 
-            onClick={handleSeedRealData}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            Popular Banco (Dados Reais)
-          </button>
-        </div>
+        {!isProd && (
+          <div className="flex gap-2">
+            <button 
+              onClick={handleClearDB}
+              className="px-4 py-2 bg-red-600/20 hover:bg-red-500/30 text-red-500 border border-red-500/20 text-sm font-medium rounded-lg transition-colors"
+            >
+              Limpar Banco
+            </button>
+            <button 
+              onClick={handleSeedRealData}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              Popular Banco (Dados Reais)
+            </button>
+          </div>
+        )}
       </div>
 
       {(loading || error) && (

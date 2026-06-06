@@ -51,6 +51,6 @@ export const env = {
   ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH || "placeholder",
   NODE_ENV: process.env.NODE_ENV ?? "development",
   PORT: parseInt(process.env.PORT ?? "3001", 10),
-  ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000,http://localhost:5173,https://portfolio-novo-frontend.onrender.com").split(",").map(s => s.trim()),
+  ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:5173").split(",").map(s => s.trim()),
   SEED_SECRET: process.env.SEED_SECRET ?? null,
 } as const;

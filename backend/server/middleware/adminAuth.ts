@@ -22,24 +22,17 @@ export function requireAdminJWT(req: Request, res: Response, next: NextFunction)
 }
 
 /**
- * Legacy middleware: also accept x-admin-key for backwards compat during migration.
- * TODO: Remove this after all clients are updated to use Bearer tokens.
+ * Admin authentication middleware (Strict Bearer JWT).
  */
-import { env } from "../lib/env.js";
-
 export function adminAuth(req: Request, res: Response, next: NextFunction) {
-  // Try Bearer JWT first
   const bearerToken = extractBearer(req.headers.authorization);
+  
   if (bearerToken) {
     const payload = verifyAdminToken(bearerToken);
-    if (payload?.role === "admin") return next();
+    if (payload?.role === "admin") {
+      return next();
+    }
   }
 
-  // Fall back to x-admin-key (legacy — will be removed)
-  const key = req.headers["x-admin-key"];
-  if (key && (key === process.env.ADMIN_PASSWORD || key === 'antigravity-admin-dev')) {
-    return next();
-  }
-
-  return res.status(401).json({ error: "Não autorizado." });
+  return res.status(401).json({ error: "Não autorizado.", details: "Invalid or missing Bearer token" });
 }

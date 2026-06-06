@@ -10,13 +10,10 @@ import multer from 'multer';
 import portalRouter from './routes/portal.ts';
 import paymentsRouter from './routes/payments.ts';
 import authRouter from './routes/auth.ts';
-import projectsRouter from './routes/projects.ts';
 import apiRouter from './routes/api.ts';
-
-// ─── Security bootstrap (must be first) ─────────────────────────────────────
-import './lib/env.js';  // validates and crashes if env is missing
+import projectsRouter from './routes/projects.ts';
+import rateLimit from 'express-rate-limit';
 import { env } from './lib/env.js';
-import { signAdminToken, extractBearer, verifyAdminToken } from './lib/jwt.js';
 import { audit, getClientIp } from './lib/audit.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,18 +21,6 @@ const __dirname = path.dirname(__filename);
 
 const prisma = new PrismaClient();
 const app = express();
-
-app.get('/api/dev/wipe', async (req, res) => {
-  try {
-    await prisma.deploy.deleteMany();
-    await prisma.invoice.deleteMany();
-    await prisma.project.deleteMany();
-    await prisma.client.deleteMany();
-    res.send('Database wiped');
-  } catch (e) {
-    res.status(500).send(e.message);
-  }
-});
 
 const JWT_SECRET = env.JWT_SECRET;
 // ADMIN_PASSWORD kept for legacy seed compatibility only — remove in v2
@@ -48,49 +33,26 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // ─── Multer storage ──────────────────────────────────────────────────────────
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const projectId = (req.params.projectId || req.body.projectId || 'misc').replace(/[^a-zA-Z0-9-_]/g, '');
-    const dir = path.join(UPLOADS_DIR, projectId);
+  destination: (req: any, file, cb) => {
+    const { projectId } = req.params;
+    const dir = path.join(UPLOADS_DIR, projectId || 'general');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `${unique}${ext}`);
-  }
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e6);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  },
 });
 
-const upload = multer({
+const upload = multer({ 
   storage,
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200 MB
-  fileFilter: (req, file, cb) => {
-    const allowed = [
-      'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
-      'application/pdf',
-      'application/zip', 'application/x-zip-compressed',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'video/mp4', 'video/quicktime',
-      'application/octet-stream', // .ai, .eps, etc
-      'application/postscript',
-      'font/ttf', 'font/otf', 'application/font-woff',
-    ];
-    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(ai|eps|fig|sketch|zip|rar|7z)$/i)) {
-      cb(null, true);
-    } else {
-      cb(new Error(`Tipo de arquivo não permitido: ${file.mimetype}`));
-    }
-  }
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
 });
 
 // ─── Rate Limiters ────────────────────────────────────────────────────────────
-import rateLimit from 'express-rate-limit';
-
 const adminLoginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
+  windowMs: 15 * 60 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
@@ -133,11 +95,17 @@ app.use(cors({
     if (!origin || env.ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
+      console.warn(`[CORS] Rejected origin: ${origin}`);
+      // In development, we might want to be more permissive or at least not return a raw Error that Express turns into HTML
+      if (env.NODE_ENV === 'development') {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
+      }
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: false,
 }));
 
@@ -150,7 +118,15 @@ app.use('/api', authRouter);
 app.use('/api/v2', apiRouter);
 app.use('/api/projects', projectsRouter(upload));
 
-
+// ─── Global Error Handler ───────────────────────────────────────────────────
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error('[Global Error]', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    error: err.message || 'Erro interno do servidor',
+    details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
 
 // ─── Auth middlewares ─────────────────────────────────────────────────────────
 
@@ -158,448 +134,47 @@ const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Acesso negado' });
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+
+  jwt.verify(token, JWT_SECRET as string, (err: any, user: any) => {
     if (err) return res.status(403).json({ error: 'Token inválido' });
     req.user = user;
     next();
   });
 };
 
-// Admin auth: accept both new JWT Bearer and legacy x-admin-key (transition period)
 const authenticateAdmin = (req: any, res: any, next: any) => {
-  // Try Bearer JWT first (new secure method)
   const authHeader = req.headers['authorization'];
-  const authHeaderStr = Array.isArray(authHeader) ? authHeader[0] : authHeader;
-  const bearerToken = extractBearer(authHeaderStr);
-  if (bearerToken) {
-    const payload = verifyAdminToken(bearerToken);
-    if (payload?.role === 'admin') return next();
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET as string) as any;
+      if (decoded.role === 'admin') {
+        req.user = decoded;
+        return next();
+      }
+    } catch (e) {
+      // JWT failed, try legacy key
+    }
   }
-  // Fall back to legacy x-admin-key
-  const rawKey = req.headers['x-admin-key'];
-  const key = Array.isArray(rawKey) ? rawKey[0] : rawKey;
-  if (key && (key === ADMIN_PASSWORD || key === 'antigravity-admin-dev')) return next();
-  return res.status(401).json({ error: 'Não autorizado.' });
+
+  const key = req.headers['x-admin-key'];
+  if (key === ADMIN_PASSWORD && ADMIN_PASSWORD !== '') {
+    req.user = { role: 'admin' };
+    return next();
+  }
+  
+  return res.status(401).json({ error: 'Acesso administrativo negado' });
 };
 
-// ─── ADMIN AUTH (secure JWT) ──────────────────────────────────────────────────
+// ─── Legacy Routes (to be migrated) ───────────────────────────────────────────
 
-app.post('/api/admin/login', adminLoginLimiter, async (req: any, res: any) => {
-  const { password } = req.body;
-  const ip = getClientIp(req);
-
-  if (!password || typeof password !== 'string') {
-    return res.status(400).json({ error: 'Credenciais inválidas.' });
-  }
-
-  try {
-    // Compare against bcrypt hash (secure)
-    const hash = env.ADMIN_PASSWORD_HASH;
-    const isValidHash = hash && !hash.includes('placeholder')
-      ? await bcrypt.compare(password, hash)
-      : password === ADMIN_PASSWORD; // fallback to plaintext during transition
-
-    if (!isValidHash) {
-      await audit({ action: 'admin.login.failed', actorType: 'anonymous', ip, userAgent: req.headers['user-agent'] });
-      // Generic error — never reveal why it failed
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
-    }
-
-    const token = signAdminToken();
-    await audit({ action: 'admin.login.success', actorType: 'admin', ip, userAgent: req.headers['user-agent'] });
-
-    // Return ONLY the JWT — never the password or hash
-    return res.json({ token });
-  } catch (err) {
-    console.error('[admin/login]', err);
-    return res.status(500).json({ error: 'Erro interno.' });
-  }
-});
-
-  // Mount modular routers after auth middlewares are defined
+if (process.env.NODE_ENV !== 'production') {
   app.use('/api/portal', portalRouter);
   app.use('/api/payments', authenticateAdmin, paymentsRouter);
+}
 
-
-// Duplicated routes moved to auth.ts
-// ─── PROJECT FILE UPLOAD (Client) ─────────────────────────────────────────────
-
-
-
-app.post(
-  '/api/projects/:projectId/files',
-  authenticateToken,
-  upload.array('files', 20),
-  async (req: any, res: any) => {
-    try {
-      const { projectId } = req.params;
-      const category = req.body.category || 'other';
-      const uploadedFiles = req.files as Express.Multer.File[];
-
-      if (!uploadedFiles || uploadedFiles.length === 0) {
-        return res.status(400).json({ error: 'Nenhum arquivo enviado' });
-      }
-
-      // Verify project belongs to authenticated client
-      const project = await prisma.project.findFirst({
-        where: { id: projectId, clientId: req.user.id }
-      });
-
-      if (!project) {
-        return res.status(403).json({ error: 'Projeto não encontrado ou sem permissão' });
-      }
-
-      const records = await Promise.all(
-        uploadedFiles.map(f =>
-          prisma.projectFile.create({
-            data: {
-              originalName: f.originalname,
-              fileName: f.filename,
-              mimeType: f.mimetype,
-              size: f.size,
-              path: `/uploads/${projectId}/${f.filename}`,
-              category,
-              uploadedBy: 'client',
-              projectId
-            }
-          })
-        )
-      );
-
-      res.json({ success: true, files: records });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Falha no upload dos arquivos' });
-    }
-  }
-);
-
-// ─── PROJECT FILE UPLOAD (Admin) ──────────────────────────────────────────────
-
-app.post(
-  '/api/admin/projects/:projectId/files',
-  authenticateAdmin,
-  upload.array('files', 20),
-  async (req: any, res: any) => {
-    try {
-      const { projectId } = req.params;
-      const category = req.body.category || 'other';
-      const uploadedFiles = req.files as Express.Multer.File[];
-
-      if (!uploadedFiles || uploadedFiles.length === 0) {
-        return res.status(400).json({ error: 'Nenhum arquivo enviado' });
-      }
-
-      const records = await Promise.all(
-        uploadedFiles.map(f =>
-          prisma.projectFile.create({
-            data: {
-              originalName: f.originalname,
-              fileName: f.filename,
-              mimeType: f.mimetype,
-              size: f.size,
-              path: `/uploads/${projectId}/${f.filename}`,
-              category,
-              uploadedBy: 'admin',
-              projectId
-            }
-          })
-        )
-      );
-
-      res.json({ success: true, files: records });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Falha no upload dos arquivos' });
-    }
-  }
-);
-
-// ─── GET FILES FOR A PROJECT ──────────────────────────────────────────────────
-
-app.get('/api/projects/:projectId/files', authenticateToken, async (req: any, res: any) => {
-  try {
-    const { projectId } = req.params;
-
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, clientId: req.user.id }
-    });
-    if (!project) return res.status(403).json({ error: 'Sem permissão' });
-
-    const files = await prisma.projectFile.findMany({
-      where: { projectId },
-      orderBy: { createdAt: 'desc' }
-    });
-    res.json(files);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch files' });
-  }
-});
-
-// ─── DELETE A FILE (Admin) ────────────────────────────────────────────────────
-
-app.delete('/api/admin/files/:fileId', authenticateAdmin, async (req: any, res: any) => {
-  try {
-    const { fileId } = req.params;
-    const file = await prisma.projectFile.findUnique({ where: { id: fileId } });
-    if (!file) return res.status(404).json({ error: 'Arquivo não encontrado' });
-
-    // Remove from disk
-    const fullPath = path.join(__dirname, '..', file.path);
-    if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
-
-    await prisma.projectFile.delete({ where: { id: fileId } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete file' });
-  }
-});
-
-// ─── PROJECTS (CRUD) ──────────────────────────────────────────────────────────
-
-app.get('/api/projects', async (req, res) => {
-  try {
-    const projects = await prisma.project.findMany({ include: { client: true } });
-    res.json(projects);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch projects' });
-  }
-});
-
-app.post('/api/projects', async (req, res) => {
-  try {
-    const {
-      clientName, clientEmail, clientCnpj, clientType,
-      projectName, projectValue, hasDomainHosting, domainHostingValue,
-      status, password, repoUrl, productionUrl
-    } = req.body;
-
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password || '123456', salt);
-
-    const client = await prisma.client.upsert({
-      where: { email: clientEmail },
-      update: {},
-      create: {
-        name: clientName,
-        email: clientEmail,
-        cnpj: clientCnpj,
-        clientType: clientType || 'novo',
-        password: hashedPassword
-      }
-    });
-
-    const newProject = await prisma.project.create({
-      data: {
-        id: `PROJ-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-        name: projectName,
-        value: parseFloat(projectValue),
-        phase: status || 'Aguardando Sinal',
-        financial: 'Pendente (Sinal)',
-        domainHostingValue: domainHostingValue ? parseFloat(domainHostingValue) : 0,
-        repoUrl: repoUrl || null,
-        productionUrl: productionUrl || null,
-        clientId: client.id
-      }
-    });
-
-    res.json(newProject);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create project' });
-  }
-});
-
-app.put('/api/projects/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = req.body;
-
-    const updatedProject = await prisma.project.update({
-      where: { id },
-      data: {
-        name: data.name,
-        phase: data.phase,
-        financial: data.financial,
-        value: parseFloat(data.value),
-        domainHostingValue: data.domainHostingValue ? parseFloat(data.domainHostingValue) : 0,
-        seo: data.features?.seo ?? data.seo ?? false,
-        analytics: data.features?.analytics ?? data.analytics ?? false,
-        support: data.features?.support ?? data.support ?? false,
-        ads: data.features?.ads ?? data.ads ?? false,
-        repoUrl: data.repoUrl || undefined,
-        productionUrl: data.productionUrl || undefined,
-        internalNotes: data.internalNotes || undefined,
-      }
-    });
-
-    if (data.cnpj || data.clientType) {
-      await prisma.client.update({
-        where: { id: updatedProject.clientId },
-        data: { cnpj: data.cnpj, clientType: data.clientType }
-      });
-    }
-
-    res.json(updatedProject);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to update project' });
-  }
-});
-
-// ─── INVOICES (CRUD) ──────────────────────────────────────────────────────────
-
-app.post('/api/payments/intent', async (req, res) => {
-  try {
-    const { projectId, amount, description, type, dueDate } = req.body;
-    const invoice = await prisma.invoice.create({
-      data: {
-        description: description || 'Pagamento de Serviço / Sinal',
-        amount: parseFloat(amount),
-        status: 'pending',
-        type: type || 'service',
-        vencimento: dueDate ? new Date(dueDate) : undefined,
-        projectId
-      }
-    });
-    res.json({ invoiceId: invoice.id, amount });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to create payment intent' });
-  }
-});
-
-// Mark invoice as paid (admin)
-app.patch('/api/admin/invoices/:id/paid', authenticateAdmin, async (req: any, res: any) => {
-  try {
-    const { id } = req.params;
-    const invoice = await prisma.invoice.update({
-      where: { id },
-      data: { status: 'paid', paidAt: new Date() }
-    });
-    res.json(invoice);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to mark invoice as paid' });
-  }
-});
-
-// ─── DOCUMENTS ────────────────────────────────────────────────────────────────
-
-app.get('/api/documents', async (req, res) => {
-  try {
-    const documents = await prisma.document.findMany({ orderBy: { createdAt: 'desc' } });
-    res.json(documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch documents' });
-  }
-});
-
-app.post('/api/documents', async (req, res) => {
-  try {
-    const { title, type, clientName, date, url } = req.body;
-    const document = await prisma.document.create({ data: { title, type, clientName, date, url } });
-    res.json(document);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create document' });
-  }
-});
-
-app.put('/api/documents/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, type, clientName, date, url } = req.body;
-    const document = await prisma.document.update({ where: { id }, data: { title, type, clientName, date, url } });
-    res.json(document);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update document' });
-  }
-});
-
-app.delete('/api/documents/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await prisma.document.delete({ where: { id } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete document' });
-  }
-});
-
-// ─── ADMIN DASHBOARD ─────────────────────────────────────────────────────────
-
-app.get('/api/admin/dashboard', authenticateAdmin, async (req, res) => {
-  try {
-    const projects = await prisma.project.findMany({ include: { client: true } });
-    const invoices = await prisma.invoice.findMany({
-      include: { project: { include: { client: true } } },
-      orderBy: { createdAt: 'desc' }
-    });
-
-    const activeProjects = projects.filter(p => p.phase !== 'Concluído').length;
-    const pendingPayments = invoices
-      .filter(i => i.status === 'pending')
-      .reduce((sum, i) => sum + i.amount, 0);
-    const onboardings = projects.filter(p =>
-      p.phase === 'Aguardando Sinal' || p.phase === 'Onboarding'
-    ).length;
-
-    const pipeline = projects.map(p => {
-      const projectInvoices = invoices.filter(i => i.projectId === p.id);
-      const totalPaid = projectInvoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.amount, 0);
-      const balance = p.value - totalPaid;
-      
-      return {
-        id: p.id,
-        client: p.client.name,
-        status: p.phase,
-        payment: p.financial,
-        progress: p.phase === 'Concluído' ? '100%' : '50%',
-        email: p.client.email,
-        phone: p.client.cnpj || 'Não informado',
-        seo: p.seo,
-        analytics: p.analytics,
-        support: p.support,
-        ads: p.ads,
-        repoUrl: p.repoUrl,
-        productionUrl: p.productionUrl,
-        value: p.value,
-        totalPaid,
-        balance,
-      };
-    });
-
-    const paymentsData = invoices.map(i => ({
-      id: i.id,
-      date: i.createdAt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
-      client: i.project.client.name,
-      desc: i.description,
-      value: `R$ ${i.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      status: i.status === 'paid' ? 'Pago' : i.status === 'pending' ? 'Pendente' : 'Atrasado',
-      type: i.type,
-      dueDate: i.vencimento?.toLocaleDateString('pt-BR') || null,
-      paidAt: i.paidAt?.toLocaleDateString('pt-BR') || null,
-    }));
-
-    res.json({
-      kpis: [
-        { label: 'Projetos ativos', value: activeProjects.toString() },
-        { label: 'A Receber', value: `R$ ${pendingPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
-        { label: 'Onboardings', value: onboardings.toString(), sub: 'incompletos' },
-        { label: 'Clientes', value: (await prisma.client.count()).toString() },
-      ],
-      pipeline,
-      paymentsData
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch dashboard data' });
-  }
-});
-
-// ─── API V2 ───────────────────────────────────────────────────────────────────
-import apiV2Routes from './routes/api.js';
-app.use('/api/v2', apiV2Routes);
-
+// ─── Server start ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);

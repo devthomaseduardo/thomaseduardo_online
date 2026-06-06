@@ -27,6 +27,13 @@ export function AdminLogin() {
         body: JSON.stringify({ password }),
       });
 
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response:', text);
+        throw new Error(`Erro no servidor (não JSON). Status: ${res.status}`);
+      }
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erro ao fazer login');
 
