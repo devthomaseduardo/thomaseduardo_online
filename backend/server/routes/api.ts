@@ -390,11 +390,40 @@ router.put('/clients/:id', adminAuth, async (req, res) => {
 });
 
 router.delete('/clients/:id', adminAuth, async (req, res) => {
+  const clientId = req.params.id;
   try {
-    await prisma.client.delete({ where: { id: req.params.id } });
-    res.json({ success: true });
+    // FORCE DELETE CLIENT: Cascades to everything
+    // 1. Get all project IDs for this client
+    const projects = await prisma.project.findMany({ where: { clientId }, select: { id: true } });
+    const pIds = projects.map(p => p.id);
+
+    await prisma.$transaction([
+      // Cleanup for all client's projects
+      (prisma as any).payment.deleteMany({ where: { invoice: { projectId: { in: pIds } } } }),
+      prisma.invoice.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).projectFile.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).timelineEvent.deleteMany({ where: { projectId: { in: pIds } } }),
+      prisma.task.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).deploy.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).integration.deleteMany({ where: { projectId: { in: pIds } } }),
+      prisma.message.deleteMany({ where: { projectId: { in: pIds } } }),
+      prisma.proposal.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).credential.deleteMany({ where: { projectId: { in: pIds } } }),
+      (prisma as any).milestoneApproval.deleteMany({ where: { projectId: { in: pIds } } }),
+      
+      // Cleanup client-direct relations
+      prisma.proposal.deleteMany({ where: { clientId } }),
+      prisma.message.deleteMany({ where: { clientId } }),
+      
+      // Delete projects and finally the client
+      prisma.project.deleteMany({ where: { clientId } }),
+      prisma.client.delete({ where: { id: clientId } })
+    ]);
+
+    res.json({ success: true, message: 'Cliente e todo o ecossistema vinculado foram removidos.' });
   } catch (err: any) {
-    res.status(500).json({ error: 'Erro ao excluir cliente.' });
+    console.error('[ForceDeleteClient] Error:', err);
+    res.status(500).json({ error: 'Erro ao realizar exclusão forçada do cliente.' });
   }
 });
 
@@ -667,13 +696,30 @@ router.post('/milestones/:id/approve', authenticateToken, async (req: any, res) 
 });
 
 router.delete('/projects/:id', adminAuth, async (req, res) => {
+  const projectId = req.params.id;
   try {
-    await prisma.project.delete({ where: { id: req.params.id } });
-    res.json({ success: true, message: 'Projeto removido com sucesso.' });
+    // FORCE DELETE: Remove all linked entities first
+    // This gives the Admin 'Power User' permissions to delete anything
+    await prisma.$transaction([
+      (prisma as any).payment.deleteMany({ where: { invoice: { projectId } } }),
+      prisma.invoice.deleteMany({ where: { projectId } }),
+      (prisma as any).projectFile.deleteMany({ where: { projectId } }),
+      (prisma as any).timelineEvent.deleteMany({ where: { projectId } }),
+      prisma.task.deleteMany({ where: { projectId } }),
+      (prisma as any).deploy.deleteMany({ where: { projectId } }),
+      (prisma as any).integration.deleteMany({ where: { projectId } }),
+      prisma.message.deleteMany({ where: { projectId } }),
+      prisma.proposal.deleteMany({ where: { projectId } }),
+      (prisma as any).credential.deleteMany({ where: { projectId } }),
+      (prisma as any).milestoneApproval.deleteMany({ where: { projectId } }),
+      prisma.project.delete({ where: { id: projectId } })
+    ]);
+
+    res.json({ success: true, message: 'Projeto e todos os dados vinculados foram removidos.' });
   } catch (err: any) {
+    console.error('[ForceDelete] Error:', err);
     if (err.code === 'P2025') return res.status(404).json({ error: 'Projeto não encontrado.' });
-    if (err.code === 'P2003') return res.status(400).json({ error: 'Não é possível excluir: este projeto possui faturas, arquivos ou tarefas vinculadas.' });
-    res.status(500).json({ error: 'Erro ao excluir projeto.' });
+    res.status(500).json({ error: 'Erro ao realizar exclusão forçada do projeto.' });
   }
 });
 
@@ -916,12 +962,17 @@ router.get('/invoices', adminAuth, async (req, res) => {
 });
 
 router.delete('/invoices/:id', adminAuth, async (req, res) => {
+  const invoiceId = req.params.id;
   try {
-    await prisma.invoice.delete({ where: { id: req.params.id } });
-    res.json({ success: true, message: 'Fatura removida.' });
+    // FORCE DELETE INVOICE: Remove linked payments first
+    await prisma.$transaction([
+      (prisma as any).payment.deleteMany({ where: { invoiceId } }),
+      prisma.invoice.delete({ where: { id: invoiceId } })
+    ]);
+    res.json({ success: true, message: 'Fatura e pagamentos vinculados foram removidos.' });
   } catch (err: any) {
+    console.error('[ForceDeleteInvoice] Error:', err);
     if (err.code === 'P2025') return res.status(404).json({ error: 'Fatura não encontrada.' });
-    if (err.code === 'P2003') return res.status(400).json({ error: 'Não é possível excluir: existem pagamentos vinculados.' });
     res.status(500).json({ error: 'Erro ao excluir fatura.' });
   }
 });

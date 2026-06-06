@@ -96,7 +96,7 @@ function Hero() {
         {/* Left Column */}
         <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7 }} className="max-w-xl">
           <h1 className="text-[clamp(48px,6vw,80px)] font-bold tracking-tighter leading-[1.05] mb-6 text-white">
-            Software que escala operações.
+            Transformo operações em vantagem competitiva.
           </h1>
           <p className="text-[16px] md:text-[18px] text-white/60 mb-10 leading-relaxed font-light">
             Desenvolvimento de sistemas, automações e plataformas privadas para empresas que precisam crescer com previsibilidade.

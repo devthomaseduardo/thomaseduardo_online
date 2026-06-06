@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import posthog from 'posthog-js';
 import { API_URL } from '../config';
 
 export const ContactForm = () => {
@@ -31,6 +32,13 @@ export const ContactForm = () => {
       if (!res.ok) {
         throw new Error(data.error || 'Erro ao enviar mensagem');
       }
+
+      // 🎯 Dispara evento de conversão pro PostHog!
+      posthog.capture('lead_generated', {
+        source: 'site_premium_form',
+        email: form.email,
+        name: form.name
+      });
 
       setStatus('success');
       setForm({ name: '', email: '', phone: '', message: '' });

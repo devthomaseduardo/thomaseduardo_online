@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   LayoutGrid, FileText, CreditCard, FolderOpen, Zap, BarChart2,
@@ -7,7 +7,31 @@ import {
   Check, Hourglass, AlertCircle, Bell, Search, Command, Settings, MessageSquare,
   X, DollarSign, Key, Eye, EyeOff
 } from "lucide-react";
-...
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
+import { useToast } from "../contexts/ToastContext";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+type NavId = "overview" | "proposals" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "vault" | "support" | "settings";
+
+interface NavItem { id: NavId; label: string; icon: React.ElementType; }
+
+const NAV: NavItem[] = [
+  { id: "overview",     label: "Projetos",     icon: LayoutGrid },
+  { id: "proposals",    label: "Propostas",    icon: FileText   },
+  { id: "contracts",    label: "Contratos",    icon: Shield     },
+  { id: "payments",     label: "Pagamentos",   icon: CreditCard },
+  { id: "files",        label: "Arquivos",     icon: FolderOpen },
+  { id: "vault",        label: "Cofre",        icon: Key        },
+  { id: "support",      label: "Suporte",      icon: MessageSquare },
+  { id: "deployments",  label: "Deployments",  icon: Zap        },
+  { id: "analytics",    label: "Analytics",    icon: BarChart2  },
+  { id: "settings",     label: "Configurações",icon: Settings   },
+];
+
+// Dynamic data logic is now handled in the components
+
+// ─── Subcomponents ────────────────────────────────────────────────────────────
 const PanelVault = ({ clientData }: { clientData: any }) => {
   const [creds, setCreds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +42,6 @@ const PanelVault = ({ clientData }: { clientData: any }) => {
     const projectIds = (clientData.projects || []).map((p:any) => p.id);
     if (projectIds.length === 0) { setLoading(false); return; }
 
-    // Fetch creds for the first project for now (most clients have 1)
     fetch(`${API_URL}/api/v2/projects/${projectIds[0]}/credentials`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -78,31 +101,7 @@ const PanelVault = ({ clientData }: { clientData: any }) => {
     </div>
   );
 };
-import { useNavigate } from "react-router-dom";
-import { API_URL } from "../config";
-import { useToast } from "../contexts/ToastContext";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-type NavId = "overview" | "proposals" | "contracts" | "payments" | "files" | "deployments" | "analytics" | "vault" | "support" | "settings";
-
-interface NavItem { id: NavId; label: string; icon: React.ElementType; }
-
-const NAV: NavItem[] = [
-  { id: "overview",     label: "Projetos",     icon: LayoutGrid },
-  { id: "proposals",    label: "Propostas",    icon: FileText   },
-  { id: "contracts",    label: "Contratos",    icon: Shield     },
-  { id: "payments",     label: "Pagamentos",   icon: CreditCard },
-  { id: "files",        label: "Arquivos",     icon: FolderOpen },
-  { id: "vault",        label: "Cofre",        icon: Key        },
-  { id: "support",      label: "Suporte",      icon: MessageSquare },
-  { id: "deployments",  label: "Deployments",  icon: Zap        },
-  { id: "analytics",    label: "Analytics",    icon: BarChart2  },
-  { id: "settings",     label: "Configurações",icon: Settings   },
-];
-
-// Dynamic data logic is now handled in the components
-
-// ─── Subcomponents ────────────────────────────────────────────────────────────
 const StatusDot = ({ status }: { status: string }) => {
   const cls = status === "done" ? "bg-emerald-500" : status === "active" ? "bg-blue-500 animate-pulse" : "bg-white/10";
   return <span className={`w-2 h-2 rounded-full shrink-0 ${cls}`} />;
@@ -129,6 +128,36 @@ const ActivityIcon = ({ type }: { type: string }) => {
 const PanelOverview = ({ clientData }: { clientData: any }) => {
   const projects = clientData.projects || [];
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [milestones, setMilestones] = useState<any[]>([]);
+  const { showToast } = useToast();
+
+  const loadMilestones = useCallback(async (pid: string) => {
+     try {
+        const res = await fetch(`${API_URL}/api/v2/projects/${pid}/milestones`, {
+           headers: { 'Authorization': `Bearer ${localStorage.getItem('clientToken')}` }
+        });
+        const data = await res.json();
+        setMilestones(Array.isArray(data) ? data : []);
+     } catch {}
+  }, []);
+
+  const approveMilestone = async (mid: string) => {
+     try {
+        const res = await fetch(`${API_URL}/api/v2/milestones/${mid}/approve`, {
+           method: "POST",
+           headers: { 'Authorization': `Bearer ${localStorage.getItem('clientToken')}` }
+        });
+        if (!res.ok) throw new Error();
+        showToast("Etapa aprovada com sucesso!", "success");
+        if (selectedProject) loadMilestones(selectedProject.id);
+     } catch {
+        showToast("Erro ao aprovar etapa.", "error");
+     }
+  };
+
+  useEffect(() => {
+     if (selectedProject) loadMilestones(selectedProject.id);
+  }, [selectedProject, loadMilestones]);
   
   const activeProjects = projects.filter((p: any) => p.status !== 'concluido' && p.phase !== 'concluido').length;
   const allTasks = projects.flatMap((p: any) => p.tasks || []);
@@ -243,6 +272,11 @@ const PanelOverview = ({ clientData }: { clientData: any }) => {
               </div>
 
               <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+                <div className="flex justify-end">
+                   <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white border border-white/10 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all">
+                      <FileText className="w-3.5 h-3.5" /> Gerar Relatório de Status (PDF)
+                   </button>
+                </div>
                 <section className="grid grid-cols-2 gap-4">
                    <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                       <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-2">Entrega Prevista</p>
@@ -251,6 +285,31 @@ const PanelOverview = ({ clientData }: { clientData: any }) => {
                    <div className="bg-white/[0.02] border border-white/5 p-5 rounded-2xl">
                       <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-2">Próximo Passo</p>
                       <p className="text-[#009EE3] font-bold">{selectedProject.proximaAcao || 'Em análise'}</p>
+                   </div>
+                </section>
+
+                <section>
+                   <h4 className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] mb-4 flex items-center gap-2"><Zap className="w-3 h-3 text-amber-400"/> Aprovação de Etapas</h4>
+                   <div className="space-y-3">
+                      {milestones.map((m: any) => (
+                        <div key={m.id} className="bg-white/[0.02] border border-white/[0.05] p-5 rounded-2xl flex items-center justify-between group">
+                           <div>
+                              <p className="text-sm font-bold text-white/90">{m.title}</p>
+                              <p className="text-xs text-white/30 mt-1">{m.description || 'Aguardando sua revisão para prosseguirmos.'}</p>
+                           </div>
+                           {m.status === 'approved' ? (
+                              <div className="flex flex-col items-end">
+                                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                 <span className="text-[9px] text-emerald-500/50 font-mono mt-1 uppercase">Aprovado</span>
+                              </div>
+                           ) : (
+                              <button onClick={() => approveMilestone(m.id)} className="px-4 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-all">
+                                 Aprovar
+                              </button>
+                           )}
+                        </div>
+                      ))}
+                      {milestones.length === 0 && <p className="text-xs text-white/20 italic">Nenhuma etapa pendente de aprovação.</p>}
                    </div>
                 </section>
 

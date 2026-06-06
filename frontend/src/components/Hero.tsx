@@ -39,7 +39,7 @@ const Hero = () => {
     <section className="relative z-20 min-h-[85vh] lg:min-h-screen flex items-center justify-center py-20 overflow-hidden bg-[#060606]">
       {/* Background Image Setup */}
       <div className="absolute inset-0 z-0">
-        <img src={heroWeb} alt="" className="absolute right-0 top-0 w-[85%] md:w-3/4 h-full object-cover object-center md:object-left opacity-30 mix-blend-luminosity" />
+        <img src={heroWeb} alt="Visualização técnica de arquitetura de software premium" className="absolute right-0 top-0 w-[85%] md:w-3/4 h-full object-cover object-center md:object-left opacity-30 mix-blend-luminosity" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#060606] from-40% via-[#060606]/90 via-60% to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#060606]/40 via-transparent to-[#060606]" />
         {/* vertical light beam */}
