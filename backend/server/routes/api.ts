@@ -283,6 +283,15 @@ router.post('/clients', adminAuth, async (req, res) => {
     const result = await prisma.client.create({
       data: { name, email, cnpj, clientType: clientType ?? 'new', password: hashedPw, phone, obs }
     });
+
+    // Notificação de Boas-vindas (Arquitetura Premium)
+    const welcomeHtml = emailService.generateWelcomeEmail(name, email, password);
+    emailService.sendEmail(
+      email,
+      `Acesso Liberado: Portal Thomas Eduardo`,
+      welcomeHtml
+    ).catch(err => console.error('Failed to send premium welcome email (direct create)', err));
+
     res.status(201).json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message ?? 'Erro ao criar cliente.' });
@@ -675,6 +684,31 @@ router.post('/projects/:id/invoices', adminAuth, async (req, res) => {
 
     await addTimeline(req.params.id, 'Fatura Gerada', `Fatura "${description}" no valor de R$ ${amount} criada.`, 'financeiro', false);
 
+    // Notificação de Faturamento (Arquitetura Premium)
+    try {
+      const projectWithClient = await prisma.project.findUnique({
+        where: { id: req.params.id },
+        include: { client: true }
+      });
+      
+      if (projectWithClient?.client) {
+        const invoiceHtml = emailService.generateInvoiceEmail(
+          projectWithClient.client.name,
+          description,
+          amount,
+          vencimento
+        );
+        
+        emailService.sendEmail(
+          projectWithClient.client.email,
+          `Novo faturamento disponível: ${description}`,
+          invoiceHtml
+        ).catch(err => console.error('Failed to send invoice email', err));
+      }
+    } catch (err) {
+      console.error('Error fetching data for invoice email', err);
+    }
+
     res.status(201).json(invoice);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -702,6 +736,30 @@ router.post('/projects/:projectId/invoices/:id/pay', adminAuth, async (req, res)
     ]);
 
     await addTimeline(req.params.projectId, 'Pagamento Recebido', `Pagamento de R$ ${valor} via ${metodo}.`, 'financeiro', true);
+
+    // Notificação de Pagamento (Arquitetura Premium)
+    try {
+      const projectWithClient = await prisma.project.findUnique({
+        where: { id: req.params.projectId },
+        include: { client: true }
+      });
+      
+      if (projectWithClient?.client) {
+        const paymentHtml = emailService.generatePaymentReceivedEmail(
+          projectWithClient.client.name,
+          invoice.description,
+          valor
+        );
+        
+        emailService.sendEmail(
+          projectWithClient.client.email,
+          `Pagamento Confirmado: ${invoice.description}`,
+          paymentHtml
+        ).catch(err => console.error('Failed to send payment confirmation email', err));
+      }
+    } catch (err) {
+      console.error('Error fetching data for payment email', err);
+    }
 
     res.json({ success: true, novoStatus, novoSaldo });
   } catch (err: any) {

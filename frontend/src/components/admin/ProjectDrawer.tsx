@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   X, LayoutDashboard, Clock, CheckSquare, FileText, 
   DollarSign, Briefcase, Rocket, BarChart3, Plus, 
-  CheckCircle2, Circle, Eye, EyeOff, Activity, AlertTriangle
+  CheckCircle2, Circle, Eye, EyeOff, Activity, AlertTriangle,
+  UploadCloud, FileSignature, Download, Trash2
 } from "lucide-react";
 import { useProjectDrawer } from "./useProjectDrawer";
 import { TimelineSkeleton } from "./Loaders";
@@ -15,6 +16,8 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
     timeline, addTimelineEvent, deleteTimelineEvent, toggleTimelineVisibility,
     tasks, addTask, updateTask, deleteTask,
     invoices, addInvoice, registerPayment, deleteInvoice,
+    contracts, addContract, updateContract, deleteContract,
+    files, uploadFiles, deleteFile
   } = useProjectDrawer(projectId, () => {}); // No need to refresh kanban for every internal change unless closed
 
   // Estados dos Modais Personalizados
@@ -26,6 +29,9 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
   
   const [timelineModal, setTimelineModal] = useState(false);
   const [timelineTitle, setTimelineTitle] = useState("");
+
+  const [contractModal, setContractModal] = useState(false);
+  const [contractForm, setContractForm] = useState({ titulo: "", fileUrl: "", visivelCliente: true });
 
   useEffect(() => { loadProject(projectId); }, [projectId, loadProject]);
 
@@ -175,6 +181,70 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
                 </div>
               </section>
 
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2"><FileSignature className="w-4 h-4" /> Contratos</h3>
+                  <button onClick={() => setContractModal(true)} 
+                    className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline">
+                    + Anexar Contrato
+                  </button>
+                </div>
+                <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden divide-y divide-white/[0.04]">
+                  {contracts.length === 0 ? (
+                    <div className="p-6 text-center text-white/20 text-xs font-mono">Nenhum contrato anexado.</div>
+                  ) : (
+                    contracts.map(c => (
+                      <div key={c.id} className="group flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-4 h-4 text-white/40" />
+                          <span className="text-sm text-white/80">{c.titulo}</span>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${
+                            c.status === 'assinado' ? 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10' : 'text-amber-400 border-amber-400/20 bg-amber-400/10'
+                          }`}>
+                            {c.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => updateContract(c.id, { visivelCliente: !c.visivelCliente })} className="text-white/30 hover:text-white" title="Visibilidade Cliente">
+                            {c.visivelCliente ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          </button>
+                          <button onClick={() => deleteContract(c.id)} title="Excluir contrato" aria-label="Excluir contrato" className="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-mono text-rose-400 hover:text-white transition-opacity">
+                            Excluir
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+
+              <section>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest flex items-center gap-2"><UploadCloud className="w-4 h-4" /> Arquivos</h3>
+                  <label className="text-[10px] uppercase font-mono text-[#009EE3] hover:underline cursor-pointer">
+                    + Fazer Upload
+                    <input type="file" multiple className="hidden" onChange={(e) => { if (e.target.files) uploadFiles(e.target.files); }} />
+                  </label>
+                </div>
+                <div className="bg-[#0B0B0B] border border-white/[0.06] rounded-2xl overflow-hidden divide-y divide-white/[0.04]">
+                  {files.length === 0 ? (
+                    <div className="p-6 text-center text-white/20 text-xs font-mono">Nenhum arquivo neste projeto.</div>
+                  ) : (
+                    files.map(f => (
+                      <div key={f.id} className="group flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500/60" />
+                          <span className="text-sm text-white/80">{f.originalName || f.fileName}</span>
+                        </div>
+                        <button onClick={() => deleteFile(f.id)} title="Excluir arquivo" aria-label="Excluir arquivo" className="opacity-0 group-hover:opacity-100 text-rose-400 hover:text-white transition-opacity">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+
             </div>
 
             {/* Coluna Direita: Timeline Operacional */}
@@ -256,6 +326,32 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
             <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">O que aconteceu?</label>
             <input type="text" autoFocus value={timelineTitle} onChange={e => setTimelineTitle(e.target.value)} onKeyDown={e => { if(e.key === 'Enter' && timelineTitle) { addTimelineEvent({ title: timelineTitle, visivelCliente: true }); setTimelineTitle(""); setTimelineModal(false); } }}
               className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" placeholder="Ex: Reunião de alinhamento concluída" />
+          </div>
+        </Modal>
+
+        <Modal isOpen={contractModal} onClose={() => setContractModal(false)} title="Anexar Contrato" maxWidth="sm"
+          footer={
+            <div className="flex items-center gap-3 w-full">
+              <button onClick={() => setContractModal(false)} className="flex-1 py-2 rounded-lg text-sm font-medium text-white/50 hover:bg-white/5">Cancelar</button>
+              <button onClick={() => { if(contractForm.titulo) { addContract(contractForm); setContractForm({ titulo: "", fileUrl: "", visivelCliente: true }); setContractModal(false); } }} 
+                className="flex-1 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-white/90">Anexar Contrato</button>
+            </div>
+          }>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Título do Contrato</label>
+              <input type="text" autoFocus value={contractForm.titulo} onChange={e => setContractForm(f => ({...f, titulo: e.target.value}))}
+                className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" placeholder="Ex: Contrato de Prestação de Serviços" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">URL do Arquivo (PDF/Doc)</label>
+              <input type="url" value={contractForm.fileUrl} onChange={e => setContractForm(f => ({...f, fileUrl: e.target.value}))}
+                className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" placeholder="https://" />
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer mt-2 text-sm text-white/70 hover:text-white transition-colors">
+              <input type="checkbox" checked={contractForm.visivelCliente} onChange={e => setContractForm(f => ({...f, visivelCliente: e.target.checked}))} className="rounded border-white/20 bg-transparent text-[#009EE3] focus:ring-[#009EE3]" />
+              Visível no portal do cliente
+            </label>
           </div>
         </Modal>
 

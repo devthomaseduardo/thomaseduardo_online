@@ -203,6 +203,42 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
     } catch (e: any) { showToast(e.message, 'error'); }
   };
 
+  // ARQUIVOS
+  const uploadFiles = async (filesToUpload: FileList | File[]) => {
+    if (!projectId || filesToUpload.length === 0) return;
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      Array.from(filesToUpload).forEach((file) => formData.append('files', file));
+      
+      const res = await fetch(`${BASE}/projects/${projectId}/files`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        },
+        body: formData
+      });
+      
+      if (!res.ok) throw new Error('Erro ao fazer upload');
+      const data = await res.json();
+      setFiles(prev => [...data.files, ...prev]);
+      showToast('Arquivos enviados com sucesso!');
+    } catch (e: any) {
+      showToast(e.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteFile = async (id: string) => {
+    if (!projectId) return;
+    try {
+      await apiFetch(`/projects/${projectId}/files/${id}`, { method: 'DELETE' });
+      setFiles(prev => prev.filter(f => f.id !== id));
+      showToast('Arquivo removido.');
+    } catch (e: any) { showToast(e.message, 'error'); }
+  };
+
   // ANALYTICS
   const addIntegration = async (data: Record<string, any>) => {
     if (!projectId) return;
@@ -231,6 +267,7 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
     addInvoice, registerPayment, deleteInvoice,
     addContract, updateContract, deleteContract,
     addDeploy, updateDeploy,
+    uploadFiles, deleteFile,
     addIntegration, updateIntegration,
   };
 }
