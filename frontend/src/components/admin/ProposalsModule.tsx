@@ -129,20 +129,20 @@ export function ProposalsModule() {
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Proposals</h1>
-          <p className="text-zinc-500 text-sm font-medium">Draft and transmit commercial engagements.</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Propostas</h1>
+          <p className="text-zinc-500 text-sm font-medium">Redija e envie compromissos comerciais.</p>
         </div>
         <button onClick={openCreate}
           className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
-          <Plus className="w-4 h-4 stroke-[3]" /> Generate New Proposal
+          <Plus className="w-4 h-4 stroke-[3]" /> Gerar Nova Proposta
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Transmissions", val: proposals.length, icon: FileText, color: "text-white", glow: "white" },
-          { label: "Pending Endorsement", val: sentCount, icon: Send, color: "text-blue-400", glow: "blue" },
-          { label: "Successful Conversions", val: approvedCount, icon: CheckCircle, color: "text-emerald-400", glow: "emerald" },
+          { label: "Transmissões Totais", val: proposals.length, icon: FileText, color: "text-white", glow: "white" },
+          { label: "Aguardando Aprovação", val: sentCount, icon: Send, color: "text-blue-400", glow: "blue" },
+          { label: "Conversões de Sucesso", val: approvedCount, icon: CheckCircle, color: "text-emerald-400", glow: "emerald" },
         ].map((k, i) => (
           <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
@@ -162,7 +162,7 @@ export function ProposalsModule() {
           <div className="flex-1 relative max-w-sm w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
             <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by proposal title..."
+              placeholder="Buscar por título da proposta..."
               className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
           </div>
         </div>
@@ -173,13 +173,13 @@ export function ProposalsModule() {
           ) : filtered.length === 0 ? (
             <div className="py-32 text-center">
               <FileText className="w-12 h-12 text-white/5 mx-auto mb-4" />
-              <p className="text-zinc-500 text-sm font-medium">No proposals found in current vault.</p>
+              <p className="text-zinc-500 text-sm font-medium">Nenhuma proposta encontrada no cofre atual.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
-                  {["Engagament Title", "Valuation", "Associated Client", "Lifecycle Status", "Operations"].map(h => (
+                  {["Título do Compromisso", "Valor da Proposta", "Cliente Associado", "Status do Ciclo", "Operações"].map(h => (
                     <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
@@ -194,7 +194,7 @@ export function ProposalsModule() {
                         </div>
                         <div>
                           <p className="font-bold text-zinc-200 group-hover:text-white transition-colors">{p.title}</p>
-                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5 uppercase tracking-tighter">Iteration v{p.version}</p>
+                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5 uppercase tracking-tighter">Iteração v{p.version}</p>
                         </div>
                       </div>
                     </td>
@@ -208,21 +208,21 @@ export function ProposalsModule() {
                     </td>
                     <td className="px-6 py-6">
                       <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${STATUS_COLOR[p.status] ?? STATUS_COLOR.draft}`}>
-                        {p.status}
+                        {p.status === 'draft' ? 'Rascunho' : p.status === 'sent' ? 'Enviada' : p.status === 'approved' ? 'Aprovada' : 'Recusada'}
                       </span>
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                         {(p.status === 'draft' || p.status === 'sent') && (
                           <button onClick={() => convertToProject(p.id)} className="cursor-pointer px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-all">
-                            Execute
+                            Executar
                           </button>
                         )}
                         <button onClick={() => openEdit(p)} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
-                          Edit
+                          Editar
                         </button>
                         <button onClick={() => remove(p.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>
-                          Wipe
+                          Excluir
                         </button>
                       </div>
                     </td>
@@ -237,20 +237,20 @@ export function ProposalsModule() {
       <Modal
         isOpen={modal !== null}
         onClose={() => setModal(null)}
-        title={modal === "create" ? "Initialize Engagment" : "Draft Configuration"}
-        description="Configure commercial valuations and engagement parameters."
+        title={modal === "create" ? "Inicializar Compromisso" : "Configuração de Rascunho"}
+        description="Configure valores comerciais e parâmetros de compromisso."
         maxWidth="md"
         footer={
           <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
             {modal === "edit" ? (
-               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINATE DRAFT</button>
+               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">ENCERRAR RASCUNHO</button>
             ) : <div/>}
             <div className="flex gap-4">
               <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
-                Discard
+                Descartar
               </button>
               <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">
-                {saving ? "Synchronizing..." : modal === "create" ? "Issue Proposal" : "Commit Changes"}
+                {saving ? "Sincronizando..." : modal === "create" ? "Emitir Proposta" : "Confirmar Alterações"}
               </button>
             </div>
           </div>
@@ -259,40 +259,40 @@ export function ProposalsModule() {
         <div className="space-y-8 py-4">
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Engagement Title</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Título do Compromisso</label>
               <input type="text" value={form.title ?? ""} onChange={e => setForm((f: any) => ({ ...f, title: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Strategic AI Implementation" />
+                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Implementação de IA Estratégica" />
             </div>
             
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Proposed Valuation (BRL)</label>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Valor Proposto (BRL)</label>
                 <input type="number" step="0.01" value={form.amount ?? 0} onChange={e => setForm((f: any) => ({ ...f, amount: e.target.value }))}
                   className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
               </div>
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Lifecycle Status</label>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status do Ciclo</label>
                 <select value={form.status ?? "draft"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}
                   className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                  <option value="draft">Initial Draft</option>
-                  <option value="sent">Transmitted</option>
-                  <option value="approved">Endorsed</option>
-                  <option value="rejected">Declined</option>
+                  <option value="draft">Rascunho Inicial</option>
+                  <option value="sent">Enviada</option>
+                  <option value="approved">Aprovada</option>
+                  <option value="rejected">Recusada</option>
                 </select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Destination Account</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conta de Destino</label>
               <select value={form.clientId ?? ""} onChange={e => setForm((f: any) => ({ ...f, clientId: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                <option value="" disabled>Select partner entity...</option>
+                <option value="" disabled>Selecione a entidade parceira...</option>
                 {clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Endorsement URI (Optional)</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">URI de Aprovação (Opcional)</label>
               <input type="text" value={form.approvalLink ?? ""} onChange={e => setForm((f: any) => ({ ...f, approvalLink: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" placeholder="https://..." />
             </div>

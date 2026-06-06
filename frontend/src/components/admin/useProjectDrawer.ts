@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const BASE = `${API_URL}/api/v2`;
 
@@ -24,8 +25,6 @@ async function apiFetch(url: string, opts?: RequestInit) {
 
 export type Tab = 'overview' | 'timeline' | 'tasks' | 'files' | 'finance' | 'contracts' | 'deploys' | 'analytics';
 
-export interface Toast { msg: string; type: 'success' | 'error' }
-
 export function useProjectDrawer(projectId: string | null, onRefreshKanban: () => void) {
   const [tab, setTab] = useState<Tab>('overview');
   const [project, setProject] = useState<any>(null);
@@ -37,12 +36,7 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
   const [integrations, setIntegrations] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<Toast | null>(null);
-
-  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   const loadProject = useCallback(async (id: string) => {
     setLoading(true);
@@ -230,7 +224,7 @@ export function useProjectDrawer(projectId: string | null, onRefreshKanban: () =
 
   return {
     tab, setTab, project, timeline, tasks, invoices, contracts, deploys, integrations, files,
-    loading, toast,
+    loading,
     loadProject, updateProject,
     addTimelineEvent, deleteTimelineEvent, toggleTimelineVisibility,
     addTask, updateTask, deleteTask,

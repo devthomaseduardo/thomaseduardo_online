@@ -11,13 +11,13 @@ import {
   Terminal,
   Cpu,
   RefreshCw,
-  Activity
+  Activity,
+  Key
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { useToast } from '@/contexts/ToastContext';
 
 export function ConfiguracoesModule() {
-  const [toast, setToast] = useState("");
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
+  const { showToast } = useToast();
 
   const handleLogout = () => {
     if (!confirm("Deseja encerrar sua sessão de administrador?")) return;

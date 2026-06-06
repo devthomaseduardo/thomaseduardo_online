@@ -16,17 +16,17 @@ import {
 import { RotatingText } from '../../RotatingText';
 
 const menuItems = [
-  { icon: LayoutDashboard, label: 'Overview', path: '/admin' },
-  { icon: Briefcase, label: 'Projects', path: '/admin/projects' },
-  { icon: Users, label: 'Clients', path: '/admin/clients' },
-  { icon: FileText, label: 'Proposals', path: '/admin/proposals' },
-  { icon: DollarSign, label: 'Financial', path: '/admin/financial' },
-  { icon: FileSignature, label: 'Contracts', path: '/admin/contracts' },
-  { icon: Rocket, label: 'Deployments', path: '/admin/deployments' },
+  { icon: LayoutDashboard, label: 'Visão Geral', path: '/admin' },
+  { icon: Briefcase, label: 'Projetos', path: '/admin/projects' },
+  { icon: Users, label: 'Clientes', path: '/admin/clients' },
+  { icon: FileText, label: 'Propostas', path: '/admin/proposals' },
+  { icon: DollarSign, label: 'Financeiro', path: '/admin/financial' },
+  { icon: FileSignature, label: 'Contratos', path: '/admin/contracts' },
+  { icon: Rocket, label: 'Deploys', path: '/admin/deployments' },
   { icon: Target, label: 'Leads', path: '/admin/leads' },
-  { icon: MessageSquare, label: 'Messages', path: '/admin/messages', badge: 3 },
-  { icon: UsersRound, label: 'Team', path: '/admin/team' },
-  { icon: Settings, label: 'Settings', path: '/admin/settings' },
+  { icon: MessageSquare, label: 'Mensagens', path: '/admin/messages', badge: 3 },
+  { icon: UsersRound, label: 'Equipe', path: '/admin/team' },
+  { icon: Settings, label: 'Configurações', path: '/admin/settings' },
 ];
 
 export function AdminSidebar() {
@@ -40,7 +40,7 @@ export function AdminSidebar() {
           </div>
           <div>
             <div className="font-bold text-base text-white tracking-tight leading-none">T3RN</div>
-            <div className="text-[10px] text-white/30 font-mono uppercase tracking-[0.2em] mt-1">Admin Panel</div>
+            <div className="text-[10px] text-white/30 font-mono uppercase tracking-[0.2em] mt-1">Painel Admin</div>
           </div>
         </div>
       </div>

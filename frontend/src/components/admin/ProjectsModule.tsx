@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, X, Search, Activity, Briefcase, Globe, ExternalLink, ShieldCheck } from "lucide-react";
+import { Plus, X, Search, Activity, Briefcase, Globe, ExternalLink, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -30,9 +31,7 @@ export function ProjectsModule() {
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
+  const { showToast } = useToast();
 
   const openCreate = () => { setForm({ ...EMPTY, clientId: clients[0]?.id || "" }); setModal("create"); };
   const openEdit = (p: any) => { setForm({ ...p }); setModal("edit"); };
@@ -62,7 +61,7 @@ export function ProjectsModule() {
       mutate('projects'); 
       showToast(isEdit ? "Projeto atualizado." : "Projeto criado.");
     } catch (e: any) { 
-      showToast(e.message); 
+      showToast(e.message, 'error'); 
     }
     setSaving(false);
   };
@@ -88,7 +87,7 @@ export function ProjectsModule() {
       showToast("Projeto removido.");
       setModal(null);
     } catch (e: any) {
-      showToast(e.message);
+      showToast(e.message, 'error');
     }
     setSaving(false);
   };
@@ -101,33 +100,22 @@ export function ProjectsModule() {
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
-            <Activity className="w-4 h-4 animate-pulse" />
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Project Pipeline</h1>
-          <p className="text-zinc-500 text-sm font-medium">Coordinate delivery phases and technical execution.</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Pipeline de Projetos</h1>
+          <p className="text-zinc-500 text-sm font-medium">Coordene as fases de entrega e execução técnica.</p>
         </div>
         <button onClick={openCreate}
           className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
-          <Plus className="w-4 h-4 stroke-[3]" /> Initiate New Project
+          <Plus className="w-4 h-4 stroke-[3]" /> Iniciar Novo Projeto
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Active Mandates", val: projects.length, icon: Briefcase, color: "text-white", glow: "white" },
-          { label: "In Development", val: activeCount, icon: Activity, color: "text-emerald-400", glow: "emerald" },
-          { label: "Deployed & Live", val: projects.length - activeCount, icon: ShieldCheck, color: "text-blue-400", glow: "blue" },
+          { label: "Mandatos Ativos", val: projects.length, icon: Briefcase, color: "text-white", glow: "white" },
+          { label: "Em Desenvolvimento", val: activeCount, icon: Activity, color: "text-emerald-400", glow: "emerald" },
+          { label: "Publicados & Live", val: projects.length - activeCount, icon: ShieldCheck, color: "text-blue-400", glow: "blue" },
         ].map((k, i) => (
           <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
@@ -147,7 +135,7 @@ export function ProjectsModule() {
           <div className="flex-1 relative max-w-sm w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
             <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by project name..."
+              placeholder="Buscar pelo nome do projeto..."
               className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
           </div>
         </div>
@@ -158,13 +146,13 @@ export function ProjectsModule() {
           ) : filtered.length === 0 ? (
             <div className="py-32 text-center">
               <Briefcase className="w-12 h-12 text-white/5 mx-auto mb-4" />
-              <p className="text-zinc-500 text-sm font-medium">No projects found in the current buffer.</p>
+              <p className="text-zinc-500 text-sm font-medium">Nenhum projeto encontrado no buffer atual.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
-                  {["Technical Entity", "Execution Phase", "Operational Status", "Associated Client", "Operations"].map(h => (
+                  {["Entidade Técnica", "Fase de Execução", "Status Operacional", "Cliente Associado", "Operações"].map(h => (
                     <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
@@ -205,10 +193,10 @@ export function ProjectsModule() {
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                         <button onClick={() => openEdit(p)} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
-                          Edit
+                          Editar
                         </button>
                         <button onClick={() => remove(p.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>
-                          Wipe
+                          Excluir
                         </button>
                       </div>
                     </td>
@@ -223,20 +211,20 @@ export function ProjectsModule() {
       <Modal
         isOpen={modal !== null}
         onClose={() => setModal(null)}
-        title={modal === "create" ? "Initialize Technical Asset" : "Entity Configuration"}
-        description="Define the core operational parameters for this project."
+        title={modal === "create" ? "Inicializar Ativo Técnico" : "Configuração da Entidade"}
+        description="Defina os parâmetros operacionais principais para este projeto."
         maxWidth="xl"
         footer={
           <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
             {modal === "edit" ? (
-               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINATE PROJECT</button>
+               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">ENCERRAR PROJETO</button>
             ) : <div/>}
             <div className="flex gap-4">
               <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
-                Discard
+                Descartar
               </button>
               <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">
-                {saving ? "Synchronizing..." : modal === "create" ? "Deploy Pipeline" : "Commit Changes"}
+                {saving ? "Sincronizando..." : modal === "create" ? "Implantar Pipeline" : "Confirmar Alterações"}
               </button>
             </div>
           </div>
@@ -245,15 +233,15 @@ export function ProjectsModule() {
         <div className="space-y-8 py-4">
           <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1 space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Solution Identifier</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Identificador da Solução</label>
               <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Neural Engine V1" />
             </div>
             <div className="col-span-2 md:col-span-1 space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Associated Account</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conta Associada</label>
               <select value={form.clientId ?? ""} onChange={e => setForm((f: any) => ({ ...f, clientId: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                <option value="" disabled>Select client entity...</option>
+                <option value="" disabled>Selecione a entidade do cliente...</option>
                 {clients.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
@@ -261,7 +249,7 @@ export function ProjectsModule() {
 
           <div className="grid grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Operational Status</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Status Operacional</label>
               <select value={form.status ?? "briefing"} onChange={e => setForm((f: any) => ({ ...f, status: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
                 <option value="briefing">Briefing</option>
@@ -272,19 +260,19 @@ export function ProjectsModule() {
               </select>
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Active Milestone</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Marco Ativo</label>
               <input type="text" value={form.phase ?? ""} onChange={e => setForm((f: any) => ({ ...f, phase: e.target.value }))}
-                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Alpha Testing" />
+                className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Teste Alpha" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Fulfillment (%)</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Conclusão (%)</label>
               <input type="number" min="0" max="100" value={form.progresso ?? 0} onChange={e => setForm((f: any) => ({ ...f, progresso: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" />
             </div>
           </div>
           
           <div className="space-y-4 pt-4 border-t border-white/5">
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Active Service Modules</label>
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Módulos de Serviço Ativos</label>
             <div className="flex flex-wrap gap-6">
               {['seo', 'analytics', 'support', 'ads'].map((mod) => (
                 <label key={mod} className="flex items-center gap-3 text-xs font-bold text-zinc-400 cursor-pointer group/mod">

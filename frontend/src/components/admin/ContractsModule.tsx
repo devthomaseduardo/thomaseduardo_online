@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { Plus, Search, Activity, FileSignature, CheckCircle, Clock } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -20,14 +21,12 @@ const STATUS_COLOR: Record<string, string> = {
 const EMPTY = { titulo: "", status: "rascunho", versao: "1.0", fileUrl: "", projectId: "", visivelCliente: false };
 
 export function ContractsModule() {
+  const { showToast } = useToast();
   const { contracts, projects, loading, mutate } = useAdminData();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true);
@@ -50,7 +49,7 @@ export function ContractsModule() {
       }
 
       setModal(null); mutate('contracts'); showToast(isEdit ? "Contrato atualizado." : "Contrato criado.");
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -73,7 +72,7 @@ export function ContractsModule() {
 
       mutate('contracts'); showToast("Contrato removido.");
       setModal(null);
-    } catch (e: any) { showToast(e.message); }
+    } catch (e: any) { showToast(e.message, 'error'); }
     setSaving(false);
   };
 
@@ -81,15 +80,6 @@ export function ContractsModule() {
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8">
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-6 right-6 z-[9999] bg-[#0B0B0B] border border-white/10 px-5 py-3 rounded-xl text-sm text-white shadow-2xl flex items-center gap-3">
-            <Activity className="w-4 h-4 text-[#009EE3]" /> {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Contratos</h1>

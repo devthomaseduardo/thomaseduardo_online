@@ -2,6 +2,7 @@ import React from 'react';
 import { LucideIcon } from 'lucide-react';
 
 interface KpiCardProps {
+  key?: React.Key;
   title: string;
   value: string | number;
   icon: LucideIcon;

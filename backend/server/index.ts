@@ -114,8 +114,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use('/uploads', express.static(UPLOADS_DIR));
 
 // Mount newly extracted routers (non-destructive mount alongside existing handlers)
-app.use('/api', authRouter);
 app.use('/api/v2', apiRouter);
+app.use('/api', authRouter);
 app.use('/api/projects', projectsRouter(upload));
 
 // ─── Global Error Handler ───────────────────────────────────────────────────

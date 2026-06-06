@@ -11,7 +11,7 @@ import { Modal } from "../ui/Modal";
 
 export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClose: () => void }) {
   const { 
-    tab, setTab, project, loading, toast, loadProject, updateProject,
+    tab, setTab, project, loading, loadProject, updateProject,
     timeline, addTimelineEvent, deleteTimelineEvent, toggleTimelineVisibility,
     tasks, addTask, updateTask, deleteTask,
     invoices, addInvoice, registerPayment, deleteInvoice,
@@ -208,18 +208,6 @@ export function ProjectDrawer({ projectId, onClose }: { projectId: string; onClo
 
         </div>
 
-        {/* Toast Local Personalizado */}
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: 50, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl flex items-center gap-2 md:gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border backdrop-blur-xl z-[60] max-w-[90vw] md:max-w-md ${
-              toast.type === "error" 
-                ? "bg-rose-500/10 border-rose-500/20 text-rose-200" 
-                : "bg-[#009EE3]/10 border-[#009EE3]/20 text-white/90"
-            }`}>
-            {toast.type === "error" ? <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-rose-400 shrink-0" /> : <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-[#009EE3] shrink-0" />}
-            <span className="text-xs md:text-sm font-medium tracking-wide">{toast.msg}</span>
-          </motion.div>
-        )}
         {/* Modais Secundários */}
         <Modal isOpen={taskModal} onClose={() => setTaskModal(false)} title="Nova Tarefa" maxWidth="sm"
           footer={

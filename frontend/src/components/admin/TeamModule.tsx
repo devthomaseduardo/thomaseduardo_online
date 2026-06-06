@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, Search, Activity, Users, Shield, ShieldAlert } from "lucide-react";
+import { Plus, Search, Activity, Users, Shield, ShieldAlert, CheckCircle } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
@@ -83,20 +83,20 @@ export function TeamModule() {
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Personnel Center</h1>
-          <p className="text-zinc-500 text-sm font-medium">Coordinate access vectors and operational roles.</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Centro de Pessoal</h1>
+          <p className="text-zinc-500 text-sm font-medium">Coordene vetores de acesso e funções operacionais.</p>
         </div>
         <button onClick={() => { setForm({ ...EMPTY }); setModal("create"); }}
           className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
-          <Plus className="w-4 h-4 stroke-[3]" /> Onboard Personnel
+          <Plus className="w-4 h-4 stroke-[3]" /> Contratar Pessoal
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Operatives", val: team.length, icon: Users, color: "text-white", glow: "white" },
-          { label: "Active Vectors", val: team.filter((m: any) => m.active).length, icon: Shield, color: "text-emerald-400", glow: "emerald" },
-          { label: "Suspended", val: team.filter((m: any) => !m.active).length, icon: ShieldAlert, color: "text-rose-400", glow: "rose" },
+          { label: "Total de Operadores", val: team.length, icon: Users, color: "text-white", glow: "white" },
+          { label: "Vetores Ativos", val: team.filter((m: any) => m.active).length, icon: Shield, color: "text-emerald-400", glow: "emerald" },
+          { label: "Suspensos", val: team.filter((m: any) => !m.active).length, icon: ShieldAlert, color: "text-rose-400", glow: "rose" },
         ].map((k, i) => (
           <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
@@ -115,7 +115,7 @@ export function TeamModule() {
         <div className="p-6 border-b border-white/5 flex flex-col md:flex-row items-start md:items-center gap-6 bg-white/[0.01]">
           <div className="flex-1 relative max-w-sm w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or alias..."
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome ou apelido..."
               className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
           </div>
         </div>
@@ -126,13 +126,13 @@ export function TeamModule() {
           ) : filtered.length === 0 ? (
             <div className="py-32 text-center">
               <Users className="w-12 h-12 text-white/5 mx-auto mb-4" />
-              <p className="text-zinc-500 text-sm font-medium">No personnel detected in current sector.</p>
+              <p className="text-zinc-500 text-sm font-medium">Nenhum pessoal detectado no setor atual.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
-                  {["Individual Identity", "Operational Role", "Permission Matrix", "Vector Status", "Operations"].map(h => (
+                  {["Identidade Individual", "Função Operacional", "Matriz de Permissões", "Status do Vetor", "Operações"].map(h => (
                     <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
@@ -156,13 +156,13 @@ export function TeamModule() {
                     </td>
                     <td className="px-6 py-6">
                       <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${m.active ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-rose-400 bg-rose-400/10 border-rose-400/20'}`}>
-                        {m.active ? "Enabled" : "Disabled"}
+                        {m.active ? "Ativado" : "Desativado"}
                       </span>
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                        <button onClick={() => { setForm({ ...m, permissions: m.permissions?.join(', ') || '' }); setModal("edit"); }} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">Modify</button>
-                        <button onClick={() => remove(m.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>Wipe</button>
+                        <button onClick={() => { setForm({ ...m, permissions: m.permissions?.join(', ') || '' }); setModal("edit"); }} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">Modificar</button>
+                        <button onClick={() => remove(m.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all" disabled={saving}>Excluir</button>
                       </div>
                     </td>
                   </tr>
@@ -173,13 +173,13 @@ export function TeamModule() {
         </div>
       </div>
 
-      <Modal isOpen={modal !== null} onClose={() => setModal(null)} title={modal === "create" ? "Initialize Operative" : "Personnel Configuration"} description="Manage access vectors and operational role definitions." maxWidth="md"
+      <Modal isOpen={modal !== null} onClose={() => setModal(null)} title={modal === "create" ? "Inicializar Operador" : "Configuração de Pessoal"} description="Gerencie vetores de acesso e definições de funções operacionais." maxWidth="md"
         footer={
           <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
-            {modal === "edit" ? <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINATE ACCESS</button> : <div/>}
+            {modal === "edit" ? <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINAR ACESSO</button> : <div/>}
             <div className="flex gap-4">
-              <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">Discard</button>
-              <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">{saving ? "Synchronizing..." : "Commit Vector"}</button>
+              <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">Descartar</button>
+              <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">{saving ? "Sincronizando..." : "Confirmar Vetor"}</button>
             </div>
           </div>
         }
@@ -187,19 +187,19 @@ export function TeamModule() {
         <div className="space-y-8 py-4">
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Full Name / Identity</label>
-              <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: John Doe" />
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Nome Completo / Identidade</label>
+              <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: João Silva" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Corporate Liaison Email</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">E-mail Corporativo</label>
               <input type="email" value={form.email ?? ""} onChange={e => setForm((f: any) => ({ ...f, email: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="liaison@company.com" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Operational Role</label>
-              <input type="text" value={form.role ?? ""} onChange={e => setForm((f: any) => ({ ...f, role: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Senior Architect" />
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Função Operacional</label>
+              <input type="text" value={form.role ?? ""} onChange={e => setForm((f: any) => ({ ...f, role: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Arquiteto Sênior" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Permission Matrix (CSV)</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Matriz de Permissões (CSV)</label>
               <input type="text" value={form.permissions ?? ""} onChange={e => setForm((f: any) => ({ ...f, permissions: e.target.value }))} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" placeholder="read, write, admin" />
             </div>
             <label className="flex items-center gap-3 text-xs font-bold text-zinc-400 cursor-pointer group/active mt-2">
@@ -207,7 +207,7 @@ export function TeamModule() {
                 <input type="checkbox" checked={form.active} onChange={e => setForm((f: any) => ({ ...f, active: e.target.checked }))} className="peer appearance-none w-5 h-5 border border-white/10 rounded-md bg-white/5 checked:bg-white checked:border-white transition-all cursor-pointer" />
                 <CheckCircle className="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
               </div>
-              <span className="group-hover/active:text-white transition-colors uppercase tracking-widest">Vector Active</span>
+              <span className="group-hover/active:text-white transition-colors uppercase tracking-widest">Vetor Ativo</span>
             </label>
           </div>
         </div>

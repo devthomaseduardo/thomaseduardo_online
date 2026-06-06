@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { Plus, X, Edit2, Trash2, Users, Search, MoreVertical, Shield, Mail, Lock, Activity } from "lucide-react";
 import { useAdminData } from "./useAdminData";
 import { TableSkeleton } from "./Loaders";
 import { Modal } from "../ui/Modal";
 import { API_URL } from '@/config';
 import { getAdminHeaders } from '@/lib/adminAuth';
+import { useToast } from '@/contexts/ToastContext';
 
 const API = `${API_URL}/api/v2`;
 const hdrs = () => getAdminHeaders();
@@ -20,14 +21,12 @@ const STATUS_COLOR: Record<string, string> = {
 const EMPTY = { name: "", email: "", cnpj: "", clientType: "new", password: "", phone: "", obs: "" };
 
 export function ClientesModule() {
+  const { showToast } = useToast();
   const { clients, loading, mutate: load } = useAdminData();
   const [modal, setModal] = useState<"create" | "edit" | null>(null);
   const [form, setForm] = useState<any>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [toast, setToast] = useState("");
-
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
   const openCreate = () => { setForm(EMPTY); setModal("create"); };
   const openEdit = (c: any) => { setForm({ ...c, password: "" }); setModal("edit"); };
@@ -59,7 +58,7 @@ export function ClientesModule() {
       load('clients'); 
       showToast(isEdit ? "Cliente atualizado." : "Cliente criado.");
     } catch (e: any) { 
-      showToast(e.message); 
+      showToast(e.message, 'error'); 
     }
     setSaving(false);
   };
@@ -85,7 +84,7 @@ export function ClientesModule() {
       showToast("Cliente removido do sistema.");
       setModal(null);
     } catch (e: any) {
-      showToast(e.message);
+      showToast(e.message, 'error');
     }
     setSaving(false);
   };
@@ -100,34 +99,23 @@ export function ClientesModule() {
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="fixed top-24 right-8 z-[9999] bg-white text-black px-6 py-3 rounded-2xl text-sm font-bold shadow-[0_8px_30px_rgba(255,255,255,0.15)] flex items-center gap-3 border border-white/20">
-            <Activity className="w-4 h-4 animate-pulse" />
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Header & KPIs */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold text-white tracking-tight">Client Directory</h1>
-          <p className="text-zinc-500 text-sm font-medium">Manage operational access and client profiles.</p>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight">Diretório de Clientes</h1>
+          <p className="text-zinc-500 text-sm font-medium">Gerencie acessos operacionais e perfis de clientes.</p>
         </div>
         <button onClick={openCreate}
           className="cursor-pointer bg-white text-black font-extrabold px-6 py-3 rounded-full text-sm flex items-center gap-2 hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] hover:scale-105 active:scale-95">
-          <Plus className="w-4 h-4 stroke-[3]" /> Register New Client
+          <Plus className="w-4 h-4 stroke-[3]" /> Registrar Novo Cliente
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: "Total Accounts", val: clients.length, icon: Users, color: "text-white", glow: "white" },
-          { label: "Active Ops", val: activeCount, icon: Activity, color: "text-emerald-400", glow: "emerald" },
-          { label: "In Onboarding", val: newCount, icon: Shield, color: "text-blue-400", glow: "blue" },
+          { label: "Contas Totais", val: clients.length, icon: Users, color: "text-white", glow: "white" },
+          { label: "Operações Ativas", val: activeCount, icon: Activity, color: "text-emerald-400", glow: "emerald" },
+          { label: "Em Onboarding", val: newCount, icon: Shield, color: "text-blue-400", glow: "blue" },
         ].map((k, i) => (
           <div key={i} className="bg-white/[0.03] border border-white/5 rounded-3xl p-6 flex items-center justify-between group hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 hover:shadow-2xl">
             <div>
@@ -149,7 +137,7 @@ export function ClientesModule() {
           <div className="flex-1 relative max-w-sm w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
             <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Filter by name or domain..."
+              placeholder="Filtrar por nome ou domínio..."
               className="w-full bg-white/[0.03] border border-white/5 rounded-full pl-11 pr-4 py-2.5 text-sm text-white outline-none focus:bg-white/[0.06] focus:border-white/10 focus:ring-4 focus:ring-white/[0.02] transition-all" />
             {search && (
               <button onClick={() => setSearch("")}
@@ -167,13 +155,13 @@ export function ClientesModule() {
           ) : filtered.length === 0 ? (
             <div className="py-32 text-center">
               <Users className="w-12 h-12 text-white/5 mx-auto mb-4" />
-              <p className="text-zinc-500 text-sm font-medium">No accounts matched your criteria.</p>
+              <p className="text-zinc-500 text-sm font-medium">Nenhuma conta corresponde aos seus critérios.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 text-[10px] text-zinc-500 uppercase font-bold tracking-widest">
-                  {["Account Name", "Contact Matrix", "Lifecycle Status", "Security", "Operations"].map(h => (
+                  {["Nome da Conta", "Matriz de Contato", "Status do Ciclo", "Segurança", "Operações"].map(h => (
                     <th key={h} className="px-6 py-5">{h}</th>
                   ))}
                 </tr>
@@ -202,22 +190,22 @@ export function ClientesModule() {
                     </td>
                     <td className="px-6 py-6">
                       <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${STATUS_COLOR[c.clientType] ?? STATUS_COLOR.new}`}>
-                        {c.clientType === "new" ? "Onboarding" : c.clientType === "active" ? "Operational" : "Inactive"}
+                        {c.clientType === "new" ? "Onboarding" : c.clientType === "active" ? "Operacional" : "Inativo"}
                       </span>
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-2 text-[11px] font-bold text-zinc-500 group-hover:text-emerald-400 transition-all">
-                        <Lock className="w-3.5 h-3.5 text-emerald-500/50 group-hover:text-emerald-500" /> ACTIVE ACCESS
+                        <Lock className="w-3.5 h-3.5 text-emerald-500/50 group-hover:text-emerald-500" /> ACESSO ATIVO
                       </div>
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
                         <button onClick={() => openEdit(c)} className="cursor-pointer px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
-                          Edit
+                          Editar
                         </button>
                         <button onClick={() => remove(c.id)} className="cursor-pointer px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 transition-all"
                           title="Remover Cliente" disabled={saving}>
-                          Wipe
+                          Excluir
                         </button>
                       </div>
                     </td>
@@ -233,20 +221,20 @@ export function ClientesModule() {
       <Modal
         isOpen={modal !== null}
         onClose={() => setModal(null)}
-        title={modal === "create" ? "Register Partner" : "Account Configuration"}
-        description={modal === "create" ? "Initialize a new environment in the ecosystem." : "Manage corporate data, security and internal notes."}
+        title={modal === "create" ? "Registrar Parceiro" : "Configuração da Conta"}
+        description={modal === "create" ? "Inicialize um novo ambiente no ecossistema." : "Gerencie dados corporativos, segurança e notas internas."}
         maxWidth="xl"
         footer={
           <div className="flex items-center justify-between w-full pt-6 border-t border-white/5">
             {modal === "edit" ? (
-               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">TERMINATE ACCOUNT</button>
+               <button type="button" onClick={() => remove(form.id)} className="cursor-pointer text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-widest transition-all">ENCERRAR CONTA</button>
             ) : <div/>}
             <div className="flex gap-4">
               <button onClick={() => setModal(null)} className="cursor-pointer px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-all">
-                Discard
+                Descartar
               </button>
               <button onClick={save} disabled={saving} className="cursor-pointer px-8 py-2.5 bg-white text-black rounded-full text-xs font-extrabold uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-[0_8px_20px_rgba(255,255,255,0.1)] active:scale-95 disabled:opacity-50">
-                {saving ? "Processing..." : modal === "create" ? "Grant Access" : "Commit Changes"}
+                {saving ? "Processando..." : modal === "create" ? "Conceder Acesso" : "Confirmar Alterações"}
               </button>
             </div>
           </div>
@@ -255,12 +243,12 @@ export function ClientesModule() {
         <div className="space-y-8 py-4">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Company / Entity Name</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Nome da Empresa / Entidade</label>
               <input type="text" value={form.name ?? ""} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="Ex: Antigravity Systems" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Tax ID / Document</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">CNPJ / Documento</label>
               <input type="text" value={form.cnpj ?? ""} onChange={e => setForm((f: any) => ({ ...f, cnpj: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] font-mono transition-all" placeholder="00.000.000/0000-00" />
             </div>
@@ -268,12 +256,12 @@ export function ClientesModule() {
           
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Primary Liaison Email</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">E-mail de Contato Principal</label>
               <input type="email" value={form.email ?? ""} onChange={e => setForm((f: any) => ({ ...f, email: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all" placeholder="liaison@company.com" />
             </div>
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Direct Communication (WhatsApp)</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Comunicação Direta (WhatsApp)</label>
               <input type="text" value={form.phone ?? ""} onChange={e => setForm((f: any) => ({ ...f, phone: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all font-mono" placeholder="+55 11 90000-0000" />
             </div>
@@ -281,28 +269,28 @@ export function ClientesModule() {
 
           <div className="grid grid-cols-2 gap-6 pt-4 border-t border-white/5">
             <div className="space-y-2">
-              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Lifecycle Stage</label>
+              <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Estágio do Ciclo de Vida</label>
               <select value={form.clientType} onChange={e => setForm((f: any) => ({ ...f, clientType: e.target.value }))}
                 className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer">
-                <option value="new">Operational Onboarding</option>
-                <option value="active">Full Production</option>
-                <option value="inactive">Project Suspended</option>
-                <option value="blocked">Access Revoked</option>
+                <option value="new">Onboarding Operacional</option>
+                <option value="active">Produção Total</option>
+                <option value="inactive">Projeto Suspenso</option>
+                <option value="blocked">Acesso Revogado</option>
               </select>
             </div>
             {modal === "create" && (
               <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-emerald-400/50 uppercase tracking-[0.2em] flex items-center gap-2"><Lock className="w-3 h-3"/> Initial Master Password</label>
+                <label className="block text-[10px] font-bold text-emerald-400/50 uppercase tracking-[0.2em] flex items-center gap-2"><Lock className="w-3 h-3"/> Senha Mestra Inicial</label>
                 <input type="password" value={form.password ?? ""} onChange={e => setForm((f: any) => ({ ...f, password: e.target.value }))}
-                  className="w-full bg-emerald-500/[0.02] border border-emerald-500/10 rounded-2xl px-5 py-4 text-emerald-400 text-sm outline-none focus:border-emerald-500/30 transition-all font-mono" placeholder="Set secure portal key..." />
+                  className="w-full bg-emerald-500/[0.02] border border-emerald-500/10 rounded-2xl px-5 py-4 text-emerald-400 text-sm outline-none focus:border-emerald-500/30 transition-all font-mono" placeholder="Defina a chave de acesso..." />
               </div>
             )}
           </div>
           
           <div className="space-y-2">
-            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Operational Intelligence (Internal Only)</label>
+            <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Inteligência Operacional (Apenas Interno)</label>
             <textarea value={form.obs ?? ""} onChange={e => setForm((f: any) => ({ ...f, obs: e.target.value }))}
-              rows={4} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-zinc-300 text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all resize-none" placeholder="Business notes, specific agreements, strategic links..." />
+              rows={4} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-5 py-4 text-zinc-300 text-sm outline-none focus:border-white/10 focus:bg-white/[0.05] transition-all resize-none" placeholder="Notas de negócio, acordos específicos, links estratégicos..." />
           </div>
         </div>
       </Modal>
