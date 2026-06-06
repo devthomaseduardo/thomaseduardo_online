@@ -41,17 +41,53 @@ export function ClientesModule() {
       const body = isEdit
         ? { name: form.name, email: form.email, cnpj: form.cnpj, clientType: form.clientType, phone: form.phone, obs: form.obs }
         : form;
+      
       const r = await fetch(url, { method, headers: hdrs(), body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
-      setModal(null); load(); showToast(isEdit ? "Cliente atualizado." : "Cliente criado.");
-    } catch (e: any) { showToast(e.message); }
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao salvar cliente.");
+      }
+
+      setModal(null); 
+      load('clients'); 
+      showToast(isEdit ? "Cliente atualizado." : "Cliente criado.");
+    } catch (e: any) { 
+      showToast(e.message); 
+    }
     setSaving(false);
   };
 
   const remove = async (id: string) => {
     if (!confirm("Excluir definitivamente este cliente do ecossistema? Esta ação é irreversível.")) return;
-    await fetch(`${API}/clients/${id}`, { method: "DELETE", headers: hdrs() });
-    load(); showToast("Cliente removido do sistema.");
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/clients/${id}`, { method: "DELETE", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao excluir cliente.");
+      }
+
+      load('clients'); 
+      showToast("Cliente removido do sistema.");
+      setModal(null);
+    } catch (e: any) {
+      showToast(e.message);
+    }
+    setSaving(false);
   };
 
   const filtered = clients.filter(c =>

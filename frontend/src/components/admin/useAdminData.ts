@@ -71,7 +71,14 @@ export function useAdminData() {
         loading[entity] = true;
         handler();
         fetch(`${API}/${endpoint}`, { headers: hdrs() })
-          .then(r => r.ok ? r.json() : [])
+          .then(r => {
+            if (r.status === 401) {
+              localStorage.removeItem("adminToken");
+              window.location.href = "/admin/login";
+              return [];
+            }
+            return r.ok ? r.json() : [];
+          })
           .then(res => {
             cache[entity] = Array.isArray(res) ? res : [];
             loading[entity] = false;
@@ -89,7 +96,7 @@ export function useAdminData() {
     fetchEntity('deploys', 'deploys');
     fetchEntity('leads', 'leads');
     fetchEntity('messages', 'messages');
-    fetchEntity('team', 'team');
+    fetchEntity('team', 'team-members');
 
     handler();
 
@@ -103,7 +110,14 @@ export function useAdminData() {
       loading[ent] = true;
       emit();
       fetch(`${API}/${endpoint}`, { headers: hdrs() })
-        .then(r => r.ok ? r.json() : [])
+        .then(r => {
+          if (r.status === 401) {
+            localStorage.removeItem("adminToken");
+            window.location.href = "/admin/login";
+            return [];
+          }
+          return r.ok ? r.json() : [];
+        })
         .then(res => {
           cache[ent] = Array.isArray(res) ? res : [];
           loading[ent] = false;
@@ -112,7 +126,8 @@ export function useAdminData() {
     };
 
     if (entity) {
-      fetchEntity(entity, entity);
+      if (entity === 'team') fetchEntity('team', 'team-members');
+      else fetchEntity(entity, entity);
     } else {
       fetchEntity('projects', 'projects');
       fetchEntity('clients', 'clients');
@@ -122,7 +137,7 @@ export function useAdminData() {
       fetchEntity('deploys', 'deploys');
       fetchEntity('leads', 'leads');
       fetchEntity('messages', 'messages');
-      fetchEntity('team', 'team');
+      fetchEntity('team', 'team-members');
     }
   };
 

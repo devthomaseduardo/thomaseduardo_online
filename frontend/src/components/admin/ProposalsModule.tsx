@@ -44,7 +44,17 @@ export function ProposalsModule() {
       const body = { ...form, amount: Number(form.amount), version: Number(form.version) };
       
       const r = await fetch(url, { method, headers: hdrs(), body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao salvar proposta.");
+      }
       
       setModal(null); mutate('proposals'); showToast(isEdit ? "Proposta atualizada." : "Proposta criada.");
     } catch (e: any) { showToast(e.message); }
@@ -53,8 +63,48 @@ export function ProposalsModule() {
 
   const remove = async (id: string) => {
     if (!confirm("Excluir proposta? Esta ação é irreversível.")) return;
-    await fetch(`${API}/proposals/${id}`, { method: "DELETE", headers: hdrs() });
-    mutate('proposals'); showToast("Proposta removida.");
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/proposals/${id}`, { method: "DELETE", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao excluir proposta.");
+      }
+
+      mutate('proposals'); showToast("Proposta removida.");
+      setModal(null);
+    } catch (e: any) { showToast(e.message); }
+    setSaving(false);
+  };
+
+  const convertToProject = async (id: string) => {
+    if (!confirm("Converter esta proposta em um novo projeto? Isso mudará o status da proposta para Aprovada.")) return;
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/proposals/${id}/convert`, { method: "POST", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao converter proposta.");
+      }
+
+      mutate(); // Reload all data to refresh projects and proposals
+      showToast("Proposta convertida em projeto!");
+    } catch (e: any) { showToast(e.message); }
+    setSaving(false);
   };
 
   const filtered = proposals.filter((p: any) =>
@@ -162,6 +212,11 @@ export function ProposalsModule() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {(p.status === 'draft' || p.status === 'sent') && (
+                          <button onClick={() => convertToProject(p.id)} className="cursor-pointer px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-xs font-medium text-emerald-400 transition-colors">
+                            Aprovar / Converter
+                          </button>
+                        )}
                         <button onClick={() => openEdit(p)} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
                           Editar
                         </button>

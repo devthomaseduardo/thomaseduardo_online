@@ -58,9 +58,9 @@ const Home = () => {
         <Hero />
         <Suspense fallback={null}>
           <AboutSection />
+          <SolutionsSection />
           <BentoGrid />
           <ProcessSection />
-          <SolutionsSection />
           <ProjectSection />
           <ContactSection />
         </Suspense>

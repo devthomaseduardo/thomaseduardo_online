@@ -1,6 +1,6 @@
-import React from 'react';
-import { ContratosModule } from '../../components/admin/ContratosModule';
+import React from "react";
+import { ContractsModule } from "@/components/admin/ContractsModule";
 
 export function Contracts() {
-  return <ContratosModule />;
+  return <ContractsModule />;
 }

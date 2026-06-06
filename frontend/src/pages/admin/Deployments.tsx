@@ -1,6 +1,6 @@
-import React from 'react';
-import { DeploysModule } from '../../components/admin/DeploysModule';
+import React from "react";
+import { DeploymentsModule } from "@/components/admin/DeploymentsModule";
 
 export function Deployments() {
-  return <DeploysModule />;
+  return <DeploymentsModule />;
 }

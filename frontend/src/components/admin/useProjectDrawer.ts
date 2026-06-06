@@ -10,6 +10,13 @@ function getHeaders() {
 
 async function apiFetch(url: string, opts?: RequestInit) {
   const res = await fetch(BASE + url, { ...opts, headers: { ...getHeaders(), ...(opts?.headers ?? {}) } });
+  
+  if (res.status === 401) {
+    localStorage.removeItem("adminToken");
+    window.location.href = "/admin/login";
+    throw new Error('Não autorizado. Redirecionando...');
+  }
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.error ?? 'Erro desconhecido');
   return data;

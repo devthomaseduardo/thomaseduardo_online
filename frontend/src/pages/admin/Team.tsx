@@ -1,6 +1,6 @@
-import React from 'react';
-import { EquipeModule } from '../../components/admin/EquipeModule';
+import React from "react";
+import { TeamModule } from "@/components/admin/TeamModule";
 
 export function Team() {
-  return <EquipeModule />;
+  return <TeamModule />;
 }

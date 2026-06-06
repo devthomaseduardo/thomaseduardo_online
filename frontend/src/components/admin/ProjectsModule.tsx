@@ -46,17 +46,51 @@ export function ProjectsModule() {
       const body = { ...form, value: Number(form.value), progresso: Number(form.progresso) };
       
       const r = await fetch(url, { method, headers: hdrs(), body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
       
-      setModal(null); mutate('projects'); showToast(isEdit ? "Projeto atualizado." : "Projeto criado.");
-    } catch (e: any) { showToast(e.message); }
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao salvar projeto.");
+      }
+      
+      setModal(null); 
+      mutate('projects'); 
+      showToast(isEdit ? "Projeto atualizado." : "Projeto criado.");
+    } catch (e: any) { 
+      showToast(e.message); 
+    }
     setSaving(false);
   };
 
   const remove = async (id: string) => {
     if (!confirm("Excluir projeto? Esta ação é irreversível e apagará tarefas e documentos associados.")) return;
-    await fetch(`${API}/projects/${id}`, { method: "DELETE", headers: hdrs() });
-    mutate('projects'); showToast("Projeto removido.");
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/projects/${id}`, { method: "DELETE", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao excluir projeto.");
+      }
+
+      mutate('projects'); 
+      showToast("Projeto removido.");
+      setModal(null);
+    } catch (e: any) {
+      showToast(e.message);
+    }
+    setSaving(false);
   };
 
   const filtered = projects.filter((p: any) =>

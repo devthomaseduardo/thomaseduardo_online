@@ -6,6 +6,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
+// ─── AUTH MIDDLEWARE (Strict Bearer JWT for v2) ─────────────────────────────
 const adminAuth = (req: Request, res: Response, next: Function) => {
   const authHeader = req.headers['authorization'];
   const authHeaderStr = Array.isArray(authHeader) ? authHeader[0] : authHeader;
@@ -18,14 +19,7 @@ const adminAuth = (req: Request, res: Response, next: Function) => {
     }
   }
 
-  const rawKey = req.headers['x-admin-key'];
-  const key = Array.isArray(rawKey) ? rawKey[0] : rawKey;
-  
-  if (key && (key === process.env.ADMIN_PASSWORD || key === 'antigravity-admin-dev')) {
-    return next();
-  }
-
-  return res.status(401).json({ error: 'Não autorizado.', details: 'Invalid token or key' });
+  return res.status(401).json({ error: 'Não autorizado.', details: 'Invalid or missing Bearer token' });
 };
 
 // ─── HELPER: criar timeline event ──────────────────────────────────────────
@@ -35,7 +29,7 @@ async function addTimeline(projectId: string, titulo: string, descricao: string,
       data: { projectId, titulo, descricao, tipo, visivelCliente, criadoPor: 'admin' }
     });
   } catch (e) {
-    console.warn('Timeline event failed (table may not exist yet):', e);
+    console.warn('Timeline event failed:', e);
   }
 }
 
@@ -57,19 +51,48 @@ router.get('/analytics/kpis', adminAuth, async (req, res) => {
 
 router.get('/dashboard', adminAuth, async (req, res) => {
   try {
-    const projects = await prisma.project.findMany({
-      include: { client: true, invoices: true, files: true }
-    });
-    const invoices = await prisma.invoice.findMany({
-      include: { project: { include: { client: true } } },
-      orderBy: { createdAt: 'desc' }
-    });
+    const now = new Date();
+    const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [projects, clients, invoices, proposals, deploys, activities] = await Promise.all([
+      prisma.project.findMany({ include: { client: true, invoices: true } }),
+      prisma.client.count(),
+      prisma.invoice.findMany({ include: { payments: true } }),
+      prisma.proposal.count({ where: { status: { in: ['draft', 'sent'] } } }),
+      prisma.deploy.count(),
+      (prisma as any).timelineEvent.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        include: { project: { select: { name: true } } }
+      })
+    ]);
 
     const activeProjects = projects.filter(p => !['concluido', 'cancelado'].includes(p.status ?? p.phase)).length;
-    const pendingPayments = invoices
+    
+    // Receita Mensal (Soma de pagamentos efetuados este mês)
+    const monthlyPayments = await (prisma as any).payment.findMany({
+      where: { pagoEm: { gte: firstDayMonth } }
+    });
+    const monthlyRevenue = monthlyPayments.reduce((sum: number, p: any) => sum + p.valor, 0);
+
+    // A Receber (Saldo de faturas não pagas)
+    const pendingRevenue = invoices
       .filter(i => ['pending', 'partial', 'overdue'].includes(i.status))
       .reduce((sum, i) => sum + (i.saldo ?? i.amount), 0);
-    const clientCount = await prisma.client.count();
+
+    // Dados para o Gráfico (Últimos 6 meses)
+    const revenueChart = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthName = d.toLocaleDateString('pt-BR', { month: 'short' });
+      const nextM = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      
+      const monthPayments = await (prisma as any).payment.findMany({
+        where: { pagoEm: { gte: d, lt: nextM } }
+      });
+      const total = monthPayments.reduce((sum: number, p: any) => sum + p.valor, 0);
+      revenueChart.push({ month: monthName, revenue: total });
+    }
 
     const pipeline = projects.map(p => {
       const totalPago = p.invoices.reduce((s, i) => s + (i.valorPago ?? 0), 0);
@@ -81,36 +104,32 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         tipo: p.tipo ?? 'website',
         status: p.status ?? p.phase,
         progresso: p.progresso ?? 0,
-        proximaAcao: p.proximaAcao,
-        dataEntregaPrevista: p.dataEntregaPrevista,
         payment: totalPago >= valorTotal && valorTotal > 0 ? 'Pago' : 'Pendente',
-        progress: (p.progresso ?? 0) + '%',
-        email: p.client.email,
         value: valorTotal,
-        totalPaid: totalPago,
-        balance: valorTotal - totalPago,
-        files: p.files ?? []
+        balance: valorTotal - totalPago
       };
     });
 
-    const paymentsData = invoices.map(i => ({
-      id: i.id,
-      date: i.createdAt.toLocaleDateString('pt-BR'),
-      client: i.project?.client?.name ?? 'Desconhecido',
-      desc: i.description,
-      value: `R$ ${i.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      status: i.status === 'paid' ? 'Pago' : i.status === 'pending' ? 'Pendente' : 'Parcial',
-      dueDate: i.vencimento ? i.vencimento.toLocaleDateString('pt-BR') : null,
+    const recentActivities = activities.map((a: any) => ({
+      id: a.id,
+      type: a.tipo === 'financeiro' ? 'payment' : a.tipo === 'deploy' ? 'deploy' : a.tipo === 'contrato' ? 'proposal' : 'message',
+      title: a.titulo,
+      description: `${a.project?.name || 'Sistema'}: ${a.descricao}`,
+      timestamp: a.createdAt.toLocaleDateString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     }));
 
     res.json({
       kpis: [
         { label: 'Projetos ativos', value: activeProjects.toString() },
-        { label: 'A Receber', value: `R$ ${pendingPayments.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
-        { label: 'Clientes', value: clientCount.toString() },
+        { label: 'A Receber', value: `R$ ${pendingRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
+        { label: 'Clientes', value: clients.toString() },
+        { label: 'Propostas Ativas', value: proposals.toString() },
+        { label: 'Deploys Realizados', value: deploys.toString() },
+        { label: 'Receita Mensal', value: `R$ ${monthlyRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` },
       ],
       pipeline,
-      paymentsData
+      revenueChart,
+      activities: recentActivities
     });
   } catch (error) {
     console.error(error);
@@ -315,6 +334,17 @@ router.put('/projects/:id', adminAuth, async (req, res) => {
   }
 });
 
+router.delete('/projects/:id', adminAuth, async (req, res) => {
+  try {
+    await prisma.project.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Projeto removido com sucesso.' });
+  } catch (err: any) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Projeto não encontrado.' });
+    if (err.code === 'P2003') return res.status(400).json({ error: 'Não é possível excluir: este projeto possui faturas, arquivos ou tarefas vinculadas.' });
+    res.status(500).json({ error: 'Erro ao excluir projeto.' });
+  }
+});
+
 // ==========================================
 // TIMELINE
 // ==========================================
@@ -478,6 +508,17 @@ router.get('/invoices', adminAuth, async (req, res) => {
   }
 });
 
+router.delete('/invoices/:id', adminAuth, async (req, res) => {
+  try {
+    await prisma.invoice.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Fatura removida.' });
+  } catch (err: any) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Fatura não encontrada.' });
+    if (err.code === 'P2003') return res.status(400).json({ error: 'Não é possível excluir: existem pagamentos vinculados.' });
+    res.status(500).json({ error: 'Erro ao excluir fatura.' });
+  }
+});
+
 router.post('/projects/:id/invoices', adminAuth, async (req, res) => {
   try {
     const { description, amount, vencimento, metodoPagamento, pixCopiaCola, mercadoPagoUrl } = req.body;
@@ -562,6 +603,16 @@ router.get('/contracts', adminAuth, async (req, res) => {
   }
 });
 
+router.delete('/contracts/:id', adminAuth, async (req, res) => {
+  try {
+    await (prisma as any).contract.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Contrato removido.' });
+  } catch (err: any) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Contrato não encontrado.' });
+    res.status(500).json({ error: 'Erro ao excluir contrato.' });
+  }
+});
+
 router.post('/projects/:id/contracts', adminAuth, async (req, res) => {
   try {
     const { titulo, status, versao, fileUrl, visivelCliente } = req.body;
@@ -638,6 +689,26 @@ router.get('/deploys', adminAuth, async (req, res) => {
     res.json(deploys);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao buscar deploys.' });
+  }
+});
+
+router.delete('/deploys/:id', adminAuth, async (req, res) => {
+  try {
+    await (prisma as any).deploy.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Deploy removido.' });
+  } catch (err: any) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Deploy não encontrado.' });
+    res.status(500).json({ error: 'Erro ao excluir deploy.' });
+  }
+});
+
+router.delete('/deployments/:id', adminAuth, async (req, res) => {
+  try {
+    await (prisma as any).deploy.delete({ where: { id: req.params.id } });
+    res.json({ success: true, message: 'Deploy removido.' });
+  } catch (err: any) {
+    if (err.code === 'P2025') return res.status(404).json({ error: 'Deploy não encontrado.' });
+    res.status(500).json({ error: 'Erro ao excluir deploy.' });
   }
 });
 

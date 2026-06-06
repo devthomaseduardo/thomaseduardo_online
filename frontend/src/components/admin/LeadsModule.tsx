@@ -45,7 +45,17 @@ export function LeadsModule() {
       const body = { ...form };
       
       const r = await fetch(url, { method, headers: hdrs(), body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao salvar lead.");
+      }
       
       setModal(null); mutate('leads'); showToast(isEdit ? "Lead atualizado." : "Lead cadastrado.");
     } catch (e: any) { showToast(e.message); }
@@ -54,8 +64,58 @@ export function LeadsModule() {
 
   const remove = async (id: string) => {
     if (!confirm("Excluir lead? Esta ação é irreversível.")) return;
-    await fetch(`${API}/leads/${id}`, { method: "DELETE", headers: hdrs() });
-    mutate('leads'); showToast("Lead removido.");
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/leads/${id}`, { method: "DELETE", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao excluir lead.");
+      }
+
+      mutate('leads'); showToast("Lead removido.");
+      setModal(null);
+    } catch (e: any) { showToast(e.message); }
+    setSaving(false);
+  };
+
+  const convertToClient = async (lead: any) => {
+    const password = prompt("Defina uma senha de acesso inicial para o novo cliente:", "123456");
+    if (!password) return; // Cancelou
+    
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/leads/${lead.id}/convert`, { 
+        method: "POST", 
+        headers: hdrs(),
+        body: JSON.stringify({
+          clientName: lead.name,
+          clientEmail: lead.email || `contato_${Date.now()}@exemplo.com`,
+          password
+        })
+      });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao converter lead.");
+      }
+
+      mutate(); // Reload everything since clients list changed too
+      showToast("Lead convertido em Cliente!");
+    } catch (e: any) { showToast(e.message); }
+    setSaving(false);
   };
 
   const filtered = leads.filter((l: any) =>
@@ -162,6 +222,11 @@ export function LeadsModule() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {l.status !== 'won' && (
+                          <button onClick={() => convertToClient(l)} className="cursor-pointer px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-xs font-medium text-emerald-400 transition-colors">
+                            Converter
+                          </button>
+                        )}
                         <button onClick={() => openEdit(l)} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
                           Editar
                         </button>

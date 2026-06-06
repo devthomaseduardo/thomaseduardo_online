@@ -40,12 +40,27 @@ export function FinancialModule() {
     e.preventDefault(); setSaving(true);
     try {
       const isEdit = modal === "edit";
-      const url = isEdit ? `${API}/invoices/${form.id}` : `${API}/invoices`;
+      const url = isEdit ? `${API}/invoices/${form.id}` : `${API}/projects/${form.projectId}/invoices`;
       const method = isEdit ? "PUT" : "POST";
-      const body = { ...form, amount: Number(form.amount), valorPago: Number(form.valorPago) };
+      const body = { 
+        ...form, 
+        amount: Number(form.amount), 
+        valorPago: Number(form.valorPago),
+        vencimento: form.vencimento ? new Date(form.vencimento).toISOString() : undefined 
+      };
       
       const r = await fetch(url, { method, headers: hdrs(), body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao salvar fatura.");
+      }
       
       setModal(null); mutate('invoices'); showToast(isEdit ? "Fatura atualizada." : "Fatura criada.");
     } catch (e: any) { showToast(e.message); }
@@ -54,16 +69,63 @@ export function FinancialModule() {
 
   const remove = async (id: string) => {
     if (!confirm("Excluir fatura? Esta ação é irreversível.")) return;
-    await fetch(`${API}/invoices/${id}`, { method: "DELETE", headers: hdrs() });
-    mutate('invoices'); showToast("Fatura removida.");
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/invoices/${id}`, { method: "DELETE", headers: hdrs() });
+      
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao excluir fatura.");
+      }
+
+      mutate('invoices'); showToast("Fatura removida.");
+      setModal(null);
+    } catch (e: any) { showToast(e.message); }
+    setSaving(false);
+  };
+
+  const registerPayment = async (inv: any) => {
+    if (!confirm(`Confirmar recebimento integral de R$ ${inv.amount.toLocaleString('pt-BR')}?`)) return;
+    setSaving(true);
+    try {
+      const r = await fetch(`${API}/projects/${inv.projectId}/invoices/${inv.id}/pay`, {
+        method: "POST",
+        headers: hdrs(),
+        body: JSON.stringify({ valor: inv.amount, metodo: "Pix" })
+      });
+
+      if (r.status === 401) {
+        localStorage.removeItem("adminToken");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      if (!r.ok) {
+        const data = await r.json();
+        throw new Error(data.error || "Erro ao registrar pagamento.");
+      }
+
+      mutate('invoices');
+      showToast("Pagamento registrado com sucesso!");
+    } catch (e: any) {
+      showToast(e.message);
+    }
+    setSaving(false);
   };
 
   const filtered = invoices.filter((i: any) =>
-    i.description?.toLowerCase().includes(search.toLowerCase())
+    i.description?.toLowerCase().includes(search.toLowerCase()) ||
+    projects.find((p: any) => p.id === i.projectId)?.name?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalRevenue = invoices.filter((i: any) => i.status === 'paid').reduce((acc: number, curr: any) => acc + curr.amount, 0);
-  const pendingRevenue = invoices.filter((i: any) => i.status === 'pending').reduce((acc: number, curr: any) => acc + curr.amount, 0);
+  const totalRevenue = invoices.filter((i: any) => i.status === 'paid').reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
+  const pendingRevenue = invoices.filter((i: any) => i.status !== 'paid' && i.status !== 'canceled').reduce((acc: number, curr: any) => acc + ((curr.amount || 0) - (curr.valorPago || 0)), 0);
 
   return (
     <div className="py-10 px-8 xl:px-12 w-full max-w-7xl mx-auto space-y-8">
@@ -163,6 +225,11 @@ export function FinancialModule() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {inv.status !== 'paid' && (
+                          <button onClick={() => registerPayment(inv)} className="cursor-pointer px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg text-xs font-medium text-emerald-400 transition-colors">
+                            Pagar
+                          </button>
+                        )}
                         <button onClick={() => openEdit(inv)} className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-medium text-white/70 transition-colors">
                           Editar
                         </button>
@@ -235,6 +302,12 @@ export function FinancialModule() {
                 <option value="" disabled>Selecione um projeto</option>
                 {projects.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-mono text-white/30 uppercase tracking-widest mb-1.5">Data de Vencimento</label>
+              <input type="date" value={form.vencimento ? new Date(form.vencimento).toISOString().split('T')[0] : ""} onChange={e => setForm((f: any) => ({ ...f, vencimento: e.target.value }))}
+                className="w-full bg-[#050505] border border-white/[0.06] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-white/20 transition-colors" />
             </div>
           </div>
         </div>

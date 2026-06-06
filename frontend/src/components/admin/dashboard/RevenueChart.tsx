@@ -2,7 +2,7 @@ import React from 'react';
 import { RevenueDataPoint } from '../../../types/admin';
 
 export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
-  const maxRevenue = Math.max(...data.map(d => d.revenue));
+  const maxRevenue = Math.max(...data.map(d => d.revenue), 1);
   
   return (
     <div className="bg-[#0B0B0B] border border-[#222] rounded-lg overflow-hidden h-full flex flex-col">

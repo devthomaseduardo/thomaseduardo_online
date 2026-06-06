@@ -1,5 +1,4 @@
 import React from 'react';
-import { API_URL } from '@/config';
 import { 
   Briefcase, 
   DollarSign, 
@@ -13,40 +12,24 @@ import { RevenueChart } from '../../components/admin/dashboard/RevenueChart';
 import { ActiveProjects } from '../../components/admin/dashboard/ActiveProjects';
 import { RecentDeploys } from '../../components/admin/dashboard/RecentDeploys';
 import { UpcomingDeadlines } from '../../components/admin/dashboard/UpcomingDeadlines';
-import { 
-  kpiMetrics, 
-  recentActivities, 
-  revenueChartData, 
-  activeProjects, 
-  recentDeploys, 
-  upcomingDeadlines 
-} from '../../data/adminMockData';
 import { useAdminFetch } from '../../components/admin/useAdminFetch';
 
 export function AdminDashboard() {
   const { data, loading, error } = useAdminFetch<any>('/dashboard');
 
-  const dashboardKpis = Array.isArray(data?.kpis) ? data.kpis : [
-    { label: 'Projetos ativos', value: '0' },
-    { label: 'A Receber', value: 'R$ 0,00' },
-    { label: 'Clientes', value: '0' },
-  ];
+  const kpis = data?.kpis || [];
   const projects = data?.pipeline?.map((project: any) => ({
     id: project.id,
     name: project.nome || project.name,
     client: project.client || '—',
     status: project.status || project.phase || 'Active',
-    progress: project.progresso ?? project.progress ?? 0,
+    progress: project.progresso ?? 0,
     deadline: project.dataEntregaPrevista || project.deadline || new Date().toISOString(),
     value: project.value ?? 0,
   })) || [];
 
-  const revenueData = data?.paymentsData?.slice(0, 6).map((item: any, index: number) => ({
-    month: item.month || `M${index + 1}`,
-    revenue: typeof item.value === 'string'
-      ? Number(String(item.value).replace(/[^0-9.-]/g, '')) || 0
-      : Number(item.value) || 0
-  })) || [];
+  const revenueData = data?.revenueChart || [];
+  const activities = data?.activities || [];
 
   const handleSeedRealData = async () => {
     try {
@@ -185,37 +168,14 @@ export function AdminDashboard() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <KpiCard 
-          title="Projetos Ativos" 
-          value={dashboardKpis[0]?.value ?? '0'} 
-          icon={Briefcase} 
-          trend={{ value: '0', isPositive: true }} 
-        />
-        <KpiCard 
-          title="A Receber" 
-          value={dashboardKpis[1]?.value ?? 'R$ 0,00'} 
-          icon={DollarSign} 
-        />
-        <KpiCard 
-          title="Clientes Ativos" 
-          value={dashboardKpis[2]?.value ?? '0'} 
-          icon={Users} 
-        />
-        <KpiCard 
-          title="Propostas Ativas" 
-          value={0} 
-          icon={FileText} 
-        />
-        <KpiCard 
-          title="Deploys" 
-          value={0} 
-          icon={Rocket} 
-        />
-        <KpiCard 
-          title="Receita Mensal" 
-          value={'R$ 0,00'} 
-          icon={DollarSign} 
-        />
+        {kpis.map((kpi: any, i: number) => (
+          <KpiCard 
+            key={i}
+            title={kpi.label} 
+            value={kpi.value} 
+            icon={kpi.label.includes('Receita') || kpi.label.includes('Receber') ? DollarSign : kpi.label.includes('Projetos') ? Briefcase : kpi.label.includes('Clientes') ? Users : kpi.label.includes('Propostas') ? FileText : Rocket} 
+          />
+        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -224,7 +184,7 @@ export function AdminDashboard() {
           <ActiveProjects projects={projects} />
         </div>
         <div className="space-y-6">
-          <ActivityFeed activities={data?.activities ?? []} />
+          <ActivityFeed activities={activities} />
         </div>
       </div>
       
