@@ -18,7 +18,14 @@ export function useAdminFetch<T = any>(path: string) {
 
     fetch(`${API_BASE}${path}`, { headers: getAdminHeaders() })
       .then(async (res) => {
-        const payload = await res.json().catch(() => null);
+        const text = await res.text();
+        let payload = null;
+        try {
+          payload = text ? JSON.parse(text) : null;
+        } catch (e) {
+          // Fallback if not JSON
+        }
+        
         if (!res.ok) {
           throw new Error(payload?.error || res.statusText || 'Erro ao buscar dados');
         }

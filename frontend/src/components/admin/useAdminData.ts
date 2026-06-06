@@ -71,13 +71,15 @@ export function useAdminData() {
         loading[entity] = true;
         handler();
         fetch(`${API}/${endpoint}`, { headers: hdrs() })
-          .then(r => {
+          .then(async r => {
             if (r.status === 401) {
               localStorage.removeItem("adminToken");
               window.location.href = "/admin/login";
               return [];
             }
-            return r.ok ? r.json() : [];
+            if (!r.ok) return [];
+            const text = await r.text();
+            return text ? JSON.parse(text) : [];
           })
           .then(res => {
             cache[entity] = Array.isArray(res) ? res : [];
@@ -110,13 +112,15 @@ export function useAdminData() {
       loading[ent] = true;
       emit();
       fetch(`${API}/${endpoint}`, { headers: hdrs() })
-        .then(r => {
+        .then(async r => {
           if (r.status === 401) {
             localStorage.removeItem("adminToken");
             window.location.href = "/admin/login";
             return [];
           }
-          return r.ok ? r.json() : [];
+          if (!r.ok) return [];
+          const text = await r.text();
+          return text ? JSON.parse(text) : [];
         })
         .then(res => {
           cache[ent] = Array.isArray(res) ? res : [];

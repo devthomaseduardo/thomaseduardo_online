@@ -16,6 +16,7 @@ import webhooksRouter from './routes/webhooks.ts';
 import rateLimit from 'express-rate-limit';
 import { env } from './lib/env.js';
 import { audit, getClientIp } from './lib/audit.js';
+import helmet from 'helmet';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,7 +82,6 @@ const generalLimiter = rateLimit({
 });
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
-import helmet from 'helmet';
 
 // Security headers
 app.use(helmet({
@@ -92,22 +92,16 @@ app.use(helmet({
 // CORS — whitelist only
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser (curl, server-to-server) and whitelisted origins
-    if (!origin || env.ALLOWED_ORIGINS.includes(origin)) {
+    if (!origin || env.ALLOWED_ORIGINS.includes(origin) || env.NODE_ENV === 'development') {
       callback(null, true);
     } else {
       console.warn(`[CORS] Rejected origin: ${origin}`);
-      // In development, we might want to be more permissive or at least not return a raw Error that Express turns into HTML
-      if (env.NODE_ENV === 'development') {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
-      }
+      callback(new Error(`CORS: Origin "${origin}" is not allowed.`));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key']
 }));
 
 app.use(generalLimiter);
@@ -129,52 +123,6 @@ app.use((err: any, req: any, res: any, next: any) => {
     details: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
-
-// ─── Auth middlewares ─────────────────────────────────────────────────────────
-
-const authenticateToken = (req: any, res: any, next: any) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Acesso negado' });
-
-  jwt.verify(token, JWT_SECRET as string, (err: any, user: any) => {
-    if (err) return res.status(403).json({ error: 'Token inválido' });
-    req.user = user;
-    next();
-  });
-};
-
-const authenticateAdmin = (req: any, res: any, next: any) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET as string) as any;
-      if (decoded.role === 'admin') {
-        req.user = decoded;
-        return next();
-      }
-    } catch (e) {
-      // JWT failed, try legacy key
-    }
-  }
-
-  const key = req.headers['x-admin-key'];
-  if (key === ADMIN_PASSWORD && ADMIN_PASSWORD !== '') {
-    req.user = { role: 'admin' };
-    return next();
-  }
-  
-  return res.status(401).json({ error: 'Acesso administrativo negado' });
-};
-
-// ─── Legacy Routes (to be migrated) ───────────────────────────────────────────
-
-if (process.env.NODE_ENV !== 'production') {
-  app.use('/api/portal', portalRouter);
-  app.use('/api/payments', authenticateAdmin, paymentsRouter);
-}
 
 // ─── Server start ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001;

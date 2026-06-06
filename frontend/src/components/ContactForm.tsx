@@ -20,7 +20,13 @@ export const ContactForm = () => {
         body: JSON.stringify({ ...form, source: 'site_premium_form' }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data = { error: 'Falha desconhecida' };
+      try {
+        data = text ? JSON.parse(text) : data;
+      } catch (e) {
+        // Not JSON
+      }
 
       if (!res.ok) {
         throw new Error(data.error || 'Erro ao enviar mensagem');

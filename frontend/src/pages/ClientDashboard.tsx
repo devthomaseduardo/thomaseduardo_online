@@ -284,6 +284,7 @@ const PanelFiles = ({ clientData }: { clientData: any }) => {
 };
 
 const PanelPayments = ({ clientData }: { clientData: any }) => {
+  const navigate = useNavigate();
   const allInvoices = (clientData.projects || []).flatMap((p: any) => (p.invoices || []).map((i: any) => ({ ...i, projectName: p.name })));
   
   return (
@@ -332,7 +333,10 @@ const PanelPayments = ({ clientData }: { clientData: any }) => {
                 </div>
                 
                 {inv.status !== 'paid' && (
-                  <button className="px-5 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-colors">
+                  <button 
+                    onClick={() => navigate(`/payment?invoiceId=${inv.id}`)}
+                    className="px-5 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-colors"
+                  >
                     Pagar Agora
                   </button>
                 )}
@@ -424,9 +428,14 @@ const PanelSupport = ({ clientData }: { clientData: any }) => {
 
   const send = async () => {
     if (!msg.trim()) return;
+    const projectId = clientData.projects?.[0]?.id;
+    if (!projectId) {
+      showToast("Nenhum projeto ativo encontrado para vincular esta mensagem.", "warning");
+      return;
+    }
     setSending(true);
     try {
-      const res = await fetch(`${API_URL}/api/v2/projects/${clientData.projects[0]?.id}/messages`, {
+      const res = await fetch(`${API_URL}/api/v2/projects/${projectId}/messages`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   Shield, Check, ArrowRight, ArrowLeft, QrCode, Copy,
-  Clock, Package, Zap, Lock, Star
+  Clock, Package, Zap, Lock, Star, ChevronRight
 } from "lucide-react";
 import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
@@ -64,7 +64,7 @@ const PIX_KEY = "devthomaseduardo@gmail.com";
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 const Sidebar = ({ amount, projectData }: { amount: number, projectData?: any }) => (
-  <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto">
+  <aside className="w-[300px] shrink-0 border-r border-white/[0.05] flex flex-col h-screen sticky top-0 bg-[#060606] overflow-y-auto hidden xl:flex">
     {/* Logo */}
     <div className="h-16 flex items-center gap-3 px-7 border-b border-white/[0.05] shrink-0">
       <div className="w-7 h-7 flex items-center justify-center shrink-0">
@@ -108,12 +108,12 @@ const Sidebar = ({ amount, projectData }: { amount: number, projectData?: any })
 
     {/* Investment summary */}
     <div className="mx-5 mb-6 p-5 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
-      <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">Investimento Total</span>
+      <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/25 block mb-3">Total a Liquidar</span>
       <span className="text-[36px] font-bold tracking-tighter leading-none block">
-        R$ {amount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)}
       </span>
       <span className="text-[11px] text-white/25 mt-2 block font-mono">
-        {projectData?.paymentTerms || "Pagamento sob consulta"}
+        {projectData?.paymentTerms || "Ambiente Seguro"}
       </span>
     </div>
   </aside>
@@ -154,25 +154,13 @@ const PanelPix = () => {
 
 // ─── Card Panel ──────────────────────────────────────────────────────────────
 const PanelCard = () => (
-  <motion.div key="card" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="px-6 py-6 space-y-4">
-    {[
-      { label: "Número do cartão", placeholder: "0000 0000 0000 0000" },
-      { label: "Nome no cartão",   placeholder: "Como está no cartão"  },
-    ].map(f => (
-      <div key={f.label}>
-        <label className="block text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 mb-2">{f.label}</label>
-        <input placeholder={f.placeholder} className="w-full bg-[#0c0c0c] border border-white/[0.07] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors" />
-      </div>
-    ))}
-    <div className="grid grid-cols-2 gap-4">
-      {[{ label: "Validade", placeholder: "MM / AA" }, { label: "CVV", placeholder: "•••" }].map(f => (
-        <div key={f.label}>
-          <label className="block text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 mb-2">{f.label}</label>
-          <input placeholder={f.placeholder} className="w-full bg-[#0c0c0c] border border-white/[0.07] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors" />
-        </div>
-      ))}
+  <motion.div key="card" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="px-6 py-6 space-y-4 text-center">
+    <div className="py-10">
+      <CreditCard className="w-12 h-12 text-white/10 mx-auto mb-4" />
+      <p className="text-sm text-white/60 mb-2">Checkout Mercado Pago</p>
+      <p className="text-[11px] text-white/20 max-w-[200px] mx-auto">Você será redirecionado para o ambiente seguro do Mercado Pago para finalizar com cartão.</p>
     </div>
-    <p className="text-center text-[10px] font-mono text-white/20 flex items-center justify-center gap-1.5 pt-2">
+    <p className="text-center text-[10px] font-mono text-white/20 flex items-center justify-center gap-1.5 pt-2 border-t border-white/5">
       <Shield className="w-3 h-3" />Visa · Mastercard · Elo · Amex — SSL encriptado
     </p>
   </motion.div>
@@ -182,56 +170,82 @@ const PanelCard = () => (
 export default function PaymentPage() {
   const navigate = useNavigate();
   const [method, setMethod] = useState<Method>("pix");
-  const [projectData, setProjectData] = useState<any>(null);
+  const [invoice, setInvoice] = useState<any>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("clientToken");
-    if (!token) return;
+    if (!token) {
+      navigate("/portal");
+      return;
+    }
 
-    fetch(`${API_URL}/api/clients/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then((res) => {
-        if (!res.ok) throw new Error("Falha ao carregar cliente");
-        return res.json();
+    const params = new URLSearchParams(window.location.search);
+    const invoiceId = params.get("invoiceId");
+
+    if (!invoiceId) {
+      navigate("/portal/dashboard");
+      return;
+    }
+
+    fetch(`${API_URL}/api/v2/invoices/${invoiceId}`, { 
+      headers: { Authorization: `Bearer ${token}` } 
+    })
+      .then(async (res) => {
+        const text = await res.text();
+        if (!text) throw new Error("Resposta vazia do servidor.");
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          throw new Error("Resposta inválida do servidor (não é JSON).");
+        }
+        if (!res.ok) throw new Error(data.error || "Falha ao carregar fatura");
+        return data;
       })
       .then((data) => {
-        const project = data.projects?.[0];
-        if (project) {
-          setProjectData(project);
-        }
+        setInvoice(data);
       })
-      .catch(() => {
-        localStorage.removeItem("clientToken");
-        localStorage.removeItem("clientId");
+      .catch((err) => {
+        setStatusMessage(err.message);
       });
-  }, []);
+  }, [navigate]);
 
-  const amount = projectData ? (projectData.invoices?.find((i: any) => i.status === 'pending')?.amount || projectData.value) : 0;
+  const amount = invoice?.saldo || invoice?.amount || 0;
 
   const handleConfirmPayment = async () => {
     setStatusMessage(null);
-    if (!projectData?.id) {
-      setStatusMessage("Acesse o portal para vincular o pagamento ao seu projeto.");
+    if (!invoice?.id) return;
+
+    if (method === "pix") {
+      setStatusMessage("Por favor, realize o Pix para a chave acima e envie o comprovante no suporte.");
       return;
     }
 
     setProcessing(true);
     try {
-      const response = await fetch(`${API_URL}/api/payments/intent`, {
+      const token = localStorage.getItem("clientToken");
+      const response = await fetch(`${API_URL}/api/v2/payments/intent`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId: projectData.id,
-          amount: amount,
-          description: method === "pix" ? "Pagamento via PIX" : "Pagamento via cartão",
-          type: "service",
-        }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ invoiceId: invoice.id }),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Falha ao registrar pagamento.");
-      setStatusMessage(`Pagamento registrado com sucesso. Invoice ID: ${data.invoiceId}`);
+      const text = await response.text();
+      if (!text) throw new Error("Erro na comunicação com o provedor de pagamento.");
+      
+      const data = JSON.parse(text);
+      if (!response.ok) throw new Error(data.error || "Falha ao gerar checkout.");
+
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        throw new Error("Checkout URL não encontrada.");
+      }
     } catch (error: any) {
       setStatusMessage(error?.message || "Erro inesperado ao processar pagamento.");
     } finally {
@@ -244,45 +258,41 @@ export default function PaymentPage() {
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
 
-      <Sidebar amount={amount} projectData={projectData} />
+      <Sidebar amount={amount} projectData={invoice?.project} />
 
-      {/* ══ MAIN ════════════════════════════════════════════════════════════ */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
 
-        {/* Top Nav */}
         <header className="h-16 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40 shrink-0">
           <nav className="flex items-center gap-1">
             {NAV.map(item => {
               const Icon = item.icon;
               const isActive = item.id === "pagamentos";
               return (
-                <button key={item.id} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all ${isActive ? "bg-white/[0.07] text-white font-medium" : "text-white/35 hover:text-white/60 hover:bg-white/[0.03]"}`}>
+                <button key={item.id} onClick={() => navigate('/portal/dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] transition-all ${isActive ? "bg-white/[0.07] text-white font-medium" : "text-white/35 hover:text-white/60 hover:bg-white/[0.03]"}`}>
                   <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-white/25"}`} />
                   {item.label}
                 </button>
               );
             })}
           </nav>
-          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/60">CL</div>
+          <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-white/60">{invoice?.project?.client?.name?.charAt(0) || 'CL'}</div>
         </header>
 
-        {/* ── HERO ──────────────────────────────────────────────────────── */}
         <section className="grid grid-cols-1 lg:grid-cols-[1fr_320px] border-b border-white/[0.05] min-h-[300px]">
           <div className="px-10 py-14 flex flex-col justify-center">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <span className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.3em] text-white/25 border border-white/[0.07] px-3 py-1.5 rounded-sm mb-8">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Onboarding
+                Segurança Ativa
               </span>
               <h1 className="text-[clamp(34px,4vw,64px)] font-bold tracking-tighter leading-[1.0] mb-5">
-                Vamos iniciar<br />sua operação.
+                Checkout<br />de Engenharia.
               </h1>
               <p className="text-[15px] text-white/35 max-w-lg leading-relaxed">
-                Confira o resumo do projeto e escolha a melhor forma de pagamento para dar início ao desenvolvimento.
+                Realize a liquidação do faturamento de forma segura e imediata para prosseguirmos com a sua operação técnica.
               </p>
             </motion.div>
           </div>
-          {/* BG image panel */}
           <div className="border-l border-white/[0.05] relative overflow-hidden hidden lg:block">
             <img src={fundoBg} alt="Fundo" className="absolute inset-0 w-full h-full object-cover object-center" />
             <div className="absolute inset-0 bg-black/55" />
@@ -290,9 +300,8 @@ export default function PaymentPage() {
           </div>
         </section>
 
-        {/* ── PROGRESS TIMELINE ─────────────────────────────────────────── */}
         <section className="px-10 py-8 border-b border-white/[0.05]">
-          <div className="flex items-center gap-0">
+          <div className="flex items-center gap-0 overflow-x-auto pb-2 scrollbar-hide">
             {STEPS.map((step, i) => (
               <React.Fragment key={step.num}>
                 <div className="flex items-center gap-3 min-w-max">
@@ -311,34 +320,24 @@ export default function PaymentPage() {
               </React.Fragment>
             ))}
           </div>
-          {/* Progress bar */}
-          <div className="mt-5 flex items-center gap-4">
-            <div className="w-64 h-[2px] bg-white/[0.05] rounded-full overflow-hidden relative">
-              <motion.div className="absolute inset-y-0 left-0 bg-white rounded-full" initial={{ width: 0 }} animate={{ width: "50%" }} transition={{ duration: 1.2, ease: "easeOut" }} />
-            </div>
-            <span className="text-[10px] font-mono text-white/20">Etapa 3 de 4</span>
-          </div>
         </section>
 
-        {/* ── CONTENT GRID ──────────────────────────────────────────────── */}
         <div className="px-10 py-10 grid grid-cols-1 xl:grid-cols-[1fr_440px] gap-10 items-start">
-
-          {/* LEFT: Project summary + Post-payment timeline */}
           <div className="space-y-6">
-
-            {/* Project Summary */}
             <div className="border border-white/[0.07] bg-[#0a0a0a] rounded-2xl overflow-hidden">
               <div className="px-7 py-5 border-b border-white/[0.06] flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Resumo do Projeto</span>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg uppercase tracking-widest">Aprovado</span>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Resumo da Fatura</span>
+                <span className={`text-[10px] font-mono border px-2.5 py-1 rounded-lg uppercase tracking-widest ${
+                  invoice?.status === 'paid' ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' : 'text-amber-400 bg-amber-400/10 border-amber-400/20'
+                }`}>
+                  {invoice?.status === 'paid' ? 'Liquidado' : 'Pendente'}
+                </span>
               </div>
               <div className="divide-y divide-white/[0.05]">
                 {[
-                  { label: "Projeto",           value: "Sleep House Campinas"     },
-                  { label: "Tipo",              value: "Site Institucional Premium" },
-                  { label: "Prazo estimado",    value: "30 a 45 dias"             },
-                  { label: "Entregáveis",       value: "Site completo + CMS"       },
-                  { label: "Suporte pós-entrega", value: "30 dias"               },
+                  { label: "Descrição",         value: invoice?.description || "Carregando..." },
+                  { label: "Projeto",           value: invoice?.project?.name || "..."     },
+                  { label: "Vencimento",        value: invoice?.vencimento ? new Date(invoice.vencimento).toLocaleDateString('pt-BR') : "A definir" },
                 ].map(row => (
                   <div key={row.label} className="flex items-center justify-between px-7 py-4">
                     <span className="text-[11px] font-mono uppercase tracking-wider text-white/25">{row.label}</span>
@@ -346,16 +345,17 @@ export default function PaymentPage() {
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-7 py-5 bg-white/[0.02]">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-white/25">Investimento</span>
-                  <span className="text-[24px] font-bold tracking-tighter">R$ {amount.toLocaleString("pt-BR")}</span>
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-white/25">Valor Líquido</span>
+                  <span className="text-[24px] font-bold tracking-tighter">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Post-payment timeline */}
             <div className="border border-white/[0.07] bg-[#0a0a0a] rounded-2xl overflow-hidden">
               <div className="px-7 py-5 border-b border-white/[0.06]">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">O que acontece depois</span>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30">Próximas Etapas</span>
               </div>
               <div className="px-7 py-6">
                 {POST_TIMELINE.map((step, i) => {
@@ -380,13 +380,11 @@ export default function PaymentPage() {
             </div>
           </div>
 
-          {/* RIGHT: Payment methods */}
           <div className="space-y-4">
-            {/* Method selector */}
             <div className="flex gap-3">
               {([
                 { id: "pix",  label: "PIX",     icon: QrCode,      desc: "Aprovação imediata e início rápido." },
-                { id: "card", label: "Cartão",  icon: CreditCard,  desc: "Pagamento seguro via Stripe."        },
+                { id: "card", label: "Cartão",  icon: CreditCard,  desc: "Crédito, Débito ou Parcelamento."     },
               ] as { id: Method; label: string; icon: React.ElementType; desc: string }[]).map(m => {
                 const Icon = m.icon;
                 const active = method === m.id;
@@ -409,15 +407,14 @@ export default function PaymentPage() {
               })}
             </div>
 
-            {/* Panel */}
             <div className="border border-white/[0.07] bg-[#0a0a0a] rounded-2xl overflow-hidden">
-              {/* Amount header */}
               <div className="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-1">Total a pagar</span>
-                  <span className="text-[32px] font-bold tracking-tighter leading-none">R$ {amount.toLocaleString("pt-BR")}</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-white/25 block mb-1">Total a liquidar</span>
+                  <span className="text-[32px] font-bold tracking-tighter leading-none">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)}
+                  </span>
                 </div>
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-lg uppercase tracking-widest">{projectData?.paymentTerms || "Pagamento único"}</span>
               </div>
 
               <AnimatePresence mode="wait">
@@ -425,48 +422,33 @@ export default function PaymentPage() {
                 {method === "card" && <PanelCard />}
               </AnimatePresence>
 
-              {/* CTA */}
               <div className="px-6 pb-6 pt-2">
                 <button
                 onClick={handleConfirmPayment}
-                disabled={processing}
+                disabled={processing || invoice?.status === 'paid'}
                 className="w-full flex items-center justify-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 text-black font-bold text-[11px] uppercase tracking-[0.2em] py-4 rounded-xl transition-all duration-200 group mt-4"
               >
-                {processing ? "Processando..." : method === "pix" ? "Já realizei o pagamento" : "Pagar com Cartão"}
+                {processing ? "Transmitindo sinal..." : invoice?.status === 'paid' ? "Fatura já Liquidada" : "Iniciar Pagamento Seguro"}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
               {statusMessage && (
-                <p className="mt-4 text-[13px] text-white/60">{statusMessage}</p>
+                <div className={`mt-4 p-4 rounded-xl text-xs font-medium border ${
+                  statusMessage.includes('confirmado') || statusMessage.includes('sucesso') ? 'bg-emerald-500/5 text-emerald-400 border-emerald-500/10' : 'bg-rose-500/5 text-rose-400 border-rose-500/10'
+                }`}>
+                  {statusMessage}
+                </div>
               )}
             </div>
           </div>
-
-            {/* Trust banner */}
-            <div className="flex items-center gap-4 px-5 py-4 border border-white/[0.06] bg-[#0a0a0a] rounded-xl">
-              <Shield className="w-5 h-5 text-white/20 shrink-0" />
-              <div>
-                <span className="block text-[12px] font-semibold text-white/60">Segurança e Confiança</span>
-                <span className="block text-[11px] text-white/25 mt-0.5">Todos os dados protegidos com criptografia de ponta a ponta.</span>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* ── BOTTOM ACTIONS ────────────────────────────────────────────── */}
         <div className="px-10 pb-12 flex items-center justify-between border-t border-white/[0.05] pt-8 mt-2">
           <button
-            onClick={() => navigate("/material")}
+            onClick={() => navigate("/portal/dashboard")}
             className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-white/25 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />Voltar para Materiais
-          </button>
-          <button
-            onClick={handleConfirmPayment}
-            disabled={processing}
-            className="flex items-center gap-3 bg-white hover:bg-neutral-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 text-black font-bold text-[11px] uppercase tracking-[0.2em] px-7 py-3.5 rounded-xl transition-all duration-200 group"
-          >
-            {processing ? "Processando..." : "Confirmar Pagamento"}
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-4 h-4" />Voltar para Dashboard
           </button>
         </div>
 

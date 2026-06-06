@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { extractBearer, verifyAdminToken } from '../lib/jwt.js';
+import { authenticateToken } from '../lib/auth.js';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -680,6 +682,81 @@ router.delete('/projects/:projectId/tasks/:id', adminAuth, async (req, res) => {
 // ==========================================
 // FINANCEIRO (INVOICES)
 // ==========================================
+
+router.get('/invoices/:id', authenticateToken, async (req: any, res) => {
+  try {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: req.params.id },
+      include: { project: { include: { client: true } } }
+    });
+    
+    if (!invoice) return res.status(404).json({ error: 'Fatura não encontrada.' });
+    
+    // Check if it belongs to the authenticated client
+    if (invoice.project.client.id !== req.user.id) {
+      return res.status(403).json({ error: 'Acesso negado a esta fatura.' });
+    }
+    
+    res.json(invoice);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao buscar fatura.' });
+  }
+});
+
+router.post('/payments/intent', authenticateToken, async (req: any, res) => {
+  try {
+    const { invoiceId } = req.body;
+    if (!invoiceId) return res.status(400).json({ error: 'invoiceId é obrigatório.' });
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: { project: { include: { client: true } } }
+    });
+
+    if (!invoice) return res.status(404).json({ error: 'Fatura não encontrada.' });
+    if (invoice.project.client.id !== req.user.id) return res.status(403).json({ error: 'Não autorizado.' });
+
+    if (invoice.status === 'paid') return res.status(400).json({ error: 'Esta fatura já está paga.' });
+
+    // Mercado Pago Integration
+    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || '' });
+    const preference = new Preference(client);
+
+    const result = await preference.create({
+      body: {
+        items: [
+          {
+            id: invoice.id,
+            title: invoice.description,
+            quantity: 1,
+            unit_price: invoice.saldo || invoice.amount,
+            currency_id: 'BRL',
+          }
+        ],
+        payer: {
+          email: invoice.project.client.email,
+        },
+        back_urls: {
+          success: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/portal/dashboard`,
+          failure: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment?invoiceId=${invoice.id}`,
+          pending: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/portal/dashboard`,
+        },
+        auto_return: 'approved',
+        external_reference: invoice.id,
+        notification_url: `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/webhooks/mercadopago`,
+      }
+    });
+
+    res.json({ 
+      id: result.id, 
+      init_point: result.init_point,
+      sandbox_init_point: result.sandbox_init_point
+    });
+  } catch (error: any) {
+    console.error('[PaymentIntent]', error);
+    res.status(500).json({ error: error.message || 'Erro ao gerar intenção de pagamento' });
+  }
+});
 
 router.get('/projects/:id/invoices', adminAuth, async (req, res) => {
   try {

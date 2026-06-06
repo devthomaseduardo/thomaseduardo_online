@@ -25,6 +25,7 @@ if (envPath) {
 
 const REQUIRED = [
   "DATABASE_URL",
+  "RESEND_API_KEY"
 ] as const;
 
 function validateEnv() {
@@ -39,7 +40,9 @@ function validateEnv() {
   if (missing.length > 0) {
     console.warn("\n⚠️ AVISO: Variáveis de ambiente faltando:");
     missing.forEach(k => console.warn(`   → ${k}`));
-    console.warn("\nO servidor pode apresentar erros se o banco de dados não estiver configurado.\n");
+    console.warn("\nO servidor pode apresentar erros se o banco de dados ou serviços externos não estiverem configurados.\n");
+  } else {
+    console.log("✅ Variáveis de ambiente carregadas com sucesso.");
   }
 }
 
