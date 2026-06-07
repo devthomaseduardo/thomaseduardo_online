@@ -2,30 +2,84 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# portfolio_novo
+<h1 align="center">Portfólio Editorial & SaaS | Plataforma de Alta Performance</h1>
 
-This repository is now organized into separate frontend and backend workspaces:
+<p align="center">
+  <img src="https://img.shields.io/badge/Versão-1.0.0-blue.svg" alt="Versão">
+  <img src="https://img.shields.io/badge/Licença-MIT-green.svg" alt="Licença">
+  <img src="https://img.shields.io/badge/Arquitetura-Monorepo-orange.svg" alt="Arquitetura">
+  <img src="https://img.shields.io/badge/TypeScript-Ready-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Node.js-Backend-339933.svg?logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/React-Frontend-61DAFB.svg?logo=react&logoColor=black" alt="React">
+</p>
 
-- `frontend/`: Vite + React application
-- `backend/`: Express server, Prisma database layer, and backend scripts
+## 🚀 Visão Geral de Negócio
 
-## Run Locally
+Este repositório abriga o ecossistema completo do meu **Portfólio Profissional**, concebido com uma estética editorial e foco em conversão e usabilidade de alto nível. Além de exibir projetos, ele opera como uma plataforma "Centro de Operações" completa, que conta com um painel de administração completo para gerenciar Leads, Projetos, Clientes, Propostas e Finanças.
 
-**Prerequisites:** Node.js
+O objetivo do projeto é demonstrar capacidade técnica *end-to-end* (Fullstack), do design de interface pixel-perfect à engenharia de software robusta, modelagem de banco de dados e automação de APIs.
 
-1. Install dependencies:
-   `npm install`
-2. Start development servers:
-   `npm run dev`
-3. Or run the pieces individually:
-   - `npm run dev:frontend`
-   - `npm run dev:backend`
+## 🛠 Principais Tecnologias
 
-## Notes
+Este projeto utiliza uma arquitetura de monorepo estruturada para escalar:
 
-- Use `backend/package.json` for server-specific commands and database seeding.
-- Use `frontend/package.json` for Vite build, preview, and asset tools.
-- Configure Neon/PostgreSQL by setting `DATABASE_URL` and `DIRECT_URL` in `.env`.
-  - `DATABASE_URL` is the runtime connection.
-  - `DIRECT_URL` is used by Prisma CLI for migrations and introspection.
-- A Neon example file is available in `.env.neon.example` for local setup.
+**Frontend (SPA)**
+- [React.js](https://reactjs.org/) + [Vite](https://vitejs.dev/) - Performance e experiência imersiva de UI.
+- [TypeScript](https://www.typescriptlang.org/) - Escalabilidade e tipagem segura.
+- [Tailwind CSS](https://tailwindcss.com/) - Design utility-first para interfaces premium e flexíveis.
+
+**Backend (API)**
+- [Node.js](https://nodejs.org/) + [Express](https://expressjs.com/) - Motor do servidor escalável e não-bloqueante.
+- [Prisma ORM](https://www.prisma.io/) - Mapeamento objeto-relacional robusto e type-safe.
+- [PostgreSQL](https://www.postgresql.org/) (via [Neon](https://neon.tech/)) - Persistência de dados confiável.
+- [Resend](https://resend.com/) - Integração para envio assíncrono de notificações transacionais (Emails).
+
+## 📁 Documentação Detalhada
+
+A documentação estendida do projeto se encontra no diretório `/docs`:
+
+- [Arquitetura (ARCHITECTURE.md)](docs/ARCHITECTURE.md) - Visão geral da arquitetura, fluxo de dados e decisões técnicas.
+- [Documentação da API (API.md)](docs/API.md) - Contratos, endpoints e payloads do Backend.
+- [Guia de Deploy (DEPLOYMENT.md)](docs/DEPLOYMENT.md) - Instruções para publicação da infraestrutura.
+- [Operações e Monitoramento (OPERATIONS.md)](docs/OPERATIONS.md) - Resolução de problemas e gerenciamento.
+
+## 💻 Como Rodar Localmente
+
+**Pré-requisitos:** Node.js v18+ e uma instância PostgreSQL (ou configuração do Neon).
+
+1. **Instale as dependências na raiz do monorepo:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure as Variáveis de Ambiente:**
+   Duplique o arquivo `.env.example` e `.env.neon.example` para `.env` na raiz, preenchendo as chaves necessárias (especialmente `DATABASE_URL`, `DIRECT_URL` e `RESEND_API_KEY`).
+
+3. **Inicie os servidores de Desenvolvimento:**
+   Execute o script unificado que inicializa o Frontend e o Backend simultaneamente:
+   ```bash
+   npm run dev
+   ```
+
+   *Se preferir executar individualmente:*
+   - Backend: `npm run dev:backend`
+   - Frontend: `npm run dev:frontend`
+
+## 🧪 Como Testar
+
+Scripts de linting já estão pré-configurados no ambiente:
+```bash
+# Roda a análise estática no projeto inteiro
+npm run lint
+```
+(A suíte de testes unitários e E2E, utilizando ferramentas como Jest ou Playwright, está mapeada para a próxima fase do roadmap).
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas e ajudam a manter este projeto robusto! Por favor, leia nosso [Guia de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md) para detalhes do nosso processo e padrões de código.
+
+Consulte o [Changelog](CHANGELOG.md) para ver as últimas novidades e correções.
+
+## 📜 Licença
+
+Este projeto é distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
