@@ -24,10 +24,37 @@ O projeto é dividido em dois workspaces principais (definidos no `package.json`
 - **Integrações Externas**: Resend (para envio de emails e notificações).
 
 ## Padrões de Design e Decisões
+
 - **Separação de Preocupações (SoC)**: O frontend cuida exclusivamente da camada de apresentação, enquanto o backend orquestra a lógica de negócio e persistência de dados.
+- **Padrão Controller / Service**: O backend isola as regras de negócio em arquivos e funções específicas (camada de serviço/lógica) e utiliza Controladores para gerenciar a requisição HTTP.
 - **Tipagem Segura (End-to-End Type Safety)**: Utilização do TypeScript em ambos os lados reduz erros em tempo de execução. O Prisma gera os tipos do banco, que podem ser mapeados e validados no Express e compartilhados (quando necessário) com o Frontend.
 - **Monorepo**: Facilita a execução local com um único comando (`npm run dev`) e mantém a documentação e histórico do projeto unificados.
 - **Env Variables**: Utilização de variáveis de ambiente para isolamento entre desenvolvimento, teste e produção (separação entre `DATABASE_URL` e `DIRECT_URL` para o Neon).
+
+## Diagrama da Arquitetura (C4 Model - Nível de Contêiner)
+
+```mermaid
+C4Container
+    title Diagrama de Contêineres - Portfólio SaaS
+
+    Person(user, "Visitante / Cliente", "Acessa o portfólio e envia contatos")
+    Person(admin, "Administrador", "Gerencia projetos, leads e finanças")
+
+    Container_Boundary(c1, "Aplicação Monorepo") {
+        Container(spa, "Frontend (React/Vite)", "TypeScript, React, Tailwind", "Apresenta o portfólio e painel admin")
+        Container(api, "Backend API (Express)", "TypeScript, Node.js", "Processa regras de negócio, expõe rotas REST")
+    }
+
+    ContainerDb(db, "Banco de Dados (Neon/PostgreSQL)", "PostgreSQL", "Armazena leads, projetos, admins")
+    System_Ext(resend, "API do Resend", "Serviço de Email", "Envia notificações transacionais")
+
+    Rel(user, spa, "Visualiza projetos, envia formulário", "HTTPS")
+    Rel(admin, spa, "Gerencia plataforma via Admin Dashboard", "HTTPS")
+    
+    Rel(spa, api, "Faz requisições REST", "JSON/HTTPS")
+    Rel(api, db, "Lê/Escreve dados", "TCP/Prisma")
+    Rel(api, resend, "Dispara emails (contato)", "HTTPS")
+```
 
 ## Fluxo de Dados (Exemplo: Contato)
 1. **Usuário** preenche o formulário no Frontend.

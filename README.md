@@ -34,14 +34,37 @@ Este projeto utiliza uma arquitetura de monorepo estruturada para escalar:
 - [PostgreSQL](https://www.postgresql.org/) (via [Neon](https://neon.tech/)) - Persistência de dados confiável.
 - [Resend](https://resend.com/) - Integração para envio assíncrono de notificações transacionais (Emails).
 
-## 📁 Documentação Detalhada
+## 📁 Estrutura de Pastas
+
+A arquitetura do projeto segue uma divisão modular para manter escalabilidade e facilidade de manutenção:
+
+```text
+.github/             # Configurações de CI/CD (GitHub Actions)
+backend/             # Aplicação Node.js / Express
+  ├── server/
+  │   ├── controllers/ # Lógica de apresentação da API
+  │   ├── lib/         # Serviços, integrações e utilitários
+  │   ├── routes/      # Definição de rotas da API REST
+  │   └── index.ts     # Ponto de entrada do servidor
+  └── prisma/        # Schemas e migrações do banco de dados
+frontend/            # Aplicação React / Vite SPA
+  ├── src/
+  │   ├── components/  # Componentes reutilizáveis
+  │   ├── pages/       # Views de página inteira
+  │   └── lib/         # Utilitários do frontend
+docs/                # Documentação detalhada
+scripts/             # Scripts de automação
+tests/               # Suíte de testes (unitários, integração, E2E)
+```
+
+## 📖 Documentação Detalhada
 
 A documentação estendida do projeto se encontra no diretório `/docs`:
 
 - [Arquitetura (ARCHITECTURE.md)](docs/ARCHITECTURE.md) - Visão geral da arquitetura, fluxo de dados e decisões técnicas.
-- [Documentação da API (API.md)](docs/API.md) - Contratos, endpoints e payloads do Backend.
-- [Guia de Deploy (DEPLOYMENT.md)](docs/DEPLOYMENT.md) - Instruções para publicação da infraestrutura.
-- [Operações e Monitoramento (OPERATIONS.md)](docs/OPERATIONS.md) - Resolução de problemas e gerenciamento.
+- [Documentação da API (API.md)](docs/API.md) - Contratos, endpoints, autenticação e payloads do Backend.
+- [Guia de Deploy (DEPLOYMENT.md)](docs/DEPLOYMENT.md) - Instruções para publicação da infraestrutura nos ambientes.
+- [Operações e Monitoramento (OPERATIONS.md)](docs/OPERATIONS.md) - Resolução de problemas, logs e gerenciamento.
 
 ## 💻 Como Rodar Localmente
 
