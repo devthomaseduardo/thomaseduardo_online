@@ -28,7 +28,7 @@ const SIDEBAR_SECTIONS = [
   {
     icon: Palette,
     title: "Identidade Visual",
-    desc: "Logo, cores, tipografia e manual da marca definem a base visual do projeto.",
+    desc: "Cores, tipografia e manual da marca definem a base visual do projeto.",
   },
   {
     icon: Zap,
@@ -79,12 +79,6 @@ const MATERIALS: MatCard[] = [
     desc: "Documento de escopo, objetivos e expectativas do projeto.",
     formats: "PDF · DOCX · TXT",
     details: "O briefing é a bússola do projeto. Nele, você descreve a visão da sua empresa, público-alvo, concorrentes de referência e os objetivos principais. Quanto mais detalhado for, mais preciso e assertivo será o resultado da interface final."
-  },
-  {
-    id: "logo",      icon: Palette,    title: "Logo da Empresa",
-    desc: "Versão principal da marca em alta resolução e variações.",
-    formats: "SVG · AI · PNG · PDF",
-    details: "Precisamos do seu logotipo preferencialmente em formato vetorial (SVG, AI, EPS) para garantir máxima qualidade visual e nitidez em qualquer tamanho de tela e resolução de dispositivo."
   },
   {
     id: "brand",     icon: Layers,     title: "Manual da Marca",
@@ -240,7 +234,6 @@ export default function MaterialPage() {
   const [activeNav] = useState<NavId>("materiais");
   const [statuses, setStatuses] = useState<Record<string, Status>>({
     briefing: "received",
-    logo:     "reviewing",
     brand:    "pending",
     images:   "pending",
     texts:    "pending",

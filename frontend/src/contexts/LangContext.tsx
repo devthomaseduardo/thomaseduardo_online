@@ -142,7 +142,7 @@ const translations = {
         title: "Do briefing ao deploy.",
         steps: [
           { n: "01", title: "Briefing & Organização", desc: "Entendimento do projeto, objetivos, referências e estrutura inicial do escopo.", emoji: "folder" },
-          { n: "02", title: "Materiais & Conteúdo", desc: "Envio de logos, imagens, textos, referências e acessos importantes.", emoji: "laptop" },
+          { n: "02", title: "Materiais & Conteúdo", desc: "Envio de imagens, textos, referências e acessos importantes.", emoji: "laptop" },
           { n: "03", title: "Desenvolvimento & Aprovação", desc: "Criação, acompanhamento, revisões e validações do projeto em tempo real.", emoji: "gear" },
           { n: "04", title: "Entrega & Infraestrutura", desc: "Deploy, domínio, repositórios, arquivos finais e documentação técnica.", emoji: "rocket" },
         ]
@@ -174,7 +174,7 @@ const translations = {
         title: "O que você precisa ter.",
         desc: "Não se preocupe se não tiver tudo — organizamos junto durante o onboarding.",
         accordions: [
-          { title: "Identidade Visual", items: ["Logo em vetor (SVG/AI)", "Paleta de cores", "Tipografia / fontes", "Referências visuais"] },
+          { title: "Identidade Visual", items: ["Paleta de cores", "Tipografia / fontes", "Referências visuais"] },
           { title: "Conteúdo", items: ["Textos institucionais", "Imagens e fotos", "Vídeos e mídias", "Copywriting"] },
           { title: "Acessos Técnicos", items: ["Painel do domínio", "Hospedagem (cPanel / FTP)", "Meta Business Manager", "Google Analytics / Tag Manager"] },
           { title: "Arquivos Extras", items: ["Google Drive compartilhado", "Documentos e PDFs", "Briefings anteriores", "Referências adicionais"] },
@@ -444,7 +444,7 @@ const translations = {
         title: "From briefing to deploy.",
         steps: [
           { n: "01", title: "Briefing & Organization", desc: "Understanding the project, objectives, references, and initial scope structure.", emoji: "folder" },
-          { n: "02", title: "Materials & Content", desc: "Sending logos, images, texts, references, and important access credentials.", emoji: "laptop" },
+          { n: "02", title: "Materials & Content", desc: "Sending images, texts, references, and important access credentials.", emoji: "laptop" },
           { n: "03", title: "Development & Approval", desc: "Creation, monitoring, revisions, and project validations in real-time.", emoji: "gear" },
           { n: "04", title: "Delivery & Infrastructure", desc: "Deploy, domain, repositories, final files, and technical documentation.", emoji: "rocket" },
         ]
@@ -476,7 +476,7 @@ const translations = {
         title: "What you need to have.",
         desc: "Don't worry if you don't have everything — we organize it together during onboarding.",
         accordions: [
-          { title: "Visual Identity", items: ["Vector Logo (SVG/AI)", "Color palette", "Typography / fonts", "Visual references"] },
+          { title: "Visual Identity", items: ["Color palette", "Typography / fonts", "Visual references"] },
           { title: "Content", items: ["Institutional texts", "Images and photos", "Videos and media", "Copywriting"] },
           { title: "Technical Access", items: ["Domain panel", "Hosting (cPanel / FTP)", "Meta Business Manager", "Google Analytics / Tag Manager"] },
           { title: "Extra Files", items: ["Shared Google Drive", "Documents and PDFs", "Previous briefings", "Additional references"] },

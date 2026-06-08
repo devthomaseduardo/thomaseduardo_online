@@ -51,6 +51,90 @@ async function main() {
       financial: "Pago",
       value: 18000.0,
       description: "Painel de controle de vendas completo para gerenciar leads, propostas e comissões da equipe comercial em tempo real."
+    },
+    {
+      name: "Mocha Corp",
+      email: "financeiro@mochacorp.com",
+      password: "password123",
+      projectName: "SaaS de Faturamento Mocha",
+      phase: "Entregue",
+      status: "completed",
+      progresso: 100,
+      financial: "Pago",
+      value: 9400.0,
+      description: "Plataforma de gestão de faturas e cobranças automatizadas."
+    },
+    {
+      name: "The Chef",
+      email: "cozinha@thechef.app",
+      password: "password123",
+      projectName: "Sistema KDS Profissional",
+      phase: "Em Produção",
+      status: "development",
+      progresso: 85,
+      financial: "Pago",
+      value: 15200.0,
+      description: "Sistema de display de cozinha para restaurantes de alto volume."
+    },
+    {
+      name: "Paper Contracts",
+      email: "legal@papercontracts.com",
+      password: "password123",
+      projectName: "Plataforma de Assinatura Digital",
+      phase: "Entregue",
+      status: "completed",
+      progresso: 100,
+      financial: "Pago",
+      value: 12000.0,
+      description: "SaaS de assinatura eletrônica e gestão de documentos jurídicos."
+    },
+    {
+      name: "Freelancer Pro",
+      email: "ana@freepro.com",
+      password: "password123",
+      projectName: "Analisador de Lucratividade",
+      phase: "Entregue",
+      status: "completed",
+      progresso: 100,
+      financial: "Pago",
+      value: 4500.0,
+      description: "Calculadora de ROI e precificação para freelancers."
+    },
+    {
+      name: "SpinMove Elite",
+      email: "contato@spinmove.com",
+      password: "password123",
+      projectName: "Plataforma Performance Esportiva",
+      phase: "Design",
+      status: "design",
+      progresso: 30,
+      financial: "Pendente",
+      value: 7800.0,
+      description: "Interface imersiva para agendamento de treinos de alta performance."
+    },
+    {
+      name: "Infoprodutos Pro",
+      email: "vendas@prlpro.com",
+      password: "password123",
+      projectName: "Página de Vendas PRL",
+      phase: "Entregue",
+      status: "completed",
+      progresso: 100,
+      financial: "Pago",
+      value: 3200.0,
+      description: "Landing page de alta conversão para produtos digitais com foco em performance mobile."
+    },
+    {
+      name: "QR Brasil Corp",
+      email: "suporte@qrbrasil.com",
+      password: "password123",
+      projectName: "Gerador QR Code Brasil",
+      phase: "Entregue",
+      status: "completed",
+      progresso: 100,
+      financial: "Pago",
+      value: 5500.0,
+      description: "Ferramenta SaaS para geração e gestão de QR Codes dinâmicos com branding customizado."
     }
   ]
 
