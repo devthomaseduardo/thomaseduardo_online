@@ -133,9 +133,9 @@ const ProjectsPage = () => {
                 ) : (
                   <motion.div
                     {...FADE_UP}
-                    className="p-8 md:p-12 rounded-3xl border border-white/5 bg-white/[0.01] backdrop-blur-sm group hover:border-white/10 transition-all duration-500 w-full"
+                    className="p-8 md:p-12 rounded-3xl border border-white/5 bg-white/[0.01] backdrop-blur-sm group hover:border-white/10 transition-all duration-500 w-full text-center"
                   >
-                    <div className="max-w-2xl">
+                    <div className="max-w-2xl mx-auto">
                       <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest mb-6 block">
                         {project.title}
                       </span>
@@ -145,7 +145,7 @@ const ProjectsPage = () => {
                       <p className="text-lg text-white/60 leading-relaxed font-light mb-8">
                         {project.description}
                       </p>
-                      <div className="flex flex-wrap gap-2.5">
+                      <div className="flex flex-wrap justify-center gap-2.5">
                         {project.technologies.map(tech => {
                           const iconUrl = getIcon(tech);
                           return (

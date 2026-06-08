@@ -256,13 +256,10 @@ function OtherProjects() {
         <h2 className="text-[32px] font-bold tracking-tighter mb-12">{t.landing.otherProjects.title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {t.landing.otherProjects.items.map((p, i) => (
-            <div key={i} className="p-8 border border-white/[0.08] bg-[#080808] hover:border-white/[0.2] transition-colors group cursor-pointer flex flex-col justify-between min-h-[200px]">
-              <div>
+            <div key={i} className="p-8 border border-white/[0.08] bg-[#080808] hover:border-white/[0.2] transition-colors group cursor-pointer flex flex-col items-center text-center justify-center min-h-[200px]">
+              <div className="flex flex-col items-center">
                 <h3 className="text-[24px] font-bold tracking-tight mb-3 text-white group-hover:text-white/80 transition-colors">{p.name}</h3>
-                <p className="text-[15px] text-white/50 font-light max-w-sm">{p.desc}</p>
-              </div>
-              <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                <ArrowRight className="w-5 h-5 text-white" />
+                <p className="text-[15px] text-white/50 font-light max-w-sm mx-auto">{p.desc}</p>
               </div>
             </div>
           ))}
