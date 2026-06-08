@@ -10,6 +10,8 @@ async function main() {
       password: "password123", // hashed later se eles fizerem login
       projectName: "Digital Showroom de Colchões Premium",
       phase: "Entregue",
+      status: "completed",
+      progresso: 100,
       financial: "Pago",
       value: 12500.0,
       description: "Um digital showroom de alto padrão para uma rede de lojas de colchões premium. O projeto entrega uma experiência de marca editorial e imersiva."
@@ -20,6 +22,8 @@ async function main() {
       password: "password123",
       projectName: "Página de Alta Conversão para Captação de Alunos",
       phase: "Em Produção",
+      status: "development",
+      progresso: 45,
       financial: "Pendente",
       value: 5700.0,
       description: "Página comercial de alta velocidade focada em apresentar a escola de idiomas e capturar contatos qualificados para o time de matrículas."
@@ -30,6 +34,8 @@ async function main() {
       password: "password123",
       projectName: "Sistema Integrado de Ordem de Serviço",
       phase: "Entregue",
+      status: "completed",
+      progresso: 100,
       financial: "Pago",
       value: 28000.0,
       description: "Sistema de gestão técnica integrado para organizar chamados, alocar visitas de técnicos nas ruas e gerenciar estoque."
@@ -40,6 +46,8 @@ async function main() {
       password: "password123",
       projectName: "Painel de Vendas e CRM Comercial",
       phase: "Em Produção",
+      status: "development",
+      progresso: 75,
       financial: "Pago",
       value: 18000.0,
       description: "Painel de controle de vendas completo para gerenciar leads, propostas e comissões da equipe comercial em tempo real."
@@ -62,11 +70,14 @@ async function main() {
         id: `PROJ-${Math.floor(Math.random() * 9000) + 1000}`,
         name: c.projectName,
         phase: c.phase,
+        status: c.status,
+        progresso: c.progresso,
         financial: c.financial,
         value: c.value,
         clientId: client.id,
         seo: true,
-        analytics: true
+        analytics: true,
+        tipo: "SaaS / Sistema"
       }
     })
     

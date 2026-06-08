@@ -167,24 +167,24 @@ export function ProjectsModule() {
                         </div>
                         <div>
                           <p className="font-bold text-zinc-200 group-hover:text-white transition-colors">{p.name}</p>
-                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5 uppercase tracking-tighter">{p.tipo}</p>
+                          <p className="text-[10px] text-zinc-500 font-mono mt-0.5 uppercase tracking-tighter">{p.tipo || p.category || 'Ativo Técnico'}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex flex-col gap-2 w-full max-w-[180px]">
                         <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider">
-                          <span className="text-zinc-400 group-hover:text-zinc-200 transition-colors">{p.phase}</span>
-                          <span className="text-white font-mono">{p.progresso}%</span>
+                          <span className="text-zinc-400 group-hover:text-zinc-200 transition-colors">{p.phase || 'N/A'}</span>
+                          <span className="text-white font-mono">{p.progresso || 0}%</span>
                         </div>
                         <div className="h-1.5 bg-white/5 rounded-full overflow-hidden relative">
-                          <div className="h-full bg-white rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.4)]" style={{ width: `${p.progresso}%` }} />
+                          <div className="h-full bg-white rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.4)]" style={{ width: `${p.progresso || 0}%` }} />
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-6">
                       <span className={`text-[10px] font-bold uppercase px-3 py-1.5 rounded-full border border-white/5 shadow-sm ${STATUS_COLOR[p.status] ?? STATUS_COLOR.briefing}`}>
-                        {p.status}
+                        {p.status || 'briefing'}
                       </span>
                     </td>
                     <td className="px-6 py-6">
