@@ -304,4 +304,32 @@ if (env.NODE_ENV !== 'production') {
   });
 }
 
+// PostHog Reverse Proxy - Burla ad-blockers encaminhando eventos pelo seu domínio
+router.all('/ingest*', async (req: any, res: any) => {
+  const targetHost = 'https://us.i.posthog.com';
+  // Remove o prefixo da rota para obter o caminho real do PostHog (/decide, /e, etc)
+  const targetPath = req.url.replace('/ingest', '');
+  const url = `${targetHost}${targetPath}`;
+
+  try {
+    const response = await fetch(url, {
+      method: req.method,
+      headers: {
+        'Content-Type': req.headers['content-type'] || 'application/json',
+        // Repassa o IP real para manter a precisão de geolocalização no PostHog
+        'X-Forwarded-For': req.headers['x-forwarded-for'] || req.ip || req.socket.remoteAddress || '',
+      },
+      // Encaminha o corpo da requisição apenas se não for GET/HEAD
+      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+    });
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (error) {
+    // Falha silenciosa para não quebrar o app se o PostHog estiver instável
+    console.error('[PostHog Proxy Error]:', error);
+    res.status(500).json({ error: 'Internal proxy error' });
+  }
+});
+
 export default router;

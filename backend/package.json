@@ -8,6 +8,7 @@
     "build": "npx prisma generate",
     "start": "tsx server/index.ts",
     "lint": "tsc --noEmit --project tsconfig.json",
+    "test": "vitest run",
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
