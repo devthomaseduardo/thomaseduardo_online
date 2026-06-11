@@ -1,32 +1,80 @@
-name: CI Pipeline
+name: Pipeline de CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main, develop ]
 
 jobs:
-  build-and-test:
+  integridade:
+    name: Lint e Verificação de Tipagem
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Lint
-      run: npm run lint --if-present
-      
-    # - name: Run tests
-    #   run: npm test --if-present
-      
-    # - name: Build
-    #   run: npm run build --if-present
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm install
+
+      - name: Frontend - Lint e Verificação de Tipagem
+        run: |
+          npm run lint --workspace=frontend
+
+      - name: Backend - Lint e Verificação de Tipagem
+        run: |
+          # npm run lint --workspace=backend
+
+  construcao:
+    name: Build de Produção
+    needs: integridade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar Dependências
+        run: npm install
+
+      - name: Gerar Cliente Prisma
+        run: npm run prisma:generate --workspace=backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build do Frontend
+        run: npm run build --workspace=frontend
+
+      - name: Build do Backend
+        run: npm run build --workspace=backend
+
+  deploy:
+    name: Deploy em Produção
+    needs: construcao
+    # Garante que o deploy só ocorra em pushes na branch main
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy Frontend para Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./frontend
+
+      - name: Deploy Backend para Render
+        run: |
+          curl -f -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"

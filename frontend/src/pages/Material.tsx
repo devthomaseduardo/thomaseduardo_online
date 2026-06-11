@@ -16,7 +16,7 @@ type Status = "pending" | "received" | "reviewing";
 type NavId  = "dashboard" | "projetos" | "materiais" | "pagamentos" | "mensagens";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-const NAV_ITEMS: { id: NavId; label: string; icon: React.ElementType }[] = [
+const ITENS_NAVEGACAO: { id: NavId; label: string; icon: React.ElementType }[] = [
   { id: "dashboard",  label: "Dashboard",   icon: LayoutGrid   },
   { id: "projetos",   label: "Projetos",    icon: Layers       },
   { id: "materiais",  label: "Materiais",   icon: FolderOpen   },
@@ -24,7 +24,7 @@ const NAV_ITEMS: { id: NavId; label: string; icon: React.ElementType }[] = [
   { id: "mensagens",  label: "Mensagens",   icon: MessageSquare},
 ];
 
-const SIDEBAR_SECTIONS = [
+const SECOES_LATERAIS = [
   {
     icon: Palette,
     title: "Identidade Visual",
@@ -57,7 +57,7 @@ const SIDEBAR_SECTIONS = [
   },
 ];
 
-const STEPS = [
+const ETAPAS = [
   { num: "01", label: "Briefing"  },
   { num: "02", label: "Materiais" },
   { num: "03", label: "Pagamento" },
@@ -73,7 +73,7 @@ interface MatCard {
   details:  string;
 }
 
-const MATERIALS: MatCard[] = [
+const MATERIAIS: MatCard[] = [
   {
     id: "briefing",  icon: FileText,   title: "Briefing do Projeto",
     desc: "Documento de escopo, objetivos e expectativas do projeto.",
@@ -278,7 +278,7 @@ export default function MaterialPage() {
 
         {/* Sidebar sections */}
         <div className="px-5 space-y-1 flex-1">
-          {SIDEBAR_SECTIONS.map((s, i) => (
+          {SECOES_LATERAIS.map((s, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -8 }}
@@ -332,7 +332,7 @@ export default function MaterialPage() {
         {/* Top navigation */}
         <header className="h-16 border-b border-white/[0.05] flex items-center justify-between px-8 bg-[#060606] sticky top-0 z-40 shrink-0">
           <nav className="flex items-center gap-1">
-            {NAV_ITEMS.map(item => {
+            {ITENS_NAVEGACAO.map(item => {
               const Icon = item.icon;
               const isActive = item.id === activeNav;
               return (
@@ -393,7 +393,7 @@ export default function MaterialPage() {
         {/* ── PROGRESS TIMELINE ─────────────────────────────────────────── */}
         <section className="px-10 py-8 border-b border-white/[0.05]">
           <div className="flex items-center gap-0 max-w-2xl">
-            {STEPS.map((step, i) => {
+            {ETAPAS.map((step, i) => {
               const isDone   = i < 1;
               const isActive = i === 1;
               return (
@@ -410,7 +410,7 @@ export default function MaterialPage() {
                       isActive ? "text-white" : isDone ? "text-white/35" : "text-white/20"
                     }`}>{step.label}</span>
                   </div>
-                  {i < STEPS.length - 1 && (
+                  {i < ETAPAS.length - 1 && (
                     <div className={`h-px w-12 md:w-20 mx-3 shrink-0 ${i < 1 ? "bg-emerald-500/20" : "bg-white/[0.05]"}`} />
                   )}
                 </React.Fragment>
@@ -440,12 +440,12 @@ export default function MaterialPage() {
               <p className="text-[13px] text-white/30">Envie todos os materiais solicitados abaixo para que possamos iniciar o desenvolvimento.</p>
             </div>
             <div className="flex items-center gap-3 text-[11px] font-mono text-white/25">
-              <span>{received}/{MATERIALS.length}</span>
+              <span>{received}/{MATERIAIS.length}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {MATERIALS.map((card, i) => (
+            {MATERIAIS.map((card, i) => (
               <motion.div key={card.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}>
                 <UploadCard card={card} status={statuses[card.id] as Status} onUpload={handleUpload} />
               </motion.div>

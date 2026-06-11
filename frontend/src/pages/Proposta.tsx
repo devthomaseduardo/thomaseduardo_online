@@ -13,7 +13,7 @@ import { useSVGL } from "../hooks/useSVGL";
 
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
-const NAV = [
+const NAVEGACAO = [
   { id: "dashboard",  label: "Dashboard",  icon: LayoutGrid    },
   { id: "projetos",   label: "Projetos",   icon: Layers        },
   { id: "materiais",  label: "Materiais",  icon: FolderOpen    },
@@ -21,7 +21,7 @@ const NAV = [
   { id: "mensagens",  label: "Mensagens",  icon: MessageSquare },
 ];
 
-const STEPS = [
+const ETAPAS = [
   { num: "01", label: "O Problema"    },
   { num: "02", label: "A Oportunidade"},
   { num: "03", label: "A Solução"     },
@@ -30,19 +30,19 @@ const STEPS = [
   { num: "06", label: "Cronograma"    },
 ];
 
-const PROBLEMS = [
+const PROBLEMAS = [
   { icon: Clock,       title: "Tempo perdido",          desc: "Processos manuais consomem horas que deveriam ser investidas no crescimento." },
   { icon: TrendingUp,  title: "Falta de visibilidade",  desc: "Sem dados centralizados, as decisões são baseadas em intuição, não em métricas." },
   { icon: Zap,         title: "Escalabilidade limitada", desc: "Sistemas desconectados travam o crescimento quando ele mais importa." },
 ];
 
-const OPPORTUNITIES = [
+const OPORTUNIDADES = [
   { symbol: "+", label: "Produtividade",  desc: "Automação dos processos críticos libera equipe para tarefas estratégicas." },
   { symbol: "+", label: "Visibilidade",   desc: "Dashboard centralizado com métricas em tempo real para decisões precisas." },
   { symbol: "+", label: "Crescimento",    desc: "Infraestrutura escalável preparada para acompanhar sua operação." },
 ];
 
-const CHECKLIST = [
+const LISTA_VERIFICACAO = [
   "Plataforma personalizada",
   "Design moderno e responsivo",
   "Automação de processos críticos",
@@ -52,13 +52,13 @@ const CHECKLIST = [
   "Suporte e evolução contínua",
 ];
 
-const ARCH = [
+const ARQUITETURA = [
   { layer: "Frontend",  color: "text-sky-400",     items: ["React", "Next.js", "TypeScript"] },
   { layer: "Backend",   color: "text-violet-400",  items: ["Node.js", "Prisma", "PostgreSQL"] },
   { layer: "Cloud",     color: "text-emerald-400", items: ["AWS", "Vercel", "CI/CD"] },
 ];
 
-const TIMELINE = [
+const CRONOGRAMA = [
   { week: "Semana 1",   label: "Descoberta e Planejamento" },
   { week: "Semana 2",   label: "Arquitetura"               },
   { week: "Semanas 3-4",label: "Desenvolvimento"           },
@@ -128,7 +128,7 @@ const Sidebar = ({ active, isOpen, onToggle }: { active: string, isOpen?: boolea
 
       <nav className="px-5 py-6 space-y-1 flex-1 overflow-y-auto scrollbar-hide">
         <span className="text-[9px] font-mono uppercase tracking-[0.22em] text-white/15 px-3 mb-3 block">Seções</span>
-        {STEPS.map((s, i) => (
+        {ETAPAS.map((s, i) => (
           <a
             key={s.num}
             href={`#s${s.num}`}
@@ -205,7 +205,7 @@ export default function PropostaPage() {
               <LayoutGrid className="w-5 h-5" />
             </button>
             <nav className="flex items-center gap-1 overflow-x-auto no-scrollbar max-w-[200px] xs:max-w-none">
-              {NAV.map(item => {
+              {NAVEGACAO.map(item => {
                 const Icon = item.icon;
                 const isActive = item.id === "propostas";
                 return (
@@ -248,7 +248,7 @@ export default function PropostaPage() {
             Processos manuais, sistemas desconectados e ausência de automação geram perda de tempo, erros e oportunidades desperdiçadas.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {PROBLEMS.map((p, i) => {
+            {PROBLEMAS.map((p, i) => {
               const Icon = p.icon;
               return (
                 <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
@@ -267,7 +267,7 @@ export default function PropostaPage() {
         {/* ── S02: A Oportunidade ── */}
         <Section id="s02" num="02" tag="A Oportunidade" headline="Transformar desafios em vantagem competitiva.">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {OPPORTUNITIES.map((o, i) => (
+            {OPORTUNIDADES.map((o, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                 className="p-7 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
                 <span className="text-[36px] font-bold text-white/10 leading-none block mb-3">{o.symbol}</span>
@@ -284,7 +284,7 @@ export default function PropostaPage() {
             Desenvolvimento de uma plataforma personalizada que conecta pessoas, processos e dados em um único ecossistema digital.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-            {CHECKLIST.map((item, i) => (
+            {LISTA_VERIFICACAO.map((item, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-5 h-5 rounded-sm border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-center shrink-0">
                   <Check className="w-3 h-3 text-emerald-400" />
@@ -298,7 +298,7 @@ export default function PropostaPage() {
         {/* ── S04: Arquitetura ── */}
         <Section id="s04" num="04" tag="Arquitetura" headline="Stack moderno e escalável.">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {ARCH.map((a, i) => (
+            {ARQUITETURA.map((a, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                 className="p-6 border border-white/[0.07] bg-[#0a0a0a] rounded-xl">
                 <span className={`text-[10px] font-mono uppercase tracking-[0.2em] ${a.color} block mb-4`}>{a.layer}</span>
@@ -358,7 +358,7 @@ export default function PropostaPage() {
         {/* ── S06: Cronograma ── */}
         <Section id="s06" num="06" tag="Cronograma" headline="Entrega em 6 semanas.">
           <div className="space-y-0 max-w-xl">
-            {TIMELINE.map((t, i) => (
+            {CRONOGRAMA.map((t, i) => (
               <div key={i} className="flex gap-4 sm:gap-5">
                 <div className="flex flex-col items-center">
                   <div className={`w-7 h-7 rounded-sm flex items-center justify-center border shrink-0 ${
@@ -366,7 +366,7 @@ export default function PropostaPage() {
                   }`}>
                     <span className="text-[9px] font-mono text-white/30">{String(i + 1).padStart(2, "0")}</span>
                   </div>
-                  {i < TIMELINE.length - 1 && <div className="w-px flex-1 bg-white/[0.05] my-1" />}
+                  {i < CRONOGRAMA.length - 1 && <div className="w-px flex-1 bg-white/[0.05] my-1" />}
                 </div>
                 <div className="pb-8 sm:pb-10">
                   <span className="block text-[10px] font-mono uppercase tracking-widest text-white/25 mb-1">{t.week}</span>
