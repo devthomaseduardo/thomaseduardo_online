@@ -71,7 +71,12 @@ router.get('/dashboard', authenticateToken, async (req: any, res: any) => {
           include: {
             invoices: { orderBy: { createdAt: 'desc' } },
             files: { orderBy: { createdAt: 'desc' } },
-            timeline: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } }
+            timeline: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            tasks: { where: { visivelCliente: true }, orderBy: { ordem: 'asc' } },
+            credentials: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            milestoneApprovals: { orderBy: { createdAt: 'desc' } },
+            contracts: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } },
+            integrations: { where: { visivelCliente: true }, orderBy: { createdAt: 'desc' } }
           }
         }
       }

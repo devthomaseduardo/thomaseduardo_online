@@ -7,7 +7,7 @@ import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import authRouter from './routes/auth.js';
 import apiRouter from './routes/api.js';
-import projectsRouter from './routes/projects.js';
+import portalRouter from './routes/portal.js';
 import webhooksRouter from './routes/webhooks.js';
 import rateLimit from 'express-rate-limit';
 import { env } from './lib/env.js';
@@ -70,7 +70,7 @@ app.use(helmet({
 // CORS — whitelist only
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || env.ALLOWED_ORIGINS.includes(origin) || origin === env.FRONTEND_URL || origin === env.BACKEND_URL || env.NODE_ENV === 'development') {
+    if (!origin || env.ALLOWED_ORIGINS.includes(origin) || origin === env.FRONTEND_URL || origin === env.BACKEND_URL || env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       console.warn(`[CORS] Aviso: Origem "${origin}" não está na whitelist oficial, mas foi permitida pela política flexível de produção.`);
@@ -88,11 +88,13 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // Rotas Públicas
 app.post('/api/contact', createLead);
 
-// Mount newly extracted routers (non-destructive mount alongside existing handlers)
-app.use('/api/v2', apiRouter);
-app.use('/api/webhooks', webhooksRouter);
+// API v2 (Admin Panel)
+app.use('/api/v2', apiRouter(upload));
+
+// Client Portal & Auth
 app.use('/api', authRouter);
-app.use('/api/projects', projectsRouter(upload));
+app.use('/api/portal', portalRouter);
+app.use('/api/webhooks', webhooksRouter);
 
 // ─── Global Error Handler ───────────────────────────────────────────────────
 app.use((err: any, req: any, res: any, next: any) => {
@@ -100,7 +102,7 @@ app.use((err: any, req: any, res: any, next: any) => {
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
     error: err.message || 'Erro interno do servidor',
-    details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    details: env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
 

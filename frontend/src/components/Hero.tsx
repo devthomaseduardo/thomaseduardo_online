@@ -90,15 +90,17 @@ const Hero = () => {
           <motion.div 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.25 }}
-            className="w-full max-w-[500px] mt-10 lg:hidden flex items-center justify-center relative order-2 scale-110"
+            className="w-full max-w-[500px] mt-10 lg:hidden flex items-center justify-center relative order-2"
           >
             <div className="absolute inset-0 bg-white/5 blur-[80px] rounded-full" />
             <motion.img 
               src={thomasHero} 
               alt="Thomas Eduardo" 
-              className="w-full h-auto object-contain rounded-2xl relative z-10"
-              animate={{ y: [0, -15, 0], scale: [1.05, 1.12, 1.05] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="w-full h-auto object-contain rounded-2xl relative z-10 drop-shadow-2xl"
+              style={{ 
+                maskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 75%, transparent 100%)'
+              }}
             />
           </motion.div>
 
@@ -132,15 +134,17 @@ const Hero = () => {
           <motion.div 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.4 }}
-            className="w-full max-w-[900px] relative scale-125 translate-x-4 lg:translate-x-8"
+            className="w-full max-w-[900px] relative translate-x-4 lg:translate-x-8"
           >
             <div className="absolute inset-0 bg-white/5 blur-[100px] rounded-full" />
             <motion.img 
               src={thomasHero} 
               alt="Thomas Eduardo" 
-              className="w-full h-auto object-contain relative z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.05)]"
-              animate={{ y: [0, -25, 0], scale: [1.05, 1.15, 1.05] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+              className="w-full h-auto object-contain relative z-10 drop-shadow-2xl"
+              style={{ 
+                maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)'
+              }}
             />
           </motion.div>
         </div>

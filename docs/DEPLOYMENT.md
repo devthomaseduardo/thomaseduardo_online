@@ -15,6 +15,14 @@ Antes de realizar o deploy, garanta que as seguintes variáveis de ambiente este
 
 **Frontend:**
 - `VITE_API_URL`: A URL pública de onde o Backend está hospedado (ex: `https://meu-backend.onrender.com`).
+- `VITE_GA_MEASUREMENT_ID`: ID de medição do Google Analytics (`G-37PX5ZRMLW`).
+
+### 1.1 Detalhes da Stream (Google Analytics 4)
+Para fins de configuração no console do Google Cloud ou verificação:
+- **Nome da stream**: site
+- **URL da stream**: https://www.thomaseduardo.online
+- **ID da stream**: 12148677625
+- **ID de medição**: G-37PX5ZRMLW
 
 ## 2. Estratégias Recomendadas
 

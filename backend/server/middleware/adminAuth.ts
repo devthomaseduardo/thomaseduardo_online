@@ -30,6 +30,7 @@ export function adminAuth(req: Request, res: Response, next: NextFunction) {
   if (bearerToken) {
     const payload = verifyAdminToken(bearerToken);
     if (payload?.role === "admin") {
+      (req as any).user = payload;
       return next();
     }
   }

@@ -26,9 +26,12 @@ jobs:
         run: |
           npm run lint --workspace=frontend
 
+      - name: Executar Testes Unitários e de Integração
+        run: npm run test
+
       - name: Backend - Lint e Verificação de Tipagem
         run: |
-          # npm run lint --workspace=backend
+          npm run lint --workspace=backend
 
   construcao:
     name: Build de Produção

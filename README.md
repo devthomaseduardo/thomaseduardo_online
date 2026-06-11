@@ -89,10 +89,15 @@ A documentação estendida do projeto se encontra no diretório `/docs`:
 
 Scripts de linting já estão pré-configurados no ambiente:
 ```bash
-# Roda a análise estática no projeto inteiro
+```bash
+# Roda a análise estática
 npm run lint
+
+# Executa a suíte de testes unitários (Vitest)
+npm run test
 ```
-(A suíte de testes unitários e E2E, utilizando ferramentas como Jest ou Playwright, está mapeada para a próxima fase do roadmap).
+
+A suíte de testes utiliza **Vitest** para testes unitários e de integração, e está preparada para **Playwright** para testes E2E.
 
 ## 🤝 Contribuição
 
