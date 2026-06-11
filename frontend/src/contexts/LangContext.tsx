@@ -4,6 +4,11 @@ type Lang = "pt" | "en";
 
 const translations = {
   pt: {
+    meta: {
+      title: "Thomas Eduardo | Arquiteto de Sistemas & Full Stack Developer",
+      description: "Especialista em transformar gargalos operacionais em ativos de escala através de arquitetura de software premium, automações e ecossistemas privados.",
+      keywords: "Arquiteto de Sistemas, Full Stack Developer, Node.js, React, Automação de Processos, Engenharia de Software, Performance Web, SaaS",
+    },
     nav: {
       about: "Filosofia",
       methodology: "Operação",
@@ -43,7 +48,7 @@ const translations = {
     solutions: {
       eyebrow: "Soluções",
       h2: "Soluções que eliminam gargalos.",
-      desc: "Sistemas, automações e plataformas privadas para organizar processos, reduzir trabalho manual e preparar empresas para crescer.",
+      desc: "Engenharia de software focada em governança de dados, eliminação de fricção operacional e infraestrutura preparada para o crescimento exponencial.",
       learnMore: "Saiba Mais",
       items: [
         {
@@ -306,6 +311,11 @@ const translations = {
     },
   },
   en: {
+    meta: {
+      title: "Thomas Eduardo | Systems Architect & Full Stack Developer",
+      description: "Specialist in transforming operational bottlenecks into scale assets through premium software architecture, automation, and private ecosystems.",
+      keywords: "Systems Architect, Full Stack Developer, Node.js, React, Process Automation, Software Engineering, Web Performance, SaaS",
+    },
     nav: {
       about: "Philosophy",
       methodology: "Operation",
@@ -345,7 +355,7 @@ const translations = {
     solutions: {
       eyebrow: "Solutions",
       h2: "Solutions that eliminate bottlenecks.",
-      desc: "Systems, automations, and private platforms to organize processes, reduce manual work, and prepare companies to grow.",
+      desc: "Software engineering focused on data governance, eliminating operational friction, and infrastructure built for exponential growth.",
       learnMore: "Learn More",
       items: [
         {
