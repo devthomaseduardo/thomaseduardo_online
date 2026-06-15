@@ -10,6 +10,9 @@
   <img src="https://img.shields.io/badge/React-Frontend-61DAFB.svg?logo=react&logoColor=black" alt="React">
 </p>
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/8b8b1d80-2103-4a9a-8203-2c28a22511a2" />
+
+
 ## 🚀 Visão Geral de Negócio
 
 Este repositório abriga o ecossistema completo do meu **Portfólio Profissional**, concebido com uma estética editorial e foco em conversão e usabilidade de alto nível. Além de exibir projetos, ele opera como uma plataforma "Centro de Operações" completa, que conta com um painel de administração completo para gerenciar Leads, Projetos, Clientes, Propostas e Finanças.
