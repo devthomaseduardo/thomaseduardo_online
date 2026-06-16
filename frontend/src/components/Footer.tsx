@@ -4,16 +4,18 @@ import { useLang } from '../contexts/LangContext';
 export const Footer = () => {
   const { t, lang } = useLang();
   return (
-    <footer className="pb-10 pt-16 bg-pg-bg overflow-hidden">
-      <div className="w-full px-6 md:px-16 lg:px-24 mx-auto">
+    <footer className="pb-16 pt-24 bg-[#050505] overflow-hidden border-t border-white/5">
+      <div className="w-full max-w-7xl px-6 mx-auto flex flex-col items-center justify-center text-center">
 
         {/* Big Statement */}
-        <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.0] text-white mb-12">
-          {(t.footer as any).h2}
-        </h2>
+        <a href="mailto:devthomaseduardo@gmail.com" className="block group mb-20 w-full">
+          <h2 className="text-3xl sm:text-5xl md:text-7xl lg:text-[7vw] font-bold tracking-tighter leading-[1.0] text-white group-hover:text-emerald-500 transition-colors duration-500 break-all px-4 inline-block">
+            {(t.footer as any).h2}
+          </h2>
+        </a>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-8 w-full pt-12 border-t border-white/5">
           <div className="flex flex-wrap items-center gap-6">
             <a href="https://linkedin.com/in/devthomaseduardo" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-white/30 hover:text-white/70 transition-colors uppercase tracking-widest">LinkedIn</a>
             <a href="https://github.com/devthomaseduardo" target="_blank" rel="noopener noreferrer" className="text-xs font-mono text-white/30 hover:text-white/70 transition-colors uppercase tracking-widest">GitHub</a>

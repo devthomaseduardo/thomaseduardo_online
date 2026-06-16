@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
@@ -6,34 +6,10 @@ import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import heroWeb from "../assets/hero-web.webp";
 import thomasHero from "../assets/thomas-hero.png";
 import { AnimatedEmoji } from "./AnimatedEmoji";
-
-const getGreetingText = (lang: string) => {
-  const hour = new Date().getHours();
-  if (lang === 'pt') {
-    if (hour >= 5 && hour < 12) return 'Olá, bom dia, eu sou o Thomas';
-    if (hour >= 12 && hour < 18) return 'Olá, boa tarde, eu sou o Thomas';
-    if (hour >= 18 && hour < 24) return 'Olá, boa noite, eu sou o Thomas';
-    return 'Olá, vai dormir, eu sou o Thomas';
-  } else {
-    if (hour >= 5 && hour < 12) return 'Hi, good morning, I am Thomas';
-    if (hour >= 12 && hour < 18) return 'Hi, good afternoon, I am Thomas';
-    if (hour >= 18 && hour < 24) return 'Hi, good evening, I am Thomas';
-    return 'Hi, go to sleep, I am Thomas';
-  }
-};
+import { RotatingText } from "./RotatingText";
 
 const Hero = () => {
-  const { t, lang } = useLang();
-  const [greeting, setGreeting] = useState(() => getGreetingText(lang));
-
-  useEffect(() => {
-    setGreeting(getGreetingText(lang));
-    
-    const interval = setInterval(() => {
-      setGreeting(getGreetingText(lang));
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [lang]);
+  const { t } = useLang();
 
   return (
     <section className="relative z-20 min-h-[85vh] lg:min-h-screen flex items-center justify-center py-20 overflow-hidden bg-[#060606]">
@@ -46,14 +22,14 @@ const Hero = () => {
         <div className="absolute right-1/4 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-white/10 to-transparent" />
       </div>
 
-      <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center mt-12 lg:mt-0">
+      <div className="w-full max-w-[1400px] mx-auto px-6 md:px-12 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center mt-16 lg:mt-0">
         
         {/* Typography Column (Left) */}
         <div className="w-full col-span-1 lg:col-span-6 flex flex-col items-start justify-center text-left order-1">
           <motion.h1 
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.1 }}
-            className="text-[clamp(2.5rem,10vw,5.5rem)] font-bold tracking-tighter leading-[0.9] text-white pb-6 text-left mt-8 lg:mt-0"
+            className="text-[clamp(2.75rem,12vw,5.5rem)] font-bold tracking-tighter leading-[0.85] text-white pb-6 text-left mt-4 lg:mt-0"
           >
             {t.hero.h1a} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">{t.hero.h1b}</span>
@@ -63,14 +39,14 @@ const Hero = () => {
             {...HERO_FADE_UP}
             className="mb-8 w-full max-w-full"
           >
-            <div className="inline-flex items-center gap-2 sm:gap-3 px-1.5 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-3xl bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 w-fit max-w-full overflow-hidden">
+            <div className="inline-flex items-center gap-2 sm:gap-3 px-2 py-1.5 pr-4 sm:px-2 sm:py-2 sm:pr-6 rounded-3xl bg-white/[0.02] backdrop-blur-md border border-white/[0.05] shadow-[0_0_30px_rgba(16,185,129,0.03)] hover:bg-white/[0.04] transition-all duration-300 w-fit max-w-[90vw] overflow-hidden">
               <img 
                 src="/avatar.webp" 
                 alt="Thomas" 
                 className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover grayscale opacity-80 shrink-0"
               />
-              <span className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase leading-none">
-                {greeting}
+              <span className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-mono font-bold text-white/70 tracking-[0.1em] sm:tracking-[0.2em] uppercase leading-none truncate">
+                <RotatingText />
                 <AnimatedEmoji name="waving_hand" className="w-3 h-3 sm:w-4 sm:h-4 origin-bottom-right hover:animate-wave shrink-0" />
               </span>
             </div>
@@ -81,7 +57,7 @@ const Hero = () => {
           <motion.p
             {...HERO_FADE_UP}
             transition={{ ...SMOOTH_TRANSITION, delay: 0.2 }}
-            className="text-white/50 text-sm sm:text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-xl mt-2"
+            className="text-white/50 text-base sm:text-base md:text-lg lg:text-xl font-light leading-relaxed max-w-xl mt-2"
           >
             {t.hero.desc}
           </motion.p>

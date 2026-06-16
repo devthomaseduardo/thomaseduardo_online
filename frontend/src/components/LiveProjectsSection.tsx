@@ -65,7 +65,7 @@ export function LiveProjectsSection() {
                       <Globe className="w-3 h-3" /> Live Preview
                     </p>
                     <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-emerald-400 transition-colors">{project.title}</h3>
-                    <p className="text-sm text-white/40 mt-1 line-clamp-1">{project.category}</p>
+                    <p className="text-[11px] text-white/40 mt-1 line-clamp-2 leading-relaxed max-w-[80%]">{project.descricao}</p>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-md group-hover:bg-white group-hover:text-black transition-all duration-300">
                     <ArrowUpRight className="w-5 h-5" />

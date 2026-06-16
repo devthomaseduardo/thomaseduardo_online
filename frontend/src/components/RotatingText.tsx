@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const NAMES = ['Thomas Eduardo', 'Thomas Nascimento', 'T3REN'];
+const NAMES = ['Thomas Eduardo', '@devthomaseduardo'];
 
 export function RotatingText() {
   const [index, setIndex] = useState(0);

@@ -15,15 +15,14 @@ const BentoGrid          = lazy(() => import("./components/BentoGrid"));
 const ProjectSection     = lazy(() => import("./components/ProjectSection").then(m => ({ default: m.ProjectSection })));
 const SolutionsSection    = lazy(() => import("./components/SolutionsSection").then(m => ({ default: m.SolutionsSection })));
 const ProcessSection     = lazy(() => import("./components/ProcessSection").then(m => ({ default: m.ProcessSection })));
-const ContactSection     = lazy(() => import("./components/ContactSection").then(m => ({ default: m.ContactSection })));
 const Footer             = lazy(() => import("./components/Footer").then(m => ({ default: m.Footer })));
-const LiveProjectsSection = lazy(() => import("./components/LiveProjectsSection").then(m => ({ default: m.LiveProjectsSection })));
+const AvailabilitySection = lazy(() => import("./components/AvailabilitySection").then(m => ({ default: m.AvailabilitySection })));
 
 // ─── Pages: only downloaded when routes are visited ─────────────────────────
-const LinkBio  = lazy(() => import("./pages/LinkBio"));
+const LinkBio = lazy(() => import("./pages/LinkBio"));
 const Redirect = lazy(() => import("./pages/RedirectPage"));
 const Shop     = lazy(() => import("./pages/Shop"));
-const Projects = lazy(() => import("./pages/Projects"));
+const ProjectsPage = lazy(() => import("./pages/Projects")); // Renamed for clarity
 const Material = lazy(() => import("./pages/Material"));
 const Payment = lazy(() => import("./pages/Payment"));
 
@@ -63,8 +62,7 @@ const Home = () => {
           <BentoGrid />
           <ProjectSection />
           <ProcessSection />
-          <LiveProjectsSection />
-          <ContactSection />
+          <AvailabilitySection />
         </Suspense>
       </main>
       <Suspense fallback={null}>
@@ -85,12 +83,12 @@ function App() {
               <Route path="/links"    element={<LinkBio />} />
               <Route path="/r"        element={<Redirect />} />
               <Route path="/shop"     element={<Shop />} />
-              <Route path="/cases"    element={<Projects />} />
+              <Route path="/cases"    element={<ProjectsPage />} /> {/* Use the renamed component */}
               <Route path="/portal"   element={<Portal />} />
               <Route path="/proposta" element={<Proposta />} />
 
               {/* Rotas Protegidas do Cliente */}
-              <Route path="/projetos" element={<ClientProtectedRoute><Projects /></ClientProtectedRoute>} />
+              <Route path="/projetos" element={<ClientProtectedRoute><ProjectsPage /></ClientProtectedRoute>} />
               <Route path="/material"  element={<ClientProtectedRoute><Material /></ClientProtectedRoute>} />
               <Route path="/payment"   element={<ClientProtectedRoute><Payment /></ClientProtectedRoute>} />
               <Route path="/portal/dashboard" element={<ClientProtectedRoute><ClientDashboard /></ClientProtectedRoute>} />

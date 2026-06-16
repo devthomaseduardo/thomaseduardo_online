@@ -58,7 +58,7 @@ const Navbar = () => {
           <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span style={{ fontSize: 15, fontWeight: 600, color: "#F5F5F7", letterSpacing: "-0.01em" }}>
+          <span className="text-[14px] sm:text-[15px] font-semibold text-[#F5F5F7] tracking-[-0.01em]">
             Thomas Eduardo
           </span>
         </a>

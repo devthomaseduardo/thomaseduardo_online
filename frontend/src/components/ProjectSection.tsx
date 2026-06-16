@@ -1,12 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLang } from '../contexts/LangContext';
 import { FADE_UP, SMOOTH_TRANSITION } from '../constants/animations';
 import projectsData from '../data/projects.json';
 import { useSVGL } from '../hooks/useSVGL';
 import { DeviceMockup } from './DeviceMockup';
 import { AnimatedEmoji } from './AnimatedEmoji';
+
+const TerminalText = ({ text }: { text: string }) => {
+  const [content, setContent] = useState("");
+  
+  useEffect(() => {
+    setContent("");
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i <= text.length) {
+        setContent(text.slice(0, i));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 40);
+    return () => clearInterval(timer);
+  }, [text]);
+
+  return <span className="font-mono">{`> ${content}`}<span className="animate-pulse">_</span></span>;
+};
+
+const TerminalMockup = ({ project }: { project: any }) => {
+  return (
+    <div className="w-full aspect-video bg-[#0a0a0a] border border-white/10 rounded-xl overflow-hidden shadow-2xl flex flex-col font-mono text-[10px] md:text-xs">
+      {/* Top bar */}
+      <div className="bg-white/5 border-b border-white/10 px-4 py-2 flex items-center gap-2">
+        <div className="flex gap-1.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+        </div>
+        <span className="text-white/30 text-[9px] uppercase tracking-widest ml-2">bash — {project.id}.sh</span>
+      </div>
+      
+      {/* Content */}
+      <div className="p-4 md:p-8 space-y-4 overflow-y-auto flex-1 no-scrollbar text-left">
+        <div className="flex items-center gap-2">
+          <span className="text-emerald-500">➜</span>
+          <span className="text-blue-400">~/projects</span>
+          <span className="text-white/40">cat {project.title.toLowerCase().replace(/\s+/g, '_')}.json</span>
+        </div>
+        
+        <div className="pl-4 border-l border-white/5 space-y-2">
+          <div className="text-emerald-400/90 italic font-light">// Arquitetura e Estrutura de Lógica</div>
+          <div className="text-zinc-400">
+            <span className="text-purple-400">const</span> <span className="text-yellow-400">ProjectStructure</span> = {"{"}
+          </div>
+          <div className="pl-4 space-y-1 border-l border-white/5 ml-2">
+            <div><span className="text-blue-300">"core":</span> <span className="text-orange-300">"{project.category}"</span>,</div>
+            <div><span className="text-blue-300">"objective":</span> <span className="text-orange-300">"{project.metric}"</span>,</div>
+            <div><span className="text-blue-300">"stack":</span> [
+              {project.tecnologias?.map((t: string, i: number) => (
+                <span key={t}>
+                  <span className="text-emerald-400">"{t}"</span>
+                  {i < (project.tecnologias?.length || 0) - 1 ? ", " : ""}
+                </span>
+              ))}
+            ],</div>
+            <div><span className="text-blue-300">"features":</span> [
+              {project.recursos?.map((f: string, i: number) => (
+                <span key={f} className="block pl-4">
+                  <span className="text-emerald-400">"{f}"</span>
+                  {i < (project.recursos?.length || 0) - 1 ? "," : ""}
+                </span>
+              ))}
+            ]</div>
+          </div>
+          <div className="text-zinc-400">{"};"}</div>
+        </div>
+
+        <div className="flex items-center gap-2 pt-4">
+          <span className="text-emerald-500">➜</span>
+          <span className="text-blue-400">~/projects</span>
+          <span className="text-white/40 animate-pulse">_</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
   const { getIcon } = useSVGL();
@@ -34,38 +114,31 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
             )}
           </span>
           <div className="flex items-center gap-4 mb-2 md:mb-3">
-            <img 
-              src={project.client_logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`} 
-              alt={`${project.title} logo`} 
-              className="w-10 h-10 md:w-14 md:h-14 object-contain rounded-full shrink-0" 
-              onError={(e) => {
-                // Se a logo do clearbit ou original falhar, usa o fallback
-                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(project.title)}&background=000&color=fff&bold=true&format=svg`;
-              }}
-            />
             <h3 className="text-2xl md:text-5xl font-bold tracking-tight text-white uppercase leading-tight">
               {project.title}
             </h3>
           </div>
-          <p className="hidden md:block text-lg text-white/50 font-light leading-relaxed tracking-tight">
-            {project.metric_sub}
-          </p>
+          {project.metric && (
+            <p className="hidden md:block text-lg text-white/50 font-light leading-relaxed tracking-tight">
+              {project.metric}
+            </p>
+          )}
         </div>
 
         <div className="w-full">
           <p className="text-sm md:text-[15px] text-white/70 leading-relaxed font-light mb-3">
-            {project.description}
+            {project.descricao}
           </p>
 
           {/* Action Links and CTAs */}
           <div className="flex flex-col items-start gap-4 mb-4 w-full">
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className={`relative group inline-flex items-center gap-3 text-[10px] font-mono transition-all duration-300 uppercase tracking-widest cursor-pointer border-b pb-1 ${
+              className={`relative group inline-flex items-center gap-3 text-[11px] font-mono transition-all duration-300 uppercase tracking-widest cursor-pointer border-b pb-1.5 h-8 ${
                 showDetails ? 'border-white text-white' : 'border-white/20 text-white/50 hover:text-white hover:border-white/50'
               }`}
             >
-              {showDetails ? t.projects.hideDetails : t.projects.showDetails}
+              <TerminalText text={showDetails ? t.projects.hideDetails : t.projects.showDetails} />
               <AnimatedEmoji 
                 name={showDetails ? "pointing_up" : "pointing_right"} 
                 className="w-5 h-5" 
@@ -83,13 +156,13 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                 <AnimatedEmoji name="rocket" className="w-5 h-5 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-300 shrink-0" />
                 <span>{t.projects.discussProject}</span>
               </a>
-              <a
-                href="/cases"
+              <Link
+                to="/cases"
                 className="relative inline-flex justify-center w-full md:w-auto items-center gap-3 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 hover:scale-[1.02] active:scale-95 text-[10px] font-mono font-bold tracking-widest text-white uppercase transition-all duration-300 shadow-xl group border border-white/10 hover:border-white/20"
               >
                 <span>{t.projects.exploreAll}</span>
                 <ArrowRight className="w-4 h-4 text-emerald-400 transition-transform duration-300 group-hover:translate-x-1" />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -109,18 +182,22 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                     {t.projects.challenge}
                   </span>
                   <p className="text-sm text-white/70 font-light leading-relaxed">
-                    {lang === "pt" ? project.challenge_pt : project.challenge_en}
+                    {project.descricao}
                   </p>
                 </div>
 
                 {/* Impact (Resultado) */}
                 <div className="space-y-1">
                   <span className="text-[9px] font-mono text-emerald-400/40 uppercase tracking-widest block font-medium">
-                    {t.projects.impact}
+                    Tecnologias
                   </span>
-                  <p className="text-sm text-emerald-400/80 font-light leading-relaxed">
-                    {lang === "pt" ? project.impact_pt : project.impact_en}
-                  </p>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {project.tecnologias?.map((tech: string) => (
+                      <span key={tech} className="text-[10px] font-mono text-emerald-400/60 bg-emerald-400/5 px-2 py-0.5 rounded">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Key Features (Destaques) */}
@@ -129,7 +206,7 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
                     {t.projects.highlights}
                   </span>
                   <ul className="grid grid-cols-1 gap-1.5">
-                    {((lang === "pt" ? project.features_pt : project.features_en) || []).map((feat: string, idx: number) => (
+                    {(project.recursos || []).map((feat: string, idx: number) => (
                       <li key={idx} className="flex items-center gap-2 text-xs text-white/60 font-light">
                         <span className="w-1 h-1 rounded-full bg-white/20 shrink-0" />
                         <span>{feat}</span>
@@ -165,13 +242,17 @@ export const ProjectCard = ({ project, lang, t, FADE_UP }: any) => {
         )}
 
         <div className="relative w-full flex flex-col md:block items-center justify-center select-none mt-2 md:mt-6 lg:mt-4">
-          <DeviceMockup 
-            desktopImg={project.image}
-            tabletImg={project.image}
-            mobileImg={project.image_mobile || project.image}
-            altText={project.title}
-            iframeUrl={isLiveLink ? project.link : undefined}
-          />
+          {isLiveLink ? (
+            <DeviceMockup
+              desktopImg={project.image}
+              tabletImg={project.image}
+              mobileImg={project.image_mobile || project.image}
+              altText={project.title}
+              iframeUrl={project.link}
+            />
+          ) : (
+            <TerminalMockup project={project} />
+          )}
         </div>
       </div>
     </motion.div>
@@ -182,12 +263,7 @@ export const ProjectSection = () => {
   const { t, lang } = useLang();
 
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const projects = projectsData.map(p => ({
-    ...p,
-    metric_sub: lang === 'pt' ? (p as any).metric_sub_pt : (p as any).metric_sub_en,
-    description: lang === 'pt' ? p.description_pt : p.description_en,
-  }));
+  const projects = projectsData;
 
   const featuredProjects = projects
     .sort((a, b) => {
@@ -208,8 +284,7 @@ export const ProjectSection = () => {
             {t.projects.eyebrow}
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-white">
-            {t.projects.h2a} <br className="hidden sm:block" />
-            <span className="text-white/40">{t.projects.h2b}</span>
+            {t.projects.clientHeader}
           </h2>
         </div>
         <div className="flex items-center gap-4 pb-0 md:pb-2 mt-8 md:mt-0">
@@ -246,9 +321,6 @@ export const ProjectSection = () => {
 
       {/* Client Projects Carousel */}
       <div className="mb-10 md:mb-20 mt-16 md:mt-0">
-        <span className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4 md:mb-1 block pb-0">
-          {t.projects.clientHeader}
-        </span>
         <div className="flex flex-col space-y-8">
           {featuredProjects.length > 0 && (
             <>
