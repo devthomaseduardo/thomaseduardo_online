@@ -3,7 +3,7 @@ import {
   Globe, 
   Linkedin,
   ArrowUpRight,
-  Instagram
+  Layers
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -73,8 +73,14 @@ const LinkBio = () => {
       href: "https://wa.me/5511977070209",
       label: "Começar um Projeto",
       sub: "Diagnóstico gratuito",
-      icon: <AnimatedEmoji name="pointing_right" className="w-5 h-5 shrink-0" />,
+      icon: <AnimatedEmoji name="rocket" className="w-5 h-5 shrink-0" />,
       primary: true
+    },
+    {
+      href: "/cases",
+      label: "Meus Cases",
+      sub: "Projetos de alta conversão",
+      icon: <Layers className="w-5 h-5" />
     },
     {
       href: "/",
@@ -85,14 +91,8 @@ const LinkBio = () => {
     {
       href: "https://linkedin.com/in/devthomaseduardo",
       label: "LinkedIn",
-      sub: "Perfil profissional",
+      sub: "Conexão profissional",
       icon: <Linkedin className="w-5 h-5" />
-    },
-    {
-      href: "https://instagram.com/devthomaseduardo",
-      label: "Instagram",
-      sub: "@devthomaseduardo",
-      icon: <Instagram className="w-5 h-5" />
     }
   ];
 

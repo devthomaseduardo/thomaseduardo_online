@@ -17,6 +17,7 @@ const SolutionsSection    = lazy(() => import("./components/SolutionsSection").t
 const ProcessSection     = lazy(() => import("./components/ProcessSection").then(m => ({ default: m.ProcessSection })));
 const ContactSection     = lazy(() => import("./components/ContactSection").then(m => ({ default: m.ContactSection })));
 const Footer             = lazy(() => import("./components/Footer").then(m => ({ default: m.Footer })));
+const LiveProjectsSection = lazy(() => import("./components/LiveProjectsSection").then(m => ({ default: m.LiveProjectsSection })));
 
 // ─── Pages: only downloaded when routes are visited ─────────────────────────
 const LinkBio  = lazy(() => import("./pages/LinkBio"));
@@ -42,7 +43,6 @@ const AdminTeam = lazy(() => import("./pages/admin/Team").then(m => ({ default: 
 const AdminSettings = lazy(() => import("./pages/admin/Settings").then(m => ({ default: m.Settings })));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin").then(m => ({ default: m.AdminLogin })));
 const Proposta = lazy(() => import("./pages/Proposta"));
-const LandingPage = lazy(() => import("./pages/LandingPage"));
 const ProjectMaterials = lazy(() => import("./pages/ProjectMaterials"));
 
 // Minimal suspense fallback — invisible div to avoid layout shift
@@ -63,6 +63,7 @@ const Home = () => {
           <BentoGrid />
           <ProjectSection />
           <ProcessSection />
+          <LiveProjectsSection />
           <ContactSection />
         </Suspense>
       </main>
@@ -87,7 +88,6 @@ function App() {
               <Route path="/cases"    element={<Projects />} />
               <Route path="/portal"   element={<Portal />} />
               <Route path="/proposta" element={<Proposta />} />
-              <Route path="/landing"  element={<LandingPage />} />
 
               {/* Rotas Protegidas do Cliente */}
               <Route path="/projetos" element={<ClientProtectedRoute><Projects /></ClientProtectedRoute>} />

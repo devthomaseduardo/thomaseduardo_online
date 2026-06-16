@@ -18,6 +18,7 @@ import * as TeamController from '../controllers/team.controller.js';
 import * as TaskController from '../controllers/task.controller.js';
 import * as CredentialController from '../controllers/credential.controller.js';
 import * as MilestoneController from '../controllers/milestone.controller.js';
+import { chatWithData } from '../controllers/ai.controller.js';
 
 import { validate } from '../middleware/validate.js';
 import { createClientSchema, updateClientSchema } from '../schemas/client.schema.js';
@@ -35,6 +36,7 @@ export default function(upload: any) {
   // PUBLIC ROUTES
   // ==========================================
   router.post('/public/contact', LeadController.createPublicContact);
+  router.post('/public/chat', chatWithData);
 
   // ==========================================
   // DEVELOPMENT TOOLS (Protected)

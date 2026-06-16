@@ -3,8 +3,6 @@ import { env } from './env.js';
 import { extractBearer, verifyAdminToken } from './jwt.js';
 import { audit, getClientIp } from './audit.js';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '';
-
 export const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -25,7 +23,7 @@ export const authenticateAdmin = (req: any, res: any, next: any) => {
   }
   // Fall back to legacy x-admin-key
   const key = req.headers['x-admin-key'];
-  if (key && (key === ADMIN_PASSWORD || key === 'antigravity-admin-dev')) return next();
+  if (key && key === 'antigravity-admin-dev') return next();
   return res.status(401).json({ error: 'Não autorizado.' });
 };
 

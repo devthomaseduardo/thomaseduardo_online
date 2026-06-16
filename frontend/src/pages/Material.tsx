@@ -247,7 +247,7 @@ export default function MaterialPage() {
   const received  = Object.values(statuses).filter(s => s === "received").length;
   const reviewing = Object.values(statuses).filter(s => s === "reviewing").length;
   const pending   = Object.values(statuses).filter(s => s === "pending").length;
-  const progress  = Math.round((received / MATERIALS.length) * 100);
+  const progress  = Math.round((received / MATERIAIS.length) * 100);
 
   return (
     <div className="min-h-screen bg-[#060606] text-[#e0e0e0] font-sans flex overflow-hidden">
