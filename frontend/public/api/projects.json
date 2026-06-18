@@ -1,5 +1,16 @@
 [
   {
+    "id": 23,
+    "title": "Homma Desing",
+    "slug": "homma-desing",
+    "description": "Identidade visual e design estratégico focado em conversão.",
+    "link": "https://hommavs.vercel.app/",
+    "image": "/sistemas-web.png",
+    "featuredOnHome": true,
+    "stack": ["Next.js", "TypeScript"],
+    "lighthouseScore": 95
+  },
+  {
     "id": 22,
     "title": "FitFlow App",
     "slug": "fitflow-app",
