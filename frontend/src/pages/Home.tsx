@@ -6,7 +6,7 @@ import brutalistLogo from "../assets/brutalist-logo.png";
 import thomasAbout from "../assets/thomas-about.png";
 import { RotatingText } from "../components/RotatingText";
 import { BackendTerminalSection } from "../components/BackendTerminalSection";
-import { LaptopShowcase } from "../components/LaptopShowcase";
+import { LiveProjectStack } from "../components/LiveProjectStack";
 import { ContactForm } from "../components/ContactForm";
 import { useLang } from "../contexts/LangContext";
 
@@ -80,7 +80,7 @@ export default function Home() {
       <Hero />
       <BackendTerminalSection />
       <ContactForm />
-      <LaptopShowcase />
+      <LiveProjectStack />
       {/* Adicionar Footer, etc. */}
     </div>
   );
