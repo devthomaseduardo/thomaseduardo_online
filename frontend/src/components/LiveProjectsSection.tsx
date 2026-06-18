@@ -1,67 +1,207 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { ArrowUpRight } from 'lucide-react';
-import projectsData from '../data/projects.json';
-import { useLang } from '../contexts/LangContext';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { 
+  ArrowLeft, ArrowRight, ChevronRight, ArrowUpRight, 
+  Loader2, AlertCircle, Code2, Cpu, Zap, Activity, Layers 
+} from "lucide-react";
+import { PRODUCTION_PROJECTS, CONTACT } from "@/lib/site";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function LiveProjectsSection() {
-  const { t } = useLang();
-  
-  const liveProjects = projectsData
-    .filter(p => p.link && !p.link.includes('github.com'))
-    .slice(0, 4);
+  const [i, setI] = useState(0);
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [iframeError, setIframeError] = useState(false);
+  const total = PRODUCTION_PROJECTS.length;
+  const project = PRODUCTION_PROJECTS[i];
 
-  if (liveProjects.length === 0) return null;
+  const prev = () => {
+    setI((p) => (p - 1 + total) % total);
+    setIframeLoading(true);
+    setIframeError(false);
+  };
+
+  const next = () => {
+    setI((p) => (p + 1) % total);
+    setIframeLoading(true);
+    setIframeError(false);
+  };
+
+  useEffect(() => {
+    setIframeLoading(true);
+    setIframeError(false);
+  }, [i]);
 
   return (
-    <section className="py-32 bg-[#060606] relative">
-      <div className="max-w-[1500px] mx-auto px-6 md:px-12">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
+    <section
+      id="sistemas"
+      className="relative overflow-hidden border-y border-white/5 bg-[#060606] py-20 sm:py-32"
+    >
+      {/* Ghost text marquee */}
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none overflow-hidden">
+        <motion.div
+          key={`marquee-${i}`}
+          initial={{ x: "0%" }}
+          animate={{ x: "-50%" }}
+          transition={{ duration: 40, ease: "linear", repeat: Infinity }}
+          className="flex w-max gap-8 font-bold text-[25vw] uppercase leading-none tracking-tighter text-white/[0.01] sm:gap-16 sm:text-[20vw]"
         >
-          <span className="text-[10px] font-mono text-white/40 uppercase tracking-[0.3em] mb-4 block">
-            Produção Ativa
-          </span>
-          <h2 className="text-6xl font-bold text-white tracking-tighter">
-            {t.projects.clientHeader}
-          </h2>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {liveProjects.map((project, index) => (
-            <motion.a
-              key={project.id}
-              href={project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative aspect-[16/9] rounded-3xl overflow-hidden border border-white/5 bg-[#0a0a0a] hover:border-white/10 transition-all duration-500"
-            >
-              <img 
-                src={project.image || '/sistemas-web.png'} 
-                alt={project.title}
-                className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
-              />
-              
-              <div className="absolute inset-0 bg-gradient-to-t from-[#060606] to-transparent p-12 flex flex-col justify-end">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-3xl font-bold text-white tracking-tighter mb-2">{project.title}</h3>
-                    <p className="text-sm text-white/50 leading-relaxed max-w-sm">{project.descricao}</p>
-                  </div>
-                  <div className="w-16 h-16 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
-                    <ArrowUpRight className="w-6 h-6" />
-                  </div>
-                </div>
-              </div>
-            </motion.a>
+          {[...PRODUCTION_PROJECTS, ...PRODUCTION_PROJECTS].map((p, idx) => (
+            <span key={idx} className="whitespace-nowrap">
+              {p.name} /
+            </span>
           ))}
+        </motion.div>
+      </div>
+
+      <div className="relative mx-auto max-w-[1400px] px-6 md:px-12">
+        {/* Header */}
+        <div className="mb-12 flex flex-wrap items-end justify-between gap-8 sm:mb-20">
+          <div className="max-w-3xl">
+            <span className="flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-500">
+              <Code2 className="h-3 w-3" /> Systems_Repository // {String(i + 1).padStart(2, "0")}
+            </span>
+            <h2 className="mt-6 font-bold text-[clamp(2.5rem,8vw,5rem)] tracking-tighter leading-[0.9] text-white">
+              Sistemas que <br />
+              <span className="text-white/20">escalam.</span>
+            </h2>
+          </div>
+          <div className="flex items-center gap-2 rounded-2xl border border-white/5 bg-white/[0.02] p-2 backdrop-blur-xl">
+            <button
+              onClick={prev}
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition-all hover:bg-emerald-500/10 hover:text-emerald-500"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={next}
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition-all hover:bg-emerald-500/10 hover:text-emerald-500"
+            >
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Device Display */}
+        <div className="relative mx-auto w-full max-w-6xl">
+          <div className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-2 shadow-2xl backdrop-blur-3xl sm:p-4">
+            {/* Top Bar */}
+            <div className="flex items-center gap-2 pb-4 pl-2">
+              <div className="flex gap-1.5">
+                <div className="h-2 w-2 rounded-full bg-rose-500/20" />
+                <div className="h-2 w-2 rounded-full bg-amber-500/20" />
+                <div className="h-2 w-2 rounded-full bg-emerald-500/20" />
+              </div>
+              <div className="ml-4 truncate rounded-full bg-white/[0.03] px-4 py-1.5 font-mono text-[9px] text-white/30 tracking-widest uppercase">
+                {project.domain}
+              </div>
+              {project.liveUrl && (
+                <div className="ml-auto flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-500">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live_Process
+                </div>
+              )}
+            </div>
+
+            {/* Content Area */}
+            <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-[#0a0a0a] ring-1 ring-white/5">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={project.slug}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="absolute inset-0"
+                >
+                  {/* Iframe Logic */}
+                  {project.liveUrl ? (
+                    <div className="h-full w-full relative">
+                      {iframeLoading && (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0a0a0a]">
+                          <Loader2 className="h-8 w-8 animate-spin text-emerald-500/20" />
+                        </div>
+                      )}
+                      {iframeError ? (
+                        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0a0a0a] p-8 text-center">
+                          <AlertCircle className="h-12 w-12 text-rose-500/20 mb-4" />
+                          <p className="text-sm font-mono text-white/40 uppercase tracking-widest">Falha na conexão com o sistema</p>
+                        </div>
+                      ) : (
+                        <iframe
+                          src={project.liveUrl}
+                          className="h-full w-full border-none"
+                          loading="lazy"
+                          onLoad={() => setIframeLoading(false)}
+                          onError={() => setIframeError(true)}
+                          title={project.name}
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <div className="h-full w-full">
+                       <img src={project.image} alt={project.name} className="h-full w-full object-cover grayscale opacity-40" />
+                    </div>
+                  )}
+
+                  {/* Info Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-8 sm:p-16 flex flex-col justify-end pointer-events-none">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="max-w-2xl"
+                    >
+                      <h3 className="font-bold text-4xl sm:text-6xl tracking-tighter text-white uppercase mb-4">
+                        {project.name}
+                      </h3>
+                      <p className="text-white/50 text-base sm:text-lg font-light leading-relaxed mb-8">
+                        {project.tagline}
+                      </p>
+                      
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                          <Cpu className="h-3 w-3" /> System
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                          <Zap className="h-3 w-3" /> Auto
+                        </div>
+                        {project.tech.map((t) => (
+                          <span key={t} className="px-3 py-1.5 rounded-full bg-white/[0.01] border border-white/[0.03] text-[9px] font-mono text-white/20 uppercase tracking-widest">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+          
+          {/* Base Decor */}
+          <div className="mx-auto h-2 w-[98%] rounded-b-2xl bg-white/5 opacity-50 blur-[2px]" />
+        </div>
+
+        {/* Actions */}
+        <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            href={CONTACT.whatsapp}
+            target="_blank"
+            rel="noreferrer"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-2xl bg-emerald-500 px-8 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-emerald-400 hover:scale-[1.02] active:scale-95"
+          >
+            <WhatsAppIcon size={16} /> Discutir Operação
+          </a>
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-8 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-white/5"
+            >
+              Abrir ao vivo <ArrowUpRight className="h-4 w-4" />
+            </a>
+          )}
         </div>
       </div>
     </section>

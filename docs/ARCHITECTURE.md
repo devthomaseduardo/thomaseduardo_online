@@ -23,6 +23,32 @@ O projeto é dividido em dois workspaces principais (definidos no `package.json`
 - **Banco de Dados**: PostgreSQL (gerenciado via Neon).
 - **Integrações Externas**: Resend (para envio de emails e notificações).
 
+## 📁 Estrutura de Pastas
+
+A arquitetura do projeto segue uma divisão modular para manter escalabilidade e facilidade de manutenção:
+
+```text
+.github/             # Configurações de CI/CD (GitHub Actions)
+config/              # Configurações globais
+backend/             # Aplicação Node.js / Express
+  ├── server/
+  │   ├── features/    # Lógica baseada em recursos (projects, auth, etc.)
+  │   ├── lib/         # Serviços, integrações e utilitários
+  │   ├── middleware/  # Middleware Express
+  │   ├── routes/      # Definição de rotas da API REST
+  │   └── index.ts     # Ponto de entrada do servidor
+  └── prisma/        # Schemas e migrações do banco de dados
+frontend/            # Aplicação React / Vite SPA
+  ├── src/
+  │   ├── features/    # Componentes baseados em recursos
+  │   ├── components/  # Componentes globais reutilizáveis
+  │   ├── pages/       # Views de página inteira
+  │   └── lib/         # Utilitários do frontend
+docs/                # Documentação detalhada
+scripts/             # Scripts de automação
+tests/               # Suíte de testes (unitários, integração, E2E)
+```
+
 ## Padrões de Design e Decisões
 
 - **Separação de Preocupações (SoC)**: O frontend cuida exclusivamente da camada de apresentação, enquanto o backend orquestra a lógica de negócio e persistência de dados.

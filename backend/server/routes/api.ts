@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { adminAuth } from '../middleware/adminAuth.js';
 import { authenticateToken } from '../lib/auth.js';
 import * as ClientController from '../controllers/client.controller.js';
-import * as ProjectController from '../controllers/project.controller.js';
+import * as ProjectController from '../features/projects/project.controller.js';
 import * as InvoiceController from '../controllers/invoice.controller.js';
 import * as ProposalController from '../controllers/proposal.controller.js';
 import * as LeadController from '../controllers/lead.controller.js';
@@ -22,7 +22,7 @@ import { chatWithData } from '../controllers/ai.controller.js';
 
 import { validate } from '../middleware/validate.js';
 import { createClientSchema, updateClientSchema } from '../schemas/client.schema.js';
-import { createProjectSchema, updateProjectSchema } from '../schemas/project.schema.js';
+import { createProjectSchema, updateProjectSchema } from '../features/projects/project.schema.js';
 import { createLeadSchema, updateLeadSchema } from '../schemas/lead.schema.js';
 import { createInvoiceSchema, updateInvoiceSchema } from '../schemas/invoice.schema.js';
 import { createProposalSchema, updateProposalSchema } from '../schemas/proposal.schema.js';

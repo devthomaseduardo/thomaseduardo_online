@@ -5,7 +5,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
-import authRouter from './routes/auth.js';
+import authRouter from './features/auth/auth.js';
 import apiRouter from './routes/api.js';
 import portalRouter from './routes/portal.js';
 import webhooksRouter from './routes/webhooks.js';
