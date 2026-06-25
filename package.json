@@ -16,6 +16,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "resend": "^6.12.4"
+    "resend": "^6.14.0"
   }
 }
