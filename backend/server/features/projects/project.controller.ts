@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { addTimeline } from '../services/timeline.service.js';
-import { emailService } from '../services/email.js';
-import { env } from '../lib/env.js';
-import { audit, getClientIp } from '../lib/audit.js';
+import { addTimeline } from '../../services/timeline.service.js';
+import { emailService } from '../../services/email.js';
+import { env } from '../../lib/env.js';
+import { audit, getClientIp } from '../../lib/audit.js';
 
 const prisma = new PrismaClient();
 

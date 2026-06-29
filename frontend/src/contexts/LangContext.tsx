@@ -45,6 +45,73 @@ const translations = {
       tags: ["Automação", "Performance", "Operação", "Escala"],
       certifications: "Legitimidade Técnica",
     },
+    expertise: {
+      h2a: "Soluções web",
+      h2b: "para operações reais.",
+    },
+    differentiators: {
+      items: [
+        {
+          title: "Clareza técnica",
+          desc: "Transformo necessidades de negócio em escopo, telas, APIs e entregas fáceis de acompanhar."
+        },
+        {
+          title: "Entrega funcional",
+          desc: "Construo páginas, dashboards, portais e áreas administrativas pensadas para uso diário."
+        },
+        {
+          title: "Stack consistente",
+          desc: "Uso React, Next.js, Node.js, PostgreSQL, Prisma, Docker, Linux e Vercel conforme a necessidade do projeto."
+        }
+      ]
+    },
+    tech: {
+      eyebrow: "Stack técnica",
+      h1a: "Tecnologias",
+      h1b: "que uso no dia a dia.",
+      groups: {
+        frontend: {
+          cat: "Frontend",
+          sub: "Interfaces web",
+          desc: "React, Next.js, TypeScript e Tailwind para interfaces rápidas, responsivas e fáceis de manter."
+        },
+        infra: {
+          cat: "Infra",
+          sub: "Deploy e operação",
+          desc: "Linux, Docker, Vercel e PostgreSQL para publicar, organizar e manter aplicações em produção."
+        },
+        backend: {
+          cat: "Backend",
+          sub: "APIs e dados",
+          desc: "Node.js, Express/Fastify, Prisma, JWT e PostgreSQL para autenticação, regras de negócio e integrações."
+        },
+        solutions: {
+          cat: "Soluções",
+          sub: "Produtos web",
+          desc: "Landing pages, portais, dashboards, áreas admin, autenticação e automações para operação."
+        }
+      }
+    },
+    trajectory: {
+      eyebrow: "Trajetória",
+      h2a: "Projetos reais,",
+      h2b: "aprendizado constante.",
+      items: [
+        { year: "Atual", title: "Portfólio Full Stack", desc: "Criação de sistemas web, APIs, portais e landing pages para demandas reais." },
+        { year: "Formação", title: "Engenharia de Software", desc: "Base acadêmica em arquitetura, desenvolvimento, banco de dados e qualidade de software." },
+        { year: "Produção", title: "Deploy e manutenção", desc: "Aplicações publicadas com atenção a performance, responsividade e fluxo de uso." }
+      ]
+    },
+    faq: {
+      h2a: "Dúvidas",
+      h2b: "frequentes.",
+    },
+    stats: {
+      projects: "Projetos",
+      technologies: "Tecnologias",
+      experience: "Anos estudando e construindo",
+      satisfaction: "Foco em entrega",
+    },
     solutions: {
       eyebrow: "Soluções",
       h2: "Soluções que eliminam gargalos.",
@@ -359,6 +426,73 @@ const translations = {
       p1: "I specialize in architecting workflows that eliminate operational friction, replacing manual tasks with robust, scalable, and low-maintenance code.",
       tags: ["Automation", "Performance", "Operation", "Scale"],
       certifications: "Technical Legitimacy",
+    },
+    expertise: {
+      h2a: "Web solutions",
+      h2b: "for real operations.",
+    },
+    differentiators: {
+      items: [
+        {
+          title: "Technical clarity",
+          desc: "I turn business needs into scope, screens, APIs, and deliveries that are easy to follow."
+        },
+        {
+          title: "Functional delivery",
+          desc: "I build pages, dashboards, portals, and admin areas designed for daily use."
+        },
+        {
+          title: "Consistent stack",
+          desc: "I use React, Next.js, Node.js, PostgreSQL, Prisma, Docker, Linux, and Vercel according to the project needs."
+        }
+      ]
+    },
+    tech: {
+      eyebrow: "Technical stack",
+      h1a: "Technologies",
+      h1b: "I use day to day.",
+      groups: {
+        frontend: {
+          cat: "Frontend",
+          sub: "Web interfaces",
+          desc: "React, Next.js, TypeScript, and Tailwind for fast, responsive, maintainable interfaces."
+        },
+        infra: {
+          cat: "Infra",
+          sub: "Deploy and operation",
+          desc: "Linux, Docker, Vercel, and PostgreSQL to publish, organize, and maintain production apps."
+        },
+        backend: {
+          cat: "Backend",
+          sub: "APIs and data",
+          desc: "Node.js, Express/Fastify, Prisma, JWT, and PostgreSQL for auth, business rules, and integrations."
+        },
+        solutions: {
+          cat: "Solutions",
+          sub: "Web products",
+          desc: "Landing pages, portals, dashboards, admin areas, authentication, and automations for operations."
+        }
+      }
+    },
+    trajectory: {
+      eyebrow: "Trajectory",
+      h2a: "Real projects,",
+      h2b: "constant learning.",
+      items: [
+        { year: "Now", title: "Full Stack portfolio", desc: "Building web systems, APIs, portals, and landing pages for real needs." },
+        { year: "Education", title: "Software Engineering", desc: "Academic foundation in architecture, development, databases, and software quality." },
+        { year: "Production", title: "Deploy and maintenance", desc: "Published applications with attention to performance, responsiveness, and usage flow." }
+      ]
+    },
+    faq: {
+      h2a: "Frequent",
+      h2b: "questions.",
+    },
+    stats: {
+      projects: "Projects",
+      technologies: "Technologies",
+      experience: "Years studying and building",
+      satisfaction: "Delivery focus",
     },
     solutions: {
       eyebrow: "Solutions",

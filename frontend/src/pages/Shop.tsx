@@ -10,7 +10,7 @@ import {
   Zap
 } from "lucide-react";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import STORE_PRODUCTS from "../data/store_products.json";
 

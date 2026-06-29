@@ -7,7 +7,7 @@ import {
   Search, Server, Tag, CheckCircle2, QrCode, User, Eye, EyeOff,
   Settings as SettingsIcon, ChevronRight
 } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
 import { AnimatedEmoji } from "../components/AnimatedEmoji";

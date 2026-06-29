@@ -1,13 +1,13 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare,
   Upload, Check, Clock, Eye, Shield, ArrowRight, ArrowLeft,
   Palette, Image as ImageIcon, Type, Key, FileText, Layers,
   Zap, Lock, Star, ChevronRight, X, Info
 } from "lucide-react";
-import fundoBg from "../assets/fundo-filosofia.webp";
+import fundoBg from "../assets/linux-lab.svg";
 
 import { RotatingText } from "../components/RotatingText";
 

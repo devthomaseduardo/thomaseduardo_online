@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { PRODUCTION_PROJECTS, CONTACT } from "@/lib/site";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export function LiveProjectsSection() {
   const [i, setI] = useState(0);
@@ -35,7 +34,7 @@ export function LiveProjectsSection() {
   return (
     <section
       id="sistemas"
-      className="relative overflow-hidden border-y border-white/5 bg-[#060606] py-20 sm:py-32"
+      className="relative overflow-hidden border-y border-[#18181B] bg-[#050505] py-20 sm:py-32"
     >
       {/* Ghost text marquee */}
       <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 select-none overflow-hidden">
@@ -58,7 +57,7 @@ export function LiveProjectsSection() {
         {/* Header */}
         <div className="mb-12 flex flex-wrap items-end justify-between gap-8 sm:mb-20">
           <div className="max-w-3xl">
-            <span className="flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-500">
+            <span className="flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-[0.4em] text-[#A1A1AA]">
               <Code2 className="h-3 w-3" /> Systems_Repository // {String(i + 1).padStart(2, "0")}
             </span>
             <h2 className="mt-6 font-bold text-[clamp(2.5rem,8vw,5rem)] tracking-tighter leading-[0.9] text-white">
@@ -66,16 +65,16 @@ export function LiveProjectsSection() {
               <span className="text-white/20">escalam.</span>
             </h2>
           </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-white/5 bg-white/[0.02] p-2 backdrop-blur-xl">
+          <div className="flex items-center gap-2 rounded-2xl border border-[#18181B] bg-[#0A0A0A] p-2 backdrop-blur-xl">
             <button
               onClick={prev}
-              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition-all hover:bg-emerald-500/10 hover:text-emerald-500"
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-[#71717A] transition-all hover:bg-white/5 hover:text-white"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             <button
               onClick={next}
-              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition-all hover:bg-emerald-500/10 hover:text-emerald-500"
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-[#71717A] transition-all hover:bg-white/5 hover:text-white"
             >
               <ArrowRight className="h-5 w-5" />
             </button>
@@ -84,7 +83,7 @@ export function LiveProjectsSection() {
 
         {/* Device Display */}
         <div className="relative mx-auto w-full max-w-6xl">
-          <div className="relative rounded-2xl border border-white/5 bg-white/[0.02] p-2 shadow-2xl backdrop-blur-3xl sm:p-4">
+          <div className="relative rounded-2xl border border-[#18181B] bg-[#0A0A0A] p-2 shadow-2xl backdrop-blur-3xl sm:p-4">
             {/* Top Bar */}
             <div className="flex items-center gap-2 pb-4 pl-2">
               <div className="flex gap-1.5">
@@ -96,8 +95,8 @@ export function LiveProjectsSection() {
                 {project.domain}
               </div>
               {project.liveUrl && (
-                <div className="ml-auto flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-500">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live_Process
+                <div className="ml-auto flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live_Process
                 </div>
               )}
             </div>
@@ -118,7 +117,7 @@ export function LiveProjectsSection() {
                     <div className="h-full w-full relative">
                       {iframeLoading && (
                         <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0a0a0a]">
-                          <Loader2 className="h-8 w-8 animate-spin text-emerald-500/20" />
+                          <Loader2 className="h-8 w-8 animate-spin text-white/10" />
                         </div>
                       )}
                       {iframeError ? (
@@ -188,7 +187,7 @@ export function LiveProjectsSection() {
             href={CONTACT.whatsapp}
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-2xl bg-emerald-500 px-8 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-emerald-400 hover:scale-[1.02] active:scale-95"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 rounded-2xl bg-[#FAFAFA] px-8 py-5 text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-white hover:scale-[1.02] active:scale-95"
           >
             <WhatsAppIcon size={16} /> Discutir Operação
           </a>

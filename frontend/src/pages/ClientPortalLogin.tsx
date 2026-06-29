@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Eye, EyeOff, Shield, MessageSquare, Lock } from "lucide-react";
-import paymentBg from "../assets/payment-hero.webp";
+import paymentBg from "../assets/linux-lab.svg";
 import { RotatingText } from "../components/RotatingText";
 
 export default function ClientPortalLogin() {

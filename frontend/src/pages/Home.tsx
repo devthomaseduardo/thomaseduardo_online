@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Code2, LayoutGrid, Zap, Users, Database, Workflow, LineChart } from "lucide-react";
 
-import brutalistLogo from "../assets/brutalist-logo.png";
+const brutalistLogo = "/logo.webp";
 import thomasAbout from "../assets/thomas-about.png";
 import { RotatingText } from "../components/RotatingText";
 import { BackendTerminalSection } from "../components/BackendTerminalSection";

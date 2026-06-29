@@ -72,7 +72,7 @@ export const RouteTransition = ({ children, isNavigating }: { children: React.Re
           scale: isNavigating ? 0.99 : 1,
           filter: isNavigating ? "blur(4px)" : "blur(0px)"
         }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }}
         className="w-full h-full"
       >
         {children}

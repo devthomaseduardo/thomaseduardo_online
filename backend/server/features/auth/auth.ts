@@ -4,10 +4,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { PrismaClient } from '@prisma/client';
-import { env } from '../lib/env.js';
-import { signAdminToken } from '../lib/jwt.js';
-import { audit, getClientIp } from '../lib/audit.js';
-import { authenticateToken } from '../lib/auth.js';
+import { env } from '../../lib/env.js';
+import { signAdminToken } from '../../lib/jwt.js';
+import { audit, getClientIp } from '../../lib/audit.js';
+import { authenticateToken } from '../../lib/auth.js';
 
 const prisma = new PrismaClient();
 const router = express.Router();

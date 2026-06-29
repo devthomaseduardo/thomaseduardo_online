@@ -1,22 +1,16 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { LangProvider } from "./contexts/LangContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { ClientProtectedRoute } from "./components/ClientProtectedRoute";
 
 // ─── Above-the-fold: loaded eagerly for instant FCP ─────────────────────────
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
 import FloatingSocial from "./components/FloatingSocial";
+import CinematicHome from "./components/cinematic/CinematicHome";
 
 // ─── Below-the-fold: lazy-loaded as user scrolls ────────────────────────────
-const AboutSection       = lazy(() => import("./components/AboutSection"));
-const BentoGrid          = lazy(() => import("./components/BentoGrid"));
-const ProjectSection     = lazy(() => import("./components/ProjectSection").then(m => ({ default: m.ProjectSection })));
-const SolutionsSection    = lazy(() => import("./components/SolutionsSection").then(m => ({ default: m.SolutionsSection })));
-const ProcessSection     = lazy(() => import("./components/ProcessSection").then(m => ({ default: m.ProcessSection })));
 const Footer             = lazy(() => import("./components/Footer").then(m => ({ default: m.Footer })));
-const AvailabilitySection = lazy(() => import("./components/AvailabilitySection").then(m => ({ default: m.AvailabilitySection })));
 
 // ─── Pages: only downloaded when routes are visited ─────────────────────────
 const LinkBio = lazy(() => import("./pages/LinkBio"));
@@ -55,15 +49,7 @@ const Home = () => {
       <Navbar />
       <FloatingSocial />
       <main className="relative z-10">
-        <Hero />
-        <Suspense fallback={null}>
-          <SolutionsSection />
-          <AboutSection />
-          <BentoGrid />
-          <ProjectSection />
-          <ProcessSection />
-          <AvailabilitySection />
-        </Suspense>
+        <CinematicHome />
       </main>
       <Suspense fallback={null}>
         <Footer />

@@ -63,7 +63,7 @@ export const ProjectChat = () => {
               placeholder="Pergunte sobre os projetos..."
               className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none"
             />
-            <button onClick={sendMessage} className="p-2 bg-emerald-500 rounded-lg"><Send className="w-4 h-4" /></button>
+          <button onClick={sendMessage} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg"><Send className="w-4 h-4 text-white" /></button>
           </div>
         </motion.div>
       )}

@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authenticateToken } from '../lib/auth.js';
+import { authenticateToken } from '../../lib/auth.js';
 
 const prisma = new PrismaClient();
 

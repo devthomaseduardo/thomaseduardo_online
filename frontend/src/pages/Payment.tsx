@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   Shield, Check, ArrowRight, ArrowLeft, QrCode, Copy,
@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { API_URL } from "../config";
 import { RotatingText } from "../components/RotatingText";
-import fundoBg from "../assets/payment-hero.webp";
+import fundoBg from "../assets/linux-lab.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 type Method = "pix" | "card";

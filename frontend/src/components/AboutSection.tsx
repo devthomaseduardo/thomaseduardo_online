@@ -65,7 +65,7 @@ const AboutSection = () => {
                 className="absolute top-[20%] -left-2 sm:-left-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-1.5 px-3 shadow-xl"
               >
                 <div className="text-white font-bold text-xs tracking-tight">+{new Date().getFullYear() - 2023} anos</div>
-                <div className="text-emerald-400/80 text-[7px] uppercase tracking-widest font-mono mt-[1px]">Experiência</div>
+              <div className="text-zinc-400 text-[7px] uppercase tracking-widest font-mono mt-[1px]">Experiência</div>
               </motion.div>
 
               {/* Balão 2 */}
@@ -74,7 +74,7 @@ const AboutSection = () => {
                 className="absolute top-[40%] -right-2 sm:-right-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-1.5 px-3 shadow-xl text-right"
               >
                 <div className="text-white font-bold text-xs tracking-tight">+18</div>
-                <div className="text-emerald-400/80 text-[7px] uppercase tracking-widest font-mono mt-[1px]">{t.hero.stats.projects}</div>
+              <div className="text-zinc-400 text-[7px] uppercase tracking-widest font-mono mt-[1px]">{t.hero.stats.projects}</div>
               </motion.div>
             </div>
           </motion.div>
@@ -87,7 +87,7 @@ const AboutSection = () => {
             
             <h2 className="text-[clamp(2rem,6vw,3.5rem)] font-bold mb-6 tracking-tighter leading-[1.05]">
               {t.about.h2a} <br className="hidden lg:block" />
-              <span className="text-emerald-500">{t.about.h2b.split(' ')[0]} {t.about.h2b.split(' ')[1]}</span> {t.about.h2b.split(' ').slice(2).join(' ')}
+              <span className="text-[#FAFAFA]">{t.about.h2b.split(' ')[0]} {t.about.h2b.split(' ')[1]}</span> {t.about.h2b.split(' ').slice(2).join(' ')}
             </h2>
             
             <p className="text-base md:text-lg text-white/50 leading-relaxed font-light mb-6">
@@ -127,9 +127,9 @@ const AboutSection = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1, duration: 0.5 }}
                   viewport={{ once: true }}
-                  className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-center items-start hover:bg-white/[0.04] transition-all group"
+                  className="p-5 rounded-2xl bg-[#0A0A0A] border border-[#18181B] flex flex-col justify-center items-start hover:bg-white/[0.04] transition-all group"
                 >
-                  <span className="text-2xl font-bold text-white mb-1 tracking-tight group-hover:text-emerald-400 transition-colors">{stat.value}</span>
+                  <span className="text-2xl font-bold text-white mb-1 tracking-tight group-hover:text-white transition-colors">{stat.value}</span>
                   <span className="text-[10px] font-mono text-white/30 uppercase tracking-widest leading-none">{stat.label}</span>
                 </motion.div>
               ))}
@@ -152,7 +152,7 @@ const AboutSection = () => {
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.05, duration: 0.3 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5 backdrop-blur-md text-[10px] font-mono text-white/50 hover:text-white hover:border-emerald-500/20 hover:bg-emerald-500/5 transition-all cursor-default"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#0A0A0A] border border-[#18181B] backdrop-blur-md text-[10px] font-mono text-white/50 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all cursor-default"
                     >
                       {iconUrl && (
                         <img src={iconUrl} alt={tech} className="w-3 h-3 object-contain opacity-60" loading="lazy" />

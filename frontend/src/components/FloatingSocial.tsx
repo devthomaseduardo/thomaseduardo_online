@@ -49,11 +49,11 @@ const FloatingSocial = () => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
           className="fixed right-5 top-1/2 -translate-y-1/2 z-[990] hidden md:flex flex-col items-center gap-1"
         >
           {/* Vertical line above */}
-          <div className="w-px h-12 bg-gradient-to-b from-transparent to-white/10 mb-1" />
+          <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#272727] mb-1" />
 
           {/* Icon buttons */}
           {socials.map((social) => (
@@ -64,12 +64,12 @@ const FloatingSocial = () => {
               rel="noopener noreferrer"
               aria-label={social.label}
               title={social.label}
-              className="group relative w-8 h-8 flex items-center justify-center rounded-full text-white/30 hover:text-white/90 transition-all duration-300 hover:bg-white/5 hover:shadow-[0_0_12px_rgba(255,255,255,0.2)] hover:scale-110"
+              className="group relative w-8 h-8 flex items-center justify-center rounded-full text-[#78716C] hover:text-[#F97316] transition-all duration-300 hover:bg-[rgba(249,115,22,0.12)] hover:scale-110"
             >
               {social.icon}
               {/* Tooltip */}
               <span className="absolute right-10 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1 group-hover:translate-x-0 pointer-events-none">
-                <span className="text-[9px] font-mono font-semibold text-white/50 tracking-widest uppercase whitespace-nowrap bg-white/5 border border-white/10 backdrop-blur-md px-2 py-1 rounded-full">
+                <span className="text-[9px] font-mono font-semibold text-[#A8A29E] tracking-widest uppercase whitespace-nowrap bg-[#111111] border border-[#272727] backdrop-blur-md px-2 py-1 rounded-full">
                   {social.label}
                 </span>
               </span>
@@ -77,7 +77,7 @@ const FloatingSocial = () => {
           ))}
 
           {/* Vertical line below */}
-          <div className="w-px h-12 bg-gradient-to-b from-white/10 to-transparent mt-1" />
+          <div className="w-px h-12 bg-gradient-to-b from-[#272727] to-transparent mt-1" />
         </motion.div>
       )}
     </AnimatePresence>

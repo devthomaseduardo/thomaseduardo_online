@@ -53,10 +53,10 @@ export const ContactForm = () => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-lg bg-emerald-500/5 border border-emerald-500/20 rounded-3xl p-12 text-center"
+        className="w-full max-w-lg bg-[#0A0A0A] border border-[#18181B] rounded-3xl p-12 text-center"
       >
-        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle2 className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-bold text-white mb-4">Mensagem Transmitida</h3>
         <p className="text-zinc-400 leading-relaxed">
@@ -66,7 +66,7 @@ export const ContactForm = () => {
         </p>
         <button 
           onClick={() => setStatus('idle')}
-          className="mt-8 text-sm font-mono text-emerald-400 hover:text-white transition-colors"
+          className="mt-8 text-sm font-mono text-white hover:text-zinc-400 transition-colors"
         >
           Enviar outra mensagem
         </button>

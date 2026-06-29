@@ -38,6 +38,10 @@ export function AllProjectsShowcase() {
   const activeProject = useMemo(() => 
     projectsData.find(p => p.id === selectedId) || projectsData[0]
   , [selectedId]);
+  const activeProjectImage =
+    "image" in activeProject && typeof activeProject.image === "string"
+      ? activeProject.image
+      : "/og.webp";
 
   return (
     <section className="min-h-screen py-32 bg-[#060606] relative overflow-hidden">
@@ -47,7 +51,7 @@ export function AllProjectsShowcase() {
           {/* LEFT: Project Navigation */}
           <div className="lg:col-span-4 flex flex-col gap-8">
             <motion.div {...FADE_UP}>
-              <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.3em] mb-4 block">System_Repository</span>
+              <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-[0.3em] mb-4 block">System_Repository</span>
               <h1 className="text-5xl font-bold text-white tracking-tighter uppercase leading-[0.9]">
                 Portfólio <br /><span className="text-white/20">de Cases</span>
               </h1>
@@ -62,7 +66,7 @@ export function AllProjectsShowcase() {
                     key={cat}
                     onClick={() => setFilter(cat)}
                     className={`flex-1 px-4 py-3 rounded-2xl text-[9px] font-mono uppercase tracking-widest transition-all ${
-                      filter === cat ? 'bg-white/[0.05] text-emerald-400' : 'text-white/30 hover:text-white/60'
+                      filter === cat ? 'bg-white/[0.08] text-white font-bold' : 'text-white/30 hover:text-white/60'
                     }`}
                   >
                     {cat === 'all' ? 'Todos' : cat === 'operational' ? 'Sistemas' : 'Páginas'}
@@ -115,7 +119,7 @@ export function AllProjectsShowcase() {
 
                       <div className="flex items-center gap-6">
                         <div className="text-[10px] font-mono text-white/30 uppercase tracking-widest">
-                          Performance: <span className="text-emerald-400 font-bold">{activeProject.metric}</span>
+                        Performance: <span className="text-white font-bold">{activeProject.metric}</span>
                         </div>
                       </div>
 
@@ -134,8 +138,8 @@ export function AllProjectsShowcase() {
 
                     <div className="w-full">
                        <DeviceMockup 
-                          desktopImg={activeProject.image}
-                          mobileImg={activeProject.image}
+                          desktopImg={activeProjectImage}
+                          mobileImg={activeProjectImage}
                           altText={activeProject.title}
                        />
                     </div>

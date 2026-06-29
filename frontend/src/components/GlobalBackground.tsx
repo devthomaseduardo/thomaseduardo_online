@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import thomasAbout from "../assets/thomas-about.png";
-import heroWeb from "../assets/hero-web.jpg"; // Placeholder for projects background
+import heroWeb from "../assets/linux-lab.svg";
 
 export default function GlobalBackground() {
   const [activeBg, setActiveBg] = useState<string | null>(null);

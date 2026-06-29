@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Terminal } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useLang } from '../contexts/LangContext';
 import { FADE_UP } from '../constants/animations';
 import projectsData from '../data/projects.json';
@@ -19,7 +19,7 @@ const TerminalMockup = ({ project }: { project: any }) => (
       <span className="text-white/20 uppercase tracking-widest ml-2">bash — {project.id}.sh</span>
     </div>
     <div className="p-8 space-y-4 text-left">
-      <div className="text-emerald-500">➜ <span className="text-blue-400">~/projects</span> <span className="text-white/40">cat {project.title.toLowerCase().replace(/\s+/g, '_')}.json</span></div>
+      <div className="text-white">➜ <span className="text-zinc-400">~/projects</span> <span className="text-white/40">cat {project.title.toLowerCase().replace(/\s+/g, '_')}.json</span></div>
       <div className="pl-4 border-l border-white/5 space-y-2 text-white/60">
         <div>"category": "{project.category}",</div>
         <div>"stack": ["{project.tecnologias?.join('", "')}"],</div>
@@ -35,7 +35,7 @@ export const ProjectCard = ({ project, t }: any) => {
     <motion.div {...FADE_UP} className="grid lg:grid-cols-2 gap-16 items-center">
       <div className="space-y-8">
         <div>
-          <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.3em] mb-4 block">
+          <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-[0.3em] mb-4 block">
             {project.category === 'operational' ? t.projects.catOperational : t.projects.catInfra}
           </span>
           <h3 className="text-5xl font-bold tracking-tighter text-white uppercase leading-none mb-6">

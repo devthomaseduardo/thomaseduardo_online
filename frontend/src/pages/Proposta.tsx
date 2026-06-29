@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { API_URL } from "../config";
 import {
   LayoutGrid, FolderOpen, CreditCard, MessageSquare, Layers,
   ArrowRight, ArrowLeft, Check, Shield, Zap, TrendingUp,
   Clock, Package, Code2, Globe, Database, Cloud, ChevronRight, X
 } from "lucide-react";
-import paymentBg from "../assets/payment-hero.webp";
+import paymentBg from "../assets/linux-lab.svg";
 import { RotatingText } from "../components/RotatingText";
 import { useSVGL } from "../hooks/useSVGL";
 

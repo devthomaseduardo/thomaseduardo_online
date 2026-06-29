@@ -11,7 +11,7 @@ export function BackendTerminalSection() {
   const [selectedProject, setSelectedProject] = useState(backendProjects[0]);
 
   return (
-    <section className="py-24 bg-[#050505] text-emerald-500 font-mono">
+    <section className="py-24 bg-[#050505] text-[#FAFAFA] font-mono">
       <div className="max-w-[1400px] mx-auto px-4 md:px-12">
         <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tighter mb-8">
           Sistemas que <span className="text-white/40">reduzem gargalos.</span>
@@ -30,8 +30,8 @@ export function BackendTerminalSection() {
                   onClick={() => setSelectedProject(p)}
                   className={`w-full text-left px-3 py-2 text-sm rounded transition-colors ${
                     selectedProject.id === p.id 
-                      ? 'bg-emerald-500/10 text-emerald-400' 
-                      : 'text-zinc-500 hover:text-emerald-500/70'
+                      ? 'bg-white/10 text-white font-bold' 
+                      : 'text-zinc-500 hover:text-white'
                   }`}
                 >
                   {`> ${p.title.toLowerCase().replace(/ /g, '_')}`}
@@ -54,7 +54,7 @@ export function BackendTerminalSection() {
                 <div className="text-[10px] text-zinc-500 mb-2 uppercase">Tecnologias</div>
                 <div className="flex flex-wrap gap-2">
                   {selectedProject.tecnologias.map(t => (
-                    <span key={t} className="text-emerald-400/80 text-xs">[{t}]</span>
+                    <span key={t} className="text-[#A1A1AA] text-xs">[{t}]</span>
                   ))}
                 </div>
               </div>
@@ -63,7 +63,7 @@ export function BackendTerminalSection() {
                 href={selectedProject.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block text-white bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-xs font-bold uppercase transition-colors"
+                className="inline-block text-black bg-[#FAFAFA] hover:bg-white px-4 py-2 text-xs font-bold uppercase transition-colors"
               >
                 Executar_Projeto
               </a>

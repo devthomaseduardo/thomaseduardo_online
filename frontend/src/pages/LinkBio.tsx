@@ -6,7 +6,7 @@ import {
   Layers
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
 import { RotatingText } from "../components/RotatingText";
 import { AnimatedEmoji } from "../components/AnimatedEmoji";

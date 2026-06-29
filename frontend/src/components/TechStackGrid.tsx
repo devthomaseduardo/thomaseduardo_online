@@ -87,7 +87,7 @@ const TechStackGrid = () => {
           <motion.div
             key={group.cat}
             {...FADE_UP}
-            transition={{ delay: i * 0.1, duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ delay: i * 0.1, duration: 0.8, ease: [0.4, 0, 0.2, 1] as const }}
             className={`${group.colSpan} p-8 rounded-3xl border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 transition-all duration-700 group shadow-2xl backdrop-blur-xl relative overflow-hidden`}
           >
             <div className="absolute inset-0 bg-linear-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router";
 
 export function ClientProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem("clientToken");

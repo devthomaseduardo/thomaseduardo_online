@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { Loader2, ArrowRight } from "lucide-react";
 import { RotatingText } from "../components/RotatingText";

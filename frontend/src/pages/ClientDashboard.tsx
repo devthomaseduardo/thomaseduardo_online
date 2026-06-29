@@ -7,7 +7,7 @@ import {
   Check, Hourglass, AlertCircle, Bell, Search, Command, Settings, MessageSquare,
   X, DollarSign, Key, Eye, EyeOff, Menu
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { API_URL } from "../config";
 import { useToast } from "../contexts/ToastContext";
 

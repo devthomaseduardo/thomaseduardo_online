@@ -1,4 +1,4 @@
-export const CUBIC_BEZIER = [0.16, 1, 0.3, 1]; // Premium snappy Apple cubic bezier
+export const CUBIC_BEZIER = [0.16, 1, 0.3, 1] as const;
 
 export const SMOOTH_TRANSITION = {
   duration: 0.25,

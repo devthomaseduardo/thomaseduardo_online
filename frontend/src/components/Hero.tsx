@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { useLang } from "../contexts/LangContext";
 import { handleSmoothScroll } from "../utils/scroll";
 import { HERO_FADE_UP, SMOOTH_TRANSITION } from "../constants/animations";
-import heroWeb from "../assets/hero-web.webp";
+import heroWeb from "../assets/linux-lab.svg";
 import thomasHero from "../assets/thomas-hero.png";
 import { AnimatedEmoji } from "./AnimatedEmoji";
 import { RotatingText } from "./RotatingText";

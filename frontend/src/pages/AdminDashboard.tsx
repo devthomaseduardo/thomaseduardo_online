@@ -5,7 +5,7 @@ import {
   MessageSquare, Settings, Search, Bell, Shield, Star,
   TrendingUp, TrendingDown, Upload, Check, ChevronRight, ArrowRight, Zap
 } from "lucide-react";
-import adminHero from "../assets/admin-hero.png";
+import adminHero from "../assets/linux-lab.svg";
 
 const NAV = [
   { id:"overview",    label:"Overview",    icon:LayoutGrid   },
